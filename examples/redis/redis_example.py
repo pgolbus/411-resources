@@ -30,14 +30,12 @@ def redis_connect(env):
         conn.close()
 
 @timer
-def redis_write(env, content):
-    with redis_connect(env) as conn:
-        conn.set('content', content)
+def redis_write(conn, content):
+    conn.set('content', content)
 
 @timer
-def redis_read(env):
-    with redis_connect(env) as conn:
-        value = conn.get('content')
+def redis_read(conn):
+    value = conn.get('content')
     print(value.decode("UTF-8"))
 
 
@@ -45,6 +43,7 @@ if __name__ == "__main__":
     with open("env.json", "r") as fh:
         env = json.load(fh)
     content = request(env)
-    redis_write(env, content)
-    for _ in range(10):
-        redis_read(env)
+    with redis_connect(env) as conn:
+        redis_write(conn, content)
+        for _ in range(10):
+            redis_read(conn)
