@@ -23,7 +23,7 @@ RUN pip install flask
 EXPOSE 5000
 
 # Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD ["python3", "app.py"]
 
 # Health check (checks every 30 seconds to see if the endpoint returns a successful response)
 # HEALTHCHECK --interval=30s --timeout=3s \
