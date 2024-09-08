@@ -1,0 +1,56 @@
+# Note that this base Dockerfile is meant as a barebonnes starting point
+# Modify it to your hearts content
+
+#########################
+# Step 1: build the image
+
+# docker build -t 411-base-image:1.0.0 -f 411-Base-Dockerfile .
+
+#########################
+# Step 2: run the container with persistent storage.
+# # Running the container both creates it and starts it
+# # The -it flags start it in interactive terminal mode
+# # You may also have to expose ports with the -p flag
+
+# docker run -it -v </path/to/local/storage>:/usr/src/app --name my-411-container 411-base-image:1.0.0
+
+#########################
+# Step 3: exit the container
+
+# exit
+
+# # or
+
+# ctrl-d
+
+########################
+# Step 4: stop the container
+
+# docker stop my-411-container
+
+#######################
+# Step 5: restart the container
+# # The -i flag starts it in interactive mode. It already has the terminal, storage and ports
+# # from whan you ran it
+
+# docker start -i my-411-container
+
+#######################
+
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
+
+# Install git
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+# Create a directory for persistent storage
+RUN mkdir -p /usr/src/app
+
+# Set the working directory to our app directory
+WORKDIR /usr/src/app
+
+# VOLUME instruction creates a mount point and marks it as holding externally mounted volumes
+VOLUME ["/usr/src/app"]
+
+# Command to keep the container running in interactive terminal mode
+CMD [ "bash" ]
