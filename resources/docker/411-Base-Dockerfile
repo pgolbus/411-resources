@@ -4,6 +4,9 @@
 #########################
 # Step 1: build the image
 
+# # the -f flag specifies the Dockerfile. The . specifies the current working
+# # directory as the build context
+
 # docker build -t 411-base-image:1.0.0 -f 411-Base-Dockerfile .
 
 #########################
