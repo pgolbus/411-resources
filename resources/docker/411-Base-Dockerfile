@@ -10,15 +10,25 @@
 # docker build -t 411-base-image:1.0.0 -f 411-Base-Dockerfile .
 
 #########################
-# Step 2: run the container with persistent storage.
+# Step 2: create a directory for persistant local storage
+# # You are going to want to be able to write data to your hard drive that
+# # "persists" outside of the container. The first step is to create a
+# # directory that is "mounted" inside of the container. What does "mounted"
+# # mean?
+# # # https://www.geeksforgeeks.org/mount-command-in-linux-with-examples/
+
+# mkdir container_storage
+
+#########################
+# Step 3: run the container with persistent storage.
 # # Running the container both creates it and starts it
 # # The -it flags start it in interactive terminal mode
 # # You may also have to expose ports with the -p flag
 
-# docker run -it -v </path/to/local/storage>:/usr/src/app --name my-411-container 411-base-image:1.0.0
+# docker run -it -v </path/to/container_storage>/container_storage:/usr/src/app --name my-411-container 411-base-image:1.0.0
 
 #########################
-# Step 3: exit the container
+# Step 4: exit the container
 
 # exit
 
@@ -27,12 +37,12 @@
 # ctrl-d
 
 ########################
-# Step 4: stop the container
+# Step 5: stop the container
 
 # docker stop my-411-container
 
 #######################
-# Step 5: restart the container
+# Step 6: restart the container
 # # The -i flag starts it in interactive mode. It already has the terminal, storage and ports
 # # from whan you ran it
 
