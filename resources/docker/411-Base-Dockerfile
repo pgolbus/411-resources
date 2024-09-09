@@ -23,9 +23,23 @@
 # Step 3: run the container with persistent storage.
 # # Running the container both creates it and starts it
 # # The -it flags start it in interactive terminal mode
-# # You may also have to expose ports with the -p flag
+# # -v attaches the volume
+# # -p maps the https port (443) from the host into the container
 
-# docker run -it -v </path/to/container_storage>/container_storage:/usr/src/app --name my-411-container 411-base-image:1.0.0
+# docker run -it \
+#            -v </path/to/container_storage>/container_storage:/usr/src/app \
+#            -p 443:443 \
+#            --name my-411-container \
+#            411-base-image:1.0.0
+
+# # note that you MUST specify a path to container_storage. If it is in the same directory as where you are
+# # running docker it's at .
+
+# docker run -it \
+#            -v ./container_storage:/usr/src/app \
+#            -p 443:443 \
+#            --name my-411-container \
+#            411-base-image:1.0.0
 
 #########################
 # Step 4: exit the container
@@ -64,6 +78,10 @@ WORKDIR /usr/src/app
 
 # VOLUME instruction creates a mount point and marks it as holding externally mounted volumes
 VOLUME ["/usr/src/app"]
+
+# EXPOSE the https port (443) on the container. Note that this acts more as documentation
+# You must actually map the port when you run the container
+EXPOSE 443
 
 # Command to keep the container running in interactive terminal mode
 CMD [ "bash" ]
