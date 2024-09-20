@@ -7,7 +7,7 @@
 # # the -f flag specifies the Dockerfile. The . specifies the current working
 # # directory as the build context
 
-# docker build -t 411-base-image:1.0.0 -f 411-Base-Dockerfile .
+docker build -t 411-base-image:1.0.0 -f 411-Base-Dockerfile .
 
 #########################
 # Step 2: create a directory for persistant local storage
@@ -17,7 +17,7 @@
 # # mean?
 # # # https://www.geeksforgeeks.org/mount-command-in-linux-with-examples/
 
-# mkdir container_storage
+mkdir container_storage
 
 #########################
 # Step 3: run the container with persistent storage.
@@ -26,25 +26,25 @@
 # # -v attaches the volume
 # # -p maps the https port (443) from the host into the container
 
-# docker run -it \
-#            -v </path/to/container_storage>/container_storage:/usr/src/app \
-#            -p 443:443 \
-#            --name my-411-container \
-#            411-base-image:1.0.0
+ docker run -it \
+            -v </path/to/container_storage>/container_storage:/usr/src/app \
+            -p 443:443 \
+            --name my-411-container \
+            411-base-image:1.0.0
 
 # # note that you MUST specify a path to container_storage. If it is in the same directory as where you are
 # # running docker it's at .
 
-# docker run -it \
-#            -v ./container_storage:/usr/src/app \
-#            -p 443:443 \
-#            --name my-411-container \
-#            411-base-image:1.0.0
+ docker run -it \
+            -v ./container_storage:/usr/src/app \
+            -p 443:443 \
+            --name my-411-container \
+            411-base-image:1.0.0
 
 #########################
 # Step 4: exit the container
 
-# exit
+ exit
 
 # # or
 
@@ -53,14 +53,14 @@
 ########################
 # Step 5: stop the container
 
-# docker stop my-411-container
+ docker stop my-411-container
 
 #######################
 # Step 6: restart the container
 # # The -i flag starts it in interactive mode. It already has the terminal, storage and ports
 # # from whan you ran it
 
-# docker start -i my-411-container
+ docker start -i my-411-container
 
 #######################
 
