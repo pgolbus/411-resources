@@ -20,41 +20,50 @@ supplier_id: int
 supplier_name: str
 tracking_number: str
 
-def create_order(customer_id: int, items: List[Item]) -> None:
-  pass
-
-def modify_order(order_id: int, new_items: List[Item]) -> None:
-  pass
-
-def cancel_order(order_id: int) -> None:
-  pass
-
 def calculate_shipping_cost(order_id: int) -> float:
   pass
 
 def calculate_total_cost(order_id: int) -> float:
   pass
 
-def track_order(order_id: int) -> str:
+def cancel_order(order_id: int) -> None:
   pass
 
-def get_order_status(order_id: int) -> str:
+def create_order(customer_id: int, items: List[Item]) -> None:
   pass
 
-def get_order_details(order_id: int) -> Order:
+def create_shipment(order_id: int, shipping_address: str) -> None:
   pass
 
-def get_customer_orders(customer_id: int) -> List[Order]:
-  pass
-
-def get_supplier_orders(supplier_id: int) -> List[Order]:
+def generate_label(shipment_id: int) -> None:
   pass
 
 def get_customer_details(customer_id: int) -> Tuple(str, str):
   pass
 
+def get_customer_orders(customer_id: int) -> List[Order]:
+  pass
 
+def get_order_details(order_id: int) -> Order:
+  pass
 
+def get_order_status(order_id: int) -> str:
+  pass
+
+def get_supplier_details(supplier_id: int) -> Tuple(str, str):
+  pass
+
+def get_supplier_orders(supplier_id: int) -> List[Order]:
+  pass
+
+def modify_order(order_id: int, new_items: List[Item]) -> None:
+  pass
+
+def place_order(order_id: int) -> None:
+  pass
+
+def track_order(order_id: int) -> str:
+  pass
 
 
 
