@@ -1,8 +1,7 @@
-class OrderItem:
-    def __init__(self, itemID: int, quantity: int, price: float):
-        self.itemID = itemID
-        self.quantity = quantity
-        self.price = price
+from dataclasses import dataclass
 
-    def calculate_total(self) -> float:
-        pass
+@dataclass
+class OrderItem:
+    order_item_id: int
+    order_item_quantity: int
+    order_item_price: float

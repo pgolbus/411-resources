@@ -1,8 +1,8 @@
-class ShippingLabel:
-    def __init__(self, labelID: int, shipmentID: int, trackingNumber: str):
-        self.labelID = labelID
-        self.shipmentID = shipmentID
-        self.trackingNumber = trackingNumber
+from dataclasses import dataclass
 
-    def generate_label(self, shipmentID: int):
-        pass
+@dataclass
+class ShippingLabel:
+    label_id: int
+    shipment_id: int
+    label_creation_date: str
+    tracking_number: str
