@@ -14,3 +14,9 @@ class Customer:
 
     def get_customer_orders(self) -> List[Order]:
         pass
+
+    def get_order(self, order_id: int) -> Order:
+        pass
+
+    def manage_order(self, order: Order) -> None:
+        pass

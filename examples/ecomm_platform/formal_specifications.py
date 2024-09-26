@@ -69,6 +69,9 @@ def get_customer_orders() -> List[Order]:
 def get_customer_orders(customer_id: int) -> List[Order]:
     pass
 
+def get_order(self, order_id: int) -> Order:
+        pass
+
 def get_order_details(order_id: int) -> Order:
     pass
 
@@ -77,6 +80,9 @@ def get_order_status() -> str:
 
 def get_supplier_details() -> None:
     pass
+
+def manage_order(self, order: Order) -> None:
+        pass
 
 def modify_order(new_items: List[OrderItem]) -> None:
     pass
