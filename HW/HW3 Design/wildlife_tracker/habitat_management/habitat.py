@@ -1,5 +1,5 @@
 from typing import Any, List, Optional
-from animal_management.animal import Animal
+from wildlife_tracker.animal_management.animal import Animal
 
 class Habitat:
 

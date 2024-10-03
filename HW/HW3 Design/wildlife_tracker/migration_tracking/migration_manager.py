@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
-from habitat_management.habitat import Habitat
-from migration_tracking.migration import Migration
+from wildlife_tracker.habitat_management.habitat import Habitat
+from migration import Migration
 from migration_path import MigrationPath
 
 class MigrationManager:
@@ -16,7 +16,7 @@ class MigrationManager:
 
     def get_migration_by_id(migration_id: int) -> Migration:
         pass
-    
+
     def get_migration_path_by_id(path_id: int) -> MigrationPath:
         pass
 

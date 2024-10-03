@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from animal_management.animal import Animal
+from wildlife_tracker.animal_management.animal import Animal
 
 class AnimalManager:
 
