@@ -1,4 +1,5 @@
 from typing import Any, List, Optional
+from animal_management.animal import Animal
 
 class Habitat:
 

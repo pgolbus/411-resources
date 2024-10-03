@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import List, Optional
 
-from wildlife_tracker.animal_managment.animal import Animal
+from animal_management.animal import Animal
 
 class AnimalManager:
 
@@ -14,4 +14,7 @@ class AnimalManager:
         pass
 
     def remove_animal(animal_id: int) -> None:
+        pass
+
+    def assign_animals_to_habitat(animals: List[Animal]) -> None:
         pass
