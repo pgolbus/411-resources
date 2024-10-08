@@ -18,8 +18,6 @@ class MigrationManager:
     def get_migration_by_id(migration_id: int) -> Migration:
         pass
 
-    def get_migration_details(migration_id: int) -> dict[str, Any]:
-        pass
 
     def get_migration_path_by_id(path_id: int) -> MigrationPath:
         pass
