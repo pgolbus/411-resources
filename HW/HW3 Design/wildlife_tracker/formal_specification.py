@@ -27,6 +27,7 @@ start_location: Habitat
 status: str = "Scheduled"
 
 
+
 def assign_animals_to_habitat(animals: List[Animal]) -> None:
     pass
 

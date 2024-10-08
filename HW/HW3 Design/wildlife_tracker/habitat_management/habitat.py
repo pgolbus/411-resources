@@ -1,7 +1,7 @@
 from typing import Any, List, Optional
+from wildlife_tracker.animal_management.animal import Animal
 
 class Habitat:
-
     def __init__(self,
                 habitat_id: int,
                 geographic_area: str,
