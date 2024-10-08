@@ -37,7 +37,6 @@ class MigrationManager:
         else:
             print(f"Migration with ID {migration_id} not found.")
 
-    # New Methods for Scheduling and Canceling
     def schedule_migration(self, migration_id: int) -> None:
         if migration_id in self.migrations:
             print(f"Migration {migration_id} scheduled.")
@@ -50,6 +49,5 @@ class MigrationManager:
         else:
             print(f"Migration with ID {migration_id} not found.")
 
-    # Method to retrieve migrations by destination
     def get_migrations_by_destination(self, destination: Habitat) -> List[Migration]:
         return [migration for migration in self.migrations.values() if migration.destination == destination]

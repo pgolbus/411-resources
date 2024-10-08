@@ -2,10 +2,10 @@ from wildlife_tracker.habitat_management.habitat import Habitat
 
 class MigrationPath:
     def __init__(self, species: str, start_location: Habitat, end_location: Habitat, duration: int):
-        self.species = species  # Species involved in migration
-        self.start_location = start_location  # Start location of the migration
-        self.end_location = end_location  # End location of the migration
-        self.duration = duration  # Duration of the migration
+        self.species = species  
+        self.start_location = start_location  
+        self.end_location = end_location  
+        self.duration = duration  
 
     def update_path_details(self, species: Optional[str] = None, start_location: Optional[Habitat] = None, end_location: Optional[Habitat] = None, duration: Optional[int] = None) -> None:
         if species:
