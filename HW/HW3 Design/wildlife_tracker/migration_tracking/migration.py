@@ -1,8 +1,5 @@
 from typing import Any
 from wildlife_tracker.animal_management.animal import Animal
-from wildlife_tracker.animal_management.animal_manager import AnimalManager
-from wildlife_tracker.habitat_management.habitat import Habitat
-from wildlife_tracker.migration_tracking.migration_manager import MigrationManager
 from wildlife_tracker.migration_tracking.migration_path import MigrationPath
 
 class Migration:

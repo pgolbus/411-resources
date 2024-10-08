@@ -1,9 +1,5 @@
 from typing import Any, Optional
-from wildlife_tracker.animal_management.animal_manager import AnimalManager
-from wildlife_tracker.habitat_management.habitat import habitat
-from wildlife_tracker.migration_tracking.migration_manager import MigrationManager
-from wildlife_tracker.migration_tracking.migration_path import MigrationPath
-from wildlife_tracker.migration_tracking.migration import Migration
+
 
 class Animal:
     def __init__(self, animal_id: int, species: str, age: Optional[int] = None, health_status: Optional[str] = None) -> None:
