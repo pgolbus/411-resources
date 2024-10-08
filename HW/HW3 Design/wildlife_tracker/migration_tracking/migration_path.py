@@ -11,12 +11,7 @@ class MigrationPath:
         self.destination = destination
         self.duration = duration
 
-    def update_details(self, **kwargs) -> None:
-        for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
-
-    def to_dict(self) -> dict[str, Any]:
+    def get_migration_path_details(self) -> dict:
         return {
             "path_id": self.path_id,
             "species": self.species,
@@ -24,3 +19,8 @@ class MigrationPath:
             "destination": self.destination.habitat_id,
             "duration": self.duration
         }
+
+    def update_migration_path_details(self, **kwargs) -> None:
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
