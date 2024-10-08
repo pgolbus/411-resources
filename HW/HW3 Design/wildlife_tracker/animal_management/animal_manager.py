@@ -13,5 +13,5 @@ class AnimalManager:
     def register_animal(self, Animal) -> None:
         pass
 
-    def remove_animal(animal_id: int) -> None:
+    def remove_animal(self, animal_id: int) -> None:
         pass
