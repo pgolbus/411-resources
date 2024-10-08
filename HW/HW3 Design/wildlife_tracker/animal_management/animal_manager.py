@@ -1,6 +1,6 @@
 from typing import Optional
 from wildlife_tracker.animal_management.animal import Animal
-from wildlife_tracker.habitat_management.habitat import habitat
+from wildlife_tracker.habitat_management.habitat import Habitat
 from wildlife_tracker.migration_tracking.migration_manager import MigrationManager
 from wildlife_tracker.migration_tracking.migration_path import MigrationPath
 from wildlife_tracker.migration_tracking.migration import Migration

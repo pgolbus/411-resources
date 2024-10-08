@@ -1,9 +1,6 @@
 from typing import Optional
-from wildlife_tracker.animal_management.animal import Animal
-from wildlife_tracker.animal_management.animal_manager import AnimalManager
+
 from wildlife_tracker.habitat_management.habitat import Habitat
-from wildlife_tracker.migration_tracking.migration_manager import MigrationManager
-from wildlife_tracker.migration_tracking.migration import Migration
 
 class MigrationPath:
     def __init__(self, path_id: int, habitats: dict[int, Habitat], start_location: Habitat, destination: Habitat, duration: Optional[int] = None) -> None:
