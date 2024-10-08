@@ -1,0 +1,43 @@
+
+Task 1: Agile  
+
+1. Complete these user stories:
+
+    - As a vanilla git power-user that has never seen GiggleGit before, I want to be prompted with instructions that explicitly explain the features and functionality of GiggleGit and how it uses memes such that I am able to use the tool efficiently and not have to spend time familiarizing myself with the platform.
+
+    - As a team lead onboarding an experienced GiggleGit user, I want to have a minimalistic development management interface that allows for simplified project tracking so that current members and new members can understand the chain of development events and the use of memes with fewer resources 
+
+2. Create a third user story, one task for this user story, and two associated tickets.
+
+    - User story 3: As a novice user, new to git and the concept of the use of memes, I want to have an accessible and simple guiding interface that allows me to link both frameworks without friction so that I am able to find the value and uses of GiggleGit
+Task 1: Implement Guide Interface
+Ticket 1: Create a conceptual walkthrough of a novice user journey through GiggleGit
+	- We have to try the shoes of the hypothetical novice user and experiment with different possible journey paths to highlight points where guiding features may aid, the ticket should conclude in a flow diagram that summarizes such a journey with detailed highlights on where guiding features are essential and beneficial for the new user. 
+Ticket 2: Implement guiding features through GiggleGit 
+	- We need to ensure that such a guiding feature will ease the friction of using the tool for novice users while making the experience enriching and useful, the ticket should climax into a simple guiding interface throughout Giggle that results in minimal confusion for new users.
+
+3. This is not a user story. Why not? What is it?
+
+    - As a user I want to be able to authenticate on a new machine
+   
+- The user story doesn't specify the role/background of the user. The user story doesn't include any specific benefit of the feature requested. The user story doesn't explicitly mention any reasoning behind the requested feature. 
+
+-------------------------
+Task 2: Formal Requirements
+
+Task 2.1: 
+
+Goal: Develop a tool that is integrated with GiggleGit packages and allows for "syncing with a snicker."  
+
+Non-goal: A tool that extinguishes the appetite of the developers when merging.
+
+Tasks 2.2 and 2.3:
+
+Non-functional requirement 1: Reliability 
+- functional requirement 1: The tool must ensure that sync operations are being done without any information loss, similar to GiggleGit, and be consistent along all repositories 
+- functional requirement 2: In the case of any errors, the tool should clearly state the error and allow users to perform actions with minimal obstacles. 
+
+Non-functional requirement 2: Performance
+- functional requirement 1: SnickerSync must perform similarly to GiggleGit without sacrificing the core features.
+- functional requirement 2: Snickersync must be able to link with other tools without impacting expected performance thresholds.
+
