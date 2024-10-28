@@ -4,6 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def main():
+    app.logger.info("Hello World!")
     response = {
         "message": "Hello World!",
         "status": "success",
@@ -12,9 +13,9 @@ def main():
 
 @app.route('/health')
 def health_check():
+    app.logger.info("Health Check")
     health_status = {
         "status": "healthy",
-        "code": 200
     }
     return make_response(jsonify(health_status), 200)
 

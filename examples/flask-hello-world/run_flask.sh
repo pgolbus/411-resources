@@ -5,7 +5,7 @@ declare -A config
 config=(
   [port]=5001
   [dev_mode]=true
-  [rebuild_image]=false
+  [rebuild_image]=true
 )
 
 # Docker image and container names
@@ -13,14 +13,24 @@ IMAGE_NAME="flask-app"
 CONTAINER_NAME="flask-container"
 VERSION_NUMBER="1.0.0"
 
-# Stop the running container if it exists
-if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
-    echo "Stopping running container: $CONTAINER_NAME"
-    docker stop $CONTAINER_NAME
-    docker rm $CONTAINER_NAME
-else
-    echo "No running container named $CONTAINER_NAME found."
-fi
+# # Stop and remove the running container if it exists
+# if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
+#     echo "Stopping running container: $CONTAINER_NAME"
+#     docker stop $CONTAINER_NAME
+
+#     # Check if the stop was successful
+#     if [ $? -eq 0 ]; then
+#         echo "Removing container: $CONTAINER_NAME"
+#         docker rm $CONTAINER_NAME
+#     else
+#         echo "Failed to stop container: $CONTAINER_NAME"
+#         exit 1
+#     fi
+# else
+#     echo "No running container named $CONTAINER_NAME found."
+# fi
+
+docker rm -f $CONTAINER_NAME
 
 # Rebuild the image if rebuild_image is set to true
 if [ "${config[rebuild_image]}" = true ]; then

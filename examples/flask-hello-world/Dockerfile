@@ -7,8 +7,11 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Ensure pip is up to date
+RUN pip install --upgrade pip
+
 # Install any necessary dependencies specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.lock
 
 # Set default environment variables for port and Flask environment
 ENV FLASK_ENV=development
