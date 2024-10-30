@@ -7,6 +7,7 @@ import pytest
 from music_collection.models.song_model import (
     Song,
     create_song,
+    clear_catalog,
     delete_song,
     get_song_by_id,
     get_song_by_compound_key,
@@ -34,7 +35,7 @@ def mock_cursor(mocker):
     mock_conn.cursor.return_value = mock_cursor
     mock_cursor.fetchone.return_value = None  # Default return for queries
     mock_cursor.fetchall.return_value = []
-    mock_cursor.commit.return_value = None
+    mock_conn.commit.return_value = None
 
     # Mock the get_db_connection context manager from sql_utils
     @contextmanager
@@ -156,6 +157,23 @@ def test_delete_song_already_deleted(mock_cursor):
     # Expect a ValueError when attempting to delete a song that's already been deleted
     with pytest.raises(ValueError, match="Song with ID 999 has already been deleted"):
         delete_song(999)
+
+def test_clear_catalog(mock_cursor, mocker):
+    """Test clearing the entire song catalog (removes all songs)."""
+
+    # Mock the file reading
+    mocker.patch.dict('os.environ', {'SQL_CREATE_TABLE_PATH': 'sql/create_song_table.sql'})
+    mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data="The body of the create statement"))
+
+    # Call the clear_database function
+    clear_catalog()
+
+    # Ensure the file was opened using the environment variable's path
+    mock_open.assert_called_once_with('sql/create_song_table.sql', 'r')
+
+    # Verify that the correct SQL script was executed
+    mock_cursor.executescript.assert_called_once()
+
 
 ######################################################
 #

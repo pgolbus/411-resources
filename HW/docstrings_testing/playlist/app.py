@@ -100,6 +100,21 @@ def add_song() -> Response:
         app.logger.error("Failed to add song: %s", str(e))
         return make_response(jsonify({'error': str(e)}), 500)
 
+@app.route('/api/clear-catalog', methods=['DELETE'])
+def clear_catalog() -> Response:
+    """
+    Route to clear the entire song catalog (soft delete).
+
+    Returns:
+        JSON response indicating success of the operation or error message.
+    """
+    try:
+        app.logger.info("Clearing the song catalog")
+        song_model.clear_catalog()
+        return make_response(jsonify({'status': 'success'}), 200)
+    except Exception as e:
+        app.logger.error(f"Error clearing catalog: {e}")
+        return make_response(jsonify({'error': str(e)}), 500)
 
 @app.route('/api/delete-song/<int:song_id>', methods=['DELETE'])
 def delete_song(song_id: int) -> Response:

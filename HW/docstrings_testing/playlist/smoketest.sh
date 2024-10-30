@@ -53,6 +53,11 @@ check_db() {
 #
 ##########################################################
 
+clear_catalog() {
+  echo "Clearing the playlist..."
+  curl -s -X DELETE "$BASE_URL/clear-catalog" | grep -q '"status": "success"'
+}
+
 create_song() {
   artist=$1
   title=$2
@@ -465,6 +470,9 @@ get_song_leaderboard() {
 check_health
 check_db
 
+# Clear the catalog
+clear_catalog
+
 # Create songs
 create_song "The Beatles" "Hey Jude" 1968 "Rock" 180
 create_song "The Rolling Stones" "Paint It Black" 1966 "Rock" 180
@@ -478,6 +486,8 @@ get_all_songs
 get_song_by_id 2
 get_song_by_compound_key "The Beatles" "Let It Be" 1970
 get_random_song
+
+clear_playlist
 
 add_song_to_playlist "The Rolling Stones" "Paint It Black" 1966
 add_song_to_playlist "Queen" "Bohemian Rhapsody" 1975

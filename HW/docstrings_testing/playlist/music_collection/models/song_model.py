@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import logging
+import os
 import sqlite3
 from typing import Any
 
@@ -69,6 +70,26 @@ def create_song(artist: str, title: str, year: int, genre: str, duration: int) -
         logger.error("Database error while creating song: %s", str(e))
         raise sqlite3.Error(f"Database error: {str(e)}")
 
+def clear_catalog() -> None:
+    """
+    Clears the songs table, effectively deleting all songs.
+
+    Raises:
+        sqlite3.Error: If any database error occurs.
+    """
+    try:
+        with open(os.getenv("SQL_CREATE_TABLE_PATH", "/app/sql/create_song_table.sql"), "r") as fh:
+            create_table_script = fh.read()
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.executescript(create_table_script)
+            conn.commit()
+
+            logger.info("Catalog cleared successfully.")
+
+    except sqlite3.Error as e:
+        logger.error("Database error while clearing catalog: %s", str(e))
+        raise e
 
 def delete_song(song_id: int) -> None:
     """
