@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import logging
 import os
 import sqlite3
-from typing import Any
 
 from music_collection.utils.logger import configure_logger
 from music_collection.utils.random_utils import get_random
@@ -72,7 +71,7 @@ def create_song(artist: str, title: str, year: int, genre: str, duration: int) -
 
 def clear_catalog() -> None:
     """
-    Clears the songs table, effectively deleting all songs.
+    Recreates the songs table, effectively deleting all songs.
 
     Raises:
         sqlite3.Error: If any database error occurs.

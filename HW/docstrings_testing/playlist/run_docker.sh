@@ -21,6 +21,7 @@ if [ ! -d "${DB_VOLUME_PATH}" ]; then
   echo "Creating database directory at ${DB_VOLUME_PATH}..."
   mkdir -p ${DB_VOLUME_PATH}
 fi
+
 # Stop and remove the running container if it exists
 if [ "$(docker ps -q -a -f name=${IMAGE_NAME}_container)" ]; then
     echo "Stopping running container: ${IMAGE_NAME}_container"

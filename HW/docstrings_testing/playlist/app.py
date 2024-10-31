@@ -103,7 +103,7 @@ def add_song() -> Response:
 @app.route('/api/clear-catalog', methods=['DELETE'])
 def clear_catalog() -> Response:
     """
-    Route to clear the entire song catalog (soft delete).
+    Route to clear the entire song catalog (recreates the table).
 
     Returns:
         JSON response indicating success of the operation or error message.
