@@ -54,11 +54,9 @@ def create_meal(meal: str, cuisine: str, price: float, difficulty: str) -> None:
         difficulty: a string representing "LOW", "MED", "HIGH" 
 
     Returns: 
-        If no errors from price <= 0, difficulty not correctly listed, 
-        no duplicates, and no DB connection errors
-        
-        If nothing is raised, successfully created meal and added to DB
-
+        Raises error if price <= 0
+        Raises error if invalid difficulty string
+        Raises error if meal already exists 
         sqlite3.Error: If any database error occurs.
 
     """
@@ -116,10 +114,8 @@ def delete_meal(meal_id: int) -> None:
     
     Returns: 
         Looks through a DB parsing through table meals such that id = meal_id
-            - If it finds the matching id attributes, it will delete otherwise it will say that it has been deleted 
-                or that it has already been deleted 
-            - If successfully deleted, it will UPDATE the table where it was deleted where id attributes match and commit
-
+        Raises error if it says that it has been deleted
+        Raises error if it has not been found
         sqlite3.Error: If any database error occurs.
     """
     try:
@@ -155,10 +151,8 @@ def get_leaderboard(sort_by: str="wins") -> dict[str, Any]:
 
     Returns: 
         Returns a leaderboard with strings of Any type
-        Looks through all SQL query result tuples where wins are sorted in descending order
-            - If there is an error, the parameters will return an error
+        Raises error based off invalid parameter
         Successfully creates a leaderboard and is returned 
-
         sqlite3.Error: If any database error occurs. 
     """
 
@@ -211,10 +205,8 @@ def get_meal_by_id(meal_id: int) -> Meal:
 
     Returns: 
         Looks through the DB to find the information based on the parameter meal_id and returns the information of Meal if it is true
-
-        If found, it returns the meal and all its information but if row[5] (whether or not it is deleted) is true, it wil raise an error that it has been deleted from the DB
-        Otherwise, it will raise an error that it has not been found throughout the DB
-        
+        Raises an error that it has been deleted 
+        Raises error that meal not found throughout the DB
         sqlite3.Error: If any database error occurs.
     """
     try:
@@ -246,10 +238,8 @@ def get_meal_by_name(meal_name: str) -> Meal:
         
     Returns: 
         Returns the Meal information given that we can find the name of the meal within the DB
-
-        If found, it returns the meal and all its information but if row[5] (whether or not it is deleted) is true, it wil raise an error that it has been deleted from the DB
-        Otherwise, it will raise an error that it has not been found throughout the DB
-        
+        Otherwise, it will raise an error that it has been deleted 
+            Or will raise error that it does not exist
         sqlite3.Error: If any database error occurs.
     """
     try:
@@ -281,11 +271,8 @@ def update_meal_stats(meal_id: int, result: str) -> None:
         result(str): The string of the result that represents whether or not the result of the watch was a win or loss 
     
     Returns: 
-        Makes changes to DB list based off win/loss:
         Raises errors if the meal in the DB is deleted or has not been found
-        Executes changes to the wins(int) and battle(int) by adding 1 based off wins or loss
-            - Raises error if result(str) is invalid (not 'win' or 'loss')
-        
+        Raises error if result(str) is invalid (not 'win' or 'loss')
         sqlite3.Error: If any database error occurs.
     """
     try:

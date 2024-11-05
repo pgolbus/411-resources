@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from meal_max.meal_max.models.kitchen_model import (
+from meal_max.models.kitchen_model import (
     Meal,
     create_meal,
     clear_meals,
@@ -55,7 +55,7 @@ def test_create_meal(mock_cursor):
     """Test creating a new meal."""
 
     # Call the function to create a new meal
-    create_meal(meal="Spaghetti", cuisine= "Italian", price = 9.50 , difficulty= "LOW")
+    create_meal(meal="Spaghetti", cuisine= "Italian", price = 9.49 , difficulty= "LOW")
 
     expected_query = normalize_whitespace("""
         INSERT INTO meals (meal, cuisine, price, difficulty)
@@ -65,42 +65,42 @@ def test_create_meal(mock_cursor):
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
     # Assert that the SQL query was correct
-    assert actual_query == expected_query, "The SQL query did not match the expected structure."
+    assert actual_query == expected_query
 
     # Extract the arguments used in the SQL call (second element of call_args)
     actual_arguments = mock_cursor.execute.call_args[0][1]
 
     # Assert that the SQL query was executed with the correct arguments
-    expected_arguments = ("Spaghetti", "Italian", 9.50, "LOW")
-    assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
+    expected_arguments = ("Spaghetti", "Italian", 9.49, "LOW")
+    assert actual_arguments == expected_arguments
 
 def test_create_meal_duplicate(mock_cursor):
     """Test creating a meal with a duplicate meal, cuisine, price, difficulty (should raise an error)."""
 
     # Simulate that the database will raise an IntegrityError due to a duplicate entry
-    mock_cursor.execute.side_effect = sqlite3.IntegrityError("UNIQUE constraint failed: Meal.meal, Meal.cuisine, Meal.price, Meal.difficulty")
+    mock_cursor.execute.side_effect = sqlite3.IntegrityError
 
     # Expect the function to raise a ValueError with a specific message when handling the IntegrityError
-    with pytest.raises(ValueError, match="Meal with meal Spaghetti, cuisine Italian, price 9.50 , difficulty LOW already exists."):
-        create_meal(meal="Spaghetti", cuisine= "Italian", price = 9.50 , difficulty= "LOW")
+    with pytest.raises(ValueError, match= "Meal with name 'Spaghetti' already exists"):
+        create_meal(meal="Spaghetti", cuisine= "Italian", price = 9.49 , difficulty= "LOW")
 
 def test_create_meal_invalid_price():
     """Test error when trying to create a meal with an invalid price"""
 
     # Attempt to create a meal with a negative price
-    with pytest.raises(ValueError, match="Invalid meal price: -9.50 \\(must be a positive integer\\)."):
-        create_meal(meal="Spaghetti", cuisine= "Italian", price = -9.50 , difficulty= "LOW")
-
+    with pytest.raises(ValueError, match="Invalid price: -9.49. Price must be a positive number."):
+        create_meal(meal="Spaghetti", cuisine= "Italian", price = -9.49, difficulty= "LOW")
+    
     # Attempt to create a meal with price of 0
-    with pytest.raises(ValueError, match="Invalid meal duration: 0 \\(must be a positive integer\\)."):
-        create_meal(meal="Spaghetti", cuisine= "Italian", price = 0 , difficulty= "LOW")
+    with pytest.raises(ValueError, match="Invalid price: 0. Price must be a positive number."):
+        create_meal(meal = "Spaghetti", cuisine = "Italian", price = 0 , difficulty= "LOW")
 
 def test_create_meal_invalid_difficulty():
     """Test error when trying to create a meal with an invalid difficulty (e.g., not 'LOW' 'MED' 'HIGH')."""
 
     # Attempt to create a meal with an invalid difficulty
-    with pytest.raises(ValueError, match="Invalid difficulty provided: SUPER-EASY \\(must be 'LOW', 'MED', or 'HIGH'\\)."):
-        create_meal(meal="Spaghetti", cuisine= "Italian", price = 9.50 , difficulty= "SUPER-EASY")
+    with pytest.raises(ValueError, match="Invalid difficulty level: SUPER-EASY. Must be 'LOW', 'MED', or 'HIGH'."):
+        create_meal(meal="Spaghetti", cuisine= "Italian", price = 9.49 , difficulty= "SUPER-EASY")
 
 def test_delete_meal(mock_cursor):
     """Test soft deleting a meal from the catalog by meal ID."""
