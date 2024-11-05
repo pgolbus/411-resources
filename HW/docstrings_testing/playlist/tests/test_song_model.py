@@ -89,22 +89,22 @@ def test_create_song_invalid_duration():
     """Test error when trying to create a song with an invalid duration (e.g., negative duration)"""
 
     # Attempt to create a song with a negative duration
-    with pytest.raises(ValueError, match="Invalid song duration: -180 \(must be a positive integer\)."):
+    with pytest.raises(ValueError, match="Invalid song duration: -180 \\(must be a positive integer\\)."):
         create_song(artist="Artist Name", title="Song Title", year=2022, genre="Pop", duration=-180)
 
     # Attempt to create a song with a non-integer duration
-    with pytest.raises(ValueError, match="Invalid song duration: invalid \(must be a positive integer\)."):
+    with pytest.raises(ValueError, match="Invalid song duration: invalid \\(must be a positive integer\\)."):
         create_song(artist="Artist Name", title="Song Title", year=2022, genre="Pop", duration="invalid")
 
 def test_create_song_invalid_year():
     """Test error when trying to create a song with an invalid year (e.g., less than 1900 or non-integer)."""
 
     # Attempt to create a song with a year less than 1900
-    with pytest.raises(ValueError, match="Invalid year provided: 1899 \(must be an integer greater than or equal to 1900\)."):
+    with pytest.raises(ValueError, match="Invalid year provided: 1899 \\(must be an integer greater than or equal to 1900\\)."):
         create_song(artist="Artist Name", title="Song Title", year=1899, genre="Pop", duration=180)
 
     # Attempt to create a song with a non-integer year
-    with pytest.raises(ValueError, match="Invalid year provided: invalid \(must be an integer greater than or equal to 1900\)."):
+    with pytest.raises(ValueError, match="Invalid year provided: invalid \\(must be an integer greater than or equal to 1900\\)."):
         create_song(artist="Artist Name", title="Song Title", year="invalid", genre="Pop", duration=180)
 
 def test_delete_song(mock_cursor):
