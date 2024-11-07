@@ -33,7 +33,7 @@ class Meal:
 
     def __post_init__(self):
         """
-        Returns:
+        Raises:
             If price(float) is less than 0, it returns an error that the price is negative
             If difficulty(str) is not one of "LOW", "MED", or "HIGH", return error
         """
@@ -53,7 +53,7 @@ def create_meal(meal: str, cuisine: str, price: float, difficulty: str) -> None:
         price: a float representing decimal price of meal 
         difficulty: a string representing "LOW", "MED", "HIGH" 
 
-    Returns: 
+    Raises:
         Raises error if price <= 0
         Raises error if invalid difficulty string
         Raises error if meal already exists 
@@ -112,8 +112,7 @@ def delete_meal(meal_id: int) -> None:
     Args:
         meal_id(int): the meal id that each meal is uniquely assigned
     
-    Returns: 
-        Looks through a DB parsing through table meals such that id = meal_id
+    Raises: 
         Raises error if it says that it has been deleted
         Raises error if it has not been found
         sqlite3.Error: If any database error occurs.
@@ -151,8 +150,10 @@ def get_leaderboard(sort_by: str="wins") -> dict[str, Any]:
 
     Returns: 
         Returns a leaderboard with strings of Any type
+        --> Successfully creates a leaderboard and is returned 
+
+    Raises:
         Raises error based off invalid parameter
-        Successfully creates a leaderboard and is returned 
         sqlite3.Error: If any database error occurs. 
     """
 
@@ -205,6 +206,8 @@ def get_meal_by_id(meal_id: int) -> Meal:
 
     Returns: 
         Looks through the DB to find the information based on the parameter meal_id and returns the information of Meal if it is true
+    
+    Raises: 
         Raises an error that it has been deleted 
         Raises error that meal not found throughout the DB
         sqlite3.Error: If any database error occurs.
@@ -238,8 +241,10 @@ def get_meal_by_name(meal_name: str) -> Meal:
         
     Returns: 
         Returns the Meal information given that we can find the name of the meal within the DB
-        Otherwise, it will raise an error that it has been deleted 
-            Or will raise error that it does not exist
+    
+    Raises: 
+        Raise an error that it has been deleted 
+        Raise error that it does not exist because name not found
         sqlite3.Error: If any database error occurs.
     """
     try:
@@ -269,8 +274,8 @@ def update_meal_stats(meal_id: int, result: str) -> None:
     Args:
         meal_id(str): The id of the meal that we are looking to make edits or changes to  
         result(str): The string of the result that represents whether or not the result of the watch was a win or loss 
-    
-    Returns: 
+
+    Raises: 
         Raises errors if the meal in the DB is deleted 
         Raises error if meal has not been found
         Raises error if result(str) is invalid (not 'win' or 'loss')
