@@ -271,7 +271,8 @@ def update_meal_stats(meal_id: int, result: str) -> None:
         result(str): The string of the result that represents whether or not the result of the watch was a win or loss 
     
     Returns: 
-        Raises errors if the meal in the DB is deleted or has not been found
+        Raises errors if the meal in the DB is deleted 
+        Raises error if meal has not been found
         Raises error if result(str) is invalid (not 'win' or 'loss')
         sqlite3.Error: If any database error occurs.
     """
