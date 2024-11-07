@@ -40,9 +40,20 @@ def test_get_random_timeout(mocker):
     with pytest.raises(RuntimeError, match="Request to random.org timed out."):
         get_random()
 
-def test_get_random_invalid_response(mock_random_org):
+def test_get_random_invalid_response(mocker):
     """Simulate an invalid response (non-digit)."""
-    mock_random_org.text = "invalid_response"
+    mock_response = mocker.Mock()
+    mock_response.text = "invalid_response"
+    mocker.patch("requests.get", return_value=mock_response)
 
     with pytest.raises(ValueError, match="Invalid response from random.org: invalid_response"):
+        get_random()
+
+def test_get_random_empty_response(mocker):
+    """Simulate an empty response."""
+    mock_response = mocker.Mock()
+    mock_response.text = ""
+    mocker.patch("requests.get", return_value=mock_response)
+
+    with pytest.raises(ValueError, match="Invalid response from random.org:"):
         get_random()
