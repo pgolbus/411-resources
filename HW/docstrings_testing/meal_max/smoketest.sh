@@ -178,7 +178,7 @@ get_combatants() {
 
 battle() {
   echo "Starting battle..."
-  response=$(curl -s -X POST "$BASE_URL/battle")
+  response=$(curl -s -X GET "$BASE_URL/battle")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Battle completed successfully."
     if [ "$ECHO_JSON" = true ]; then
@@ -210,6 +210,7 @@ get_leaderboard() {
     fi
   else
     echo "Failed to get leaderboard."
+    echo "Server response: $response"
     exit 1
   fi
 }
@@ -252,6 +253,6 @@ battle
 
 # Get leaderboard
 get_leaderboard "win_pct"
-get_leaderboard "battles"
+get_leaderboard "wins"
 
 echo "All tests passed successfully!"
