@@ -27,7 +27,7 @@ class BattleModel:
 
     def __init__(self):
         """Initializes the BattleManager with an empty list of combatants and TTL."""
-        self.combatants: List[dict[str, Any]] = []
+        self.combatants: List[int] = []  # List of active combatants
         self.combatant_ttls: dict[int, int] = {}  # Dictionary to store TTL for each combatant
         self.meals_cache: dict[int, dict[str, Any]] = {}  # Cache of meal data by ID
 
@@ -50,7 +50,7 @@ class BattleModel:
 
         # Refresh combatants' data if TTLs have expired
         for combatant in self.combatants:
-            meal_id = combatant["id"]
+            meal_id = combatant
             if time.time() > self.combatant_ttls.get(meal_id, 0):  # Check TTL expiration
                 # Fetch latest data and update cache
                 logger.info("Cache expired for meal ID %s, refreshing cache.", meal_id)
@@ -59,10 +59,10 @@ class BattleModel:
                 # Update the combatant entry in self.combatants
                 for i, c in enumerate(self.combatants):
                     if c["id"] == meal_id:
-                        self.combatants[i] = updated_meal
+                        self.meals_cache[i] = updated_meal
 
-        combatant_1 = self.combatants[0]
-        combatant_2 = self.combatants[1]
+        combatant_1 = self.meals_cache[self.combatants[0]]
+        combatant_2 = self.meals_cache[self.combatants[1]]
 
         # Log the start of the battle
         logger.info("Battle started between %s and %s", combatant_1["meal"], combatant_2["meal"])
@@ -103,7 +103,7 @@ class BattleModel:
         Meals.update_meal_stats(loser["id"], 'loss')
 
         # Remove the losing combatant from combatants
-        self.combatants.remove(loser)
+        self.combatants.remove(loser["id"])
 
         return winner["meal"]
 
@@ -169,8 +169,10 @@ class BattleModel:
         # Log the addition of the combatant
         logger.info("Adding combatant '%s' to combatants list", combatant_data["meal"])
 
-        self.combatants.append(combatant_data)
-        self.combatant_ttls[combatant_data["id"]] = time.time() + TTL
+        id = combatant_data["id"]
+        self.combatants.append(id)
+        self.meals_cache[id] = combatant_data
+        self.combatant_ttls[id] = time.time() + TTL
 
         # Log the current state of combatants
-        logger.info("Current combatants list: %s", [combatant["meal"] for combatant in self.combatants])
+        logger.info("Current combatants list: %s", [self.meals_cache[combatant]["meal"] for combatant in self.combatants])

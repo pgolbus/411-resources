@@ -32,8 +32,8 @@ def sample_meal2():
     }
 
 @pytest.fixture
-def sample_combatants(sample_meal1, sample_meal2):
-    return [sample_meal1, sample_meal2]
+def sample_combatants():
+    return [1, 2]
 
 
 
@@ -84,7 +84,7 @@ def test_prep_combatant(battle_model, sample_meal1):
 
     # Assert that the combatant was added to the list
     assert len(battle_model.combatants) == 1, "Combatants list should contain one combatant after calling prep_combatant."
-    assert battle_model.combatants[0]["meal"] == "Spaghetti", "Expected 'Spaghetti' in the combatants list."
+    assert battle_model.meals_cache[battle_model.combatants[0]]["meal"] == "Spaghetti", "Expected 'Spaghetti' in the combatants list."
 
 def test_prep_combatant_full(battle_model, sample_combatants):
     """Test that prep_combatant raises an error when the list is full."""
@@ -118,7 +118,7 @@ def test_get_battle_score(battle_model, sample_meal1, sample_meal2):
     expected_score_2 = (15.0 * 7) - 3  # 15.0 * 7 - 3 = 102.0
     assert battle_model.get_battle_score(combatant_2) == expected_score_2, f"Expected score: {expected_score_2}, got {battle_model.get_battle_score(combatant_2)}"
 
-def test_battle(battle_model, sample_combatants, caplog, mocker):
+def test_battle(battle_model, sample_combatants, sample_meal1, sample_meal2, caplog, mocker):
     """Test the battle method with sample combatants."""
 
     battle_model.combatants.extend(sample_combatants)
@@ -130,9 +130,11 @@ def test_battle(battle_model, sample_combatants, caplog, mocker):
 
     # Mock the TTLs to simulate unexpired cache
     battle_model.combatant_ttls = {
-        combatant["id"]: time.time() + 60 for combatant in sample_combatants
+        combatant: time.time() + 60 for combatant in sample_combatants
     }
 
+    battle_model.meals_cache[1] = sample_meal1
+    battle_model.meals_cache[2] = sample_meal2
 
     # Call the battle method
     winner_meal = battle_model.battle()
@@ -146,7 +148,7 @@ def test_battle(battle_model, sample_combatants, caplog, mocker):
 
     # Check that combatant_1 was removed from the combatants list
     assert len(battle_model.combatants) == 1, "Losing combatant was not removed from the list."
-    assert battle_model.combatants[0]["id"] == 2, "Expected combatant 2 to remain in the list."
+    assert battle_model.combatants[0] == 2, "Expected combatant 2 to remain in the list."
 
     # Check that the logger was called with the expected message
     assert "Two meals enter, one meal leaves!" in caplog.text, "Expected battle cry log message not found."
