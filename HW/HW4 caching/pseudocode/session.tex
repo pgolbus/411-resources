@@ -20,7 +20,7 @@
             \REQUIRE $user\_id$ (int), $battle\_model$ (\texttt{BattleModel})
             \STATE $combatants\_data$ \gets combatants in $battle\_model$
             \STATE Update record for $user\_id$ in mongo
-            \IF{$user_id$ not found}
+            \IF{$user\_id$ not found}
                 \THROW
             \ENDIF
             \STATE Clear combatants in $battle\_model$
