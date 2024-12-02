@@ -35,6 +35,6 @@
 \ENDIF
 \STATE $(salt, stored\_hashed\_password) \gets \texttt{User}\mbox{'s salt and hashed password}$
 \STATE Compute SHA-256 hash of $password$ concatenated with $salt$
-\RETURN computed\_hash == stored\_hashed\_password
+\RETURN Whether computed hash matches stored hashed password
 \end{algorithmic}
 \end{algorithm}
