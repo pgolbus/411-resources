@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 
-class User(db.Model):
+class Users(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -102,6 +102,26 @@ class User(db.Model):
         db.session.delete(user)
         db.session.commit()
         logger.info("User %s deleted successfully", username)
+
+    @classmethod
+    def get_id_by_username(cls, username: str) -> int:
+        """
+        Retrieve the ID of a user by username.
+
+        Args:
+            username (str): The username of the user.
+
+        Returns:
+            int: The ID of the user.
+
+        Raises:
+            ValueError: If the user does not exist.
+        """
+        user = cls.query.filter_by(username=username).first()
+        if not user:
+            logger.info("User %s not found", username)
+            raise ValueError(f"User {username} not found")
+        return user.id
 
     @classmethod
     def update_password(cls, username: str, new_password: str) -> None:

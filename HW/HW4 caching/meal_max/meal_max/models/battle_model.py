@@ -49,17 +49,13 @@ class BattleModel:
             raise ValueError("Two combatants must be prepped for a battle.")
 
         # Refresh combatants' data if TTLs have expired
-        for combatant in self.combatants:
-            meal_id = combatant
+        for meal_id in self.combatants:
             if time.time() > self.combatant_ttls.get(meal_id, 0):  # Check TTL expiration
                 # Fetch latest data and update cache
                 logger.info("Cache expired for meal ID %s, refreshing cache.", meal_id)
                 updated_meal = Meals.get_meal_by_id(meal_id)
                 self.combatant_ttls[meal_id] = time.time() + TTL  # Reset TTL
-                # Update the combatant entry in self.combatants
-                for i, c in enumerate(self.combatants):
-                    if c["id"] == meal_id:
-                        self.meals_cache[i] = updated_meal
+                self.meals_cache[meal_id] = updated_meal
 
         combatant_1 = self.meals_cache[self.combatants[0]]
         combatant_2 = self.meals_cache[self.combatants[1]]

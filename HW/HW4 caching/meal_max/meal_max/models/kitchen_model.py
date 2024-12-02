@@ -204,6 +204,8 @@ class Meals(db.Model):
             raise ValueError(f"Meal {meal_name} not found")
 
         # Cache the name-to-ID association and retrieve the full meal data
+        # TODO: This should happen when a meal is created, not here
+        logger.info("Caching meal ID %s for name: %s", meal.id, meal_name)
         redis_client.set(cache_key, str(meal.id))
         return cls.get_meal_by_id(meal.id, meal_name)
 

@@ -1,7 +1,6 @@
 import pytest
 
-from meal_max.models.mongo_session_model import MongoSessionModel
-
+from meal_max.models.mongo_session_model import login_user, logout_user
 
 @pytest.fixture
 def sample_user_id():
@@ -19,7 +18,7 @@ def test_login_user_creates_session_if_not_exists(mocker, sample_user_id):
     mock_insert = mocker.patch("meal_max.clients.mongo_client.sessions_collection.insert_one")
     mock_battle_model = mocker.Mock()
 
-    MongoSessionModel.login_user(sample_user_id, mock_battle_model)
+    login_user(sample_user_id, mock_battle_model)
 
     mock_find.assert_called_once_with({"user_id": sample_user_id})
     mock_insert.assert_called_once_with({"user_id": sample_user_id, "combatants": []})
@@ -34,7 +33,7 @@ def test_login_user_loads_combatants_if_session_exists(mocker, sample_user_id, s
     )
     mock_battle_model = mocker.Mock()
 
-    MongoSessionModel.login_user(sample_user_id, mock_battle_model)
+    login_user(sample_user_id, mock_battle_model)
 
     mock_find.assert_called_once_with({"user_id": sample_user_id})
     mock_battle_model.clear_combatants.assert_called_once()
@@ -46,7 +45,7 @@ def test_logout_user_updates_combatants(mocker, sample_user_id, sample_combatant
     mock_battle_model = mocker.Mock()
     mock_battle_model.get_combatants.return_value = sample_combatants
 
-    MongoSessionModel.logout_user(sample_user_id, mock_battle_model)
+    logout_user(sample_user_id, mock_battle_model)
 
     mock_update.assert_called_once_with(
         {"user_id": sample_user_id},
@@ -62,7 +61,7 @@ def test_logout_user_raises_value_error_if_no_user(mocker, sample_user_id, sampl
     mock_battle_model.get_combatants.return_value = sample_combatants
 
     with pytest.raises(ValueError, match=f"User with ID {sample_user_id} not found for logout."):
-        MongoSessionModel.logout_user(sample_user_id, mock_battle_model)
+        logout_user(sample_user_id, mock_battle_model)
 
     mock_update.assert_called_once_with(
         {"user_id": sample_user_id},

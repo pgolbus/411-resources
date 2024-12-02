@@ -7,8 +7,8 @@ from config import ProductionConfig
 from meal_max.db import db
 from meal_max.models.battle_model import BattleModel
 from meal_max.models.kitchen_model import Meals
-from meal_max.models.mongo_session_model import MongoSessionModel
-from meal_max.models.user_model import User
+from meal_max.models.mongo_session_model import login_user, logout_user
+from meal_max.models.user_model import Users
 
 # Load environment variables from .env file
 load_dotenv()
@@ -76,7 +76,7 @@ def create_app(config_class=ProductionConfig):
 
             # Call the User function to add the user to the database
             app.logger.info('Adding user: %s', username)
-            User.create_user(username, password)
+            Users.create_user(username, password)
 
             app.logger.info("User added: %s", username)
             return make_response(jsonify({'status': 'user added', 'username': username}), 201)
@@ -111,7 +111,7 @@ def create_app(config_class=ProductionConfig):
 
             # Call the User function to delete the user from the database
             app.logger.info('Deleting user: %s', username)
-            User.delete_user(username)
+            Users.delete_user(username)
 
             app.logger.info("User deleted: %s", username)
             return make_response(jsonify({'status': 'user deleted', 'username': username}), 200)
@@ -119,7 +119,7 @@ def create_app(config_class=ProductionConfig):
             app.logger.error("Failed to delete user: %s", str(e))
             return make_response(jsonify({'error': str(e)}), 500)
 
-    @app.route('/login', methods=['POST'])
+    @app.route('/api/login', methods=['POST'])
     def login():
         """
         Route to log in a user and load their combatants.
@@ -146,15 +146,15 @@ def create_app(config_class=ProductionConfig):
 
         try:
             # Validate user credentials
-            if not User.check_password(username, password):
+            if not Users.check_password(username, password):
                 app.logger.warning("Login failed for username: %s", username)
                 raise Unauthorized("Invalid username or password.")
 
             # Get user ID
-            user_id = User.get_id_by_username(username)
+            user_id = Users.get_id_by_username(username)
 
             # Load user's combatants into the battle model
-            MongoSessionModel.login_user(user_id, battle_model)
+            login_user(user_id, battle_model)
 
             app.logger.info("User %s logged in successfully.", username)
             return jsonify({"message": f"User {username} logged in successfully."}), 200
@@ -166,7 +166,7 @@ def create_app(config_class=ProductionConfig):
             return jsonify({"error": "An unexpected error occurred."}), 500
 
 
-    @app.route('/logout', methods=['POST'])
+    @app.route('/api/logout', methods=['POST'])
     def logout():
         """
         Route to log out a user and save their combatants to MongoDB.
@@ -190,10 +190,10 @@ def create_app(config_class=ProductionConfig):
 
         try:
             # Get user ID
-            user_id = User.get_id_by_username(username)
+            user_id = Users.get_id_by_username(username)
 
             # Save user's combatants and clear the battle model
-            MongoSessionModel.logout_user(user_id, battle_model)
+            logout_user(user_id, battle_model)
 
             app.logger.info("User %s logged out successfully.", username)
             return jsonify({"message": f"User {username} logged out successfully."}), 200

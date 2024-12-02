@@ -17,7 +17,7 @@ services:
       - ./db:/app/db
     depends_on:
       - redis
-      - mongo
+      - mongod
 
   redis:
     image: redis:latest
@@ -26,9 +26,9 @@ services:
       - "6379:6379"
     command: redis-server
 
-  mongo:
+  mongod:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongod
     ports:
       - "27017:27017"
     command: mongod
