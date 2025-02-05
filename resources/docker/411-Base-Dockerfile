@@ -34,7 +34,6 @@
 
 # # note that you MUST specify a path to container_storage. If it is in the same directory as where you are
 # # running docker it's at .
-
 # docker run -it \
 #            -v ./container_storage:/usr/src/app \
 #            -p 443:443 \
