@@ -29,4 +29,4 @@ CMD ["python3", "app.py"]
 # HEALTHCHECK --interval=30s --timeout=3s \
 #  CMD curl -f http://localhost:5000/healthcheck || exit 1
 
-# added comment to test github on hw1-flask :)
+
