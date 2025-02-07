@@ -1,0 +1,17 @@
+SnickerSync
+Formal requirement:
+
+1.
+Goal:Make SnikcerSync a entertaining and efficient tool to handle merge conflicts 
+NonGoal:Provide compatibility with other version control systems outside of GiggleGit.
+
+2 & 3.
+Non-Functional Requirement 1:Support for User Testing
+    Functional requirements:
+        -Users should be randomly assigned to test or control groups for experiments.
+        -Keep a log of key actions like merge resolutions so analyze results and make improvements will be easier.
+
+Non-Functional Requirement 2: Access Control
+    Functional requirements:
+        -Set up secure OAuth login so only authenticated users can access 
+        -Allow Admins to assign permissions to limit who can view or edit merge conflict data.
