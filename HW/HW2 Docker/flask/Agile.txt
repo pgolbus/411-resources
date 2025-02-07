@@ -1,0 +1,28 @@
+Theme:Get GiggleGit demo into a stable enough alpha to start onboarding some adventurous clients.
+Epic: Onboarding experience 
+
+1.
+User Story 1:As a vanilla git power-user that has never seen GiggleGit before, I want to figure out how to use GiggleGit which is perform basic version control tasks, so I can get my work done with minimal learning curve.
+    Task: create a simple "getting started" guide and adding tooltip for users
+        Ticket 1: Create GiggleGit command documentation.
+            -Explain basic command: how to commit, push, pull, and merge with GiggleGit. Add a fun section on managing merges with memes.
+        Ticket 2: Add tooltips for core command actions.
+            -Add tooltip pop-up to the interface and each of them explain technical functionality behind actions like "merge with memes". 
+
+User Story 2:As a team lead onboarding an experienced GiggleGit user, I want to be able to track my team's activities on GiggleGit such as what commaands/operation that they did so i can stay on top of the progress and do better collaborations.
+    Task:Implement real-time tracking and role-based access control.
+            Ticket 1:real time activity track
+                -Track core operations (include commit, merge, conflict resolution) with metadata (includes users, action types). 
+            Ticket 2:role-based permissions for merges.
+                -add functionality for role-based access control for merge operation, to restrict conflict resolution and metadata editing to authorized users.
+
+2.
+User Story 3:As a developer, I want notifications for completed merges, so I can quickly verify the status of my changes without constantly checking the dashboard.
+    Task: Implement real-time notifications for merge events.
+        Ticket 1: Add notifications
+            -Create a system to send notifications when a merge completes successfully or fails.
+        Ticket 2: Adjust notification setting
+            -Allow users to change notification preferences such as disable notification.
+
+3. "As a user I want to be able to authenticate on a new machine "
+    This is not a user story because only describes an action the user wants to perform. However, without explaining why the feature is important which the value of this feature.
