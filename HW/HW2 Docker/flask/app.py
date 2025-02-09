@@ -20,6 +20,12 @@ def repeat():
     user_input = request.args.get("input", "no input") #no input msg if the input is missing
     return jsonify({"body": user_input, "status": 200})
 
+#as per step 3 instructions.."health-healthcheck" part
+@app.route('/health')
+@app.route('/healthcheck') #apparently can do 2 app.routes like this
+def health():
+    return jsonify({"body": "OK", "status": 200})
+
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
     # Set this to '0.0.0.0' to make it accessible from any IP address
