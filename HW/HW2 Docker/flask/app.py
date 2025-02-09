@@ -1,4 +1,5 @@
-from flask import Flask, make_response
+from flask import Flask, make_response, request
+import os
 
 app = Flask(__name__)
 
@@ -11,6 +12,17 @@ def hello():
         }
     )
     return response
+
+@app.route('/repeat')
+def repeat():
+    response = make_response(
+            {
+                'response': request.args.get('input'),
+                'status': 200
+            }
+        )
+    return response
+
 
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
