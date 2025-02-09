@@ -1,4 +1,5 @@
-import os
+import os #for task 1 or 2 (i dont remember im writing this while doing step 4)
+import time #for task 4 infinite loop
 
 from flask import Flask, make_response, request, jsonify #latter 2 imports for task 2
 
@@ -26,9 +27,15 @@ def repeat():
 def health():
     return jsonify({"body": "OK", "status": 200})
 
+#as per step 4 instructions.."infinite loop" part
+@app.route('/hang')
+def hang():
+    while True:  
+        time.sleep(1) #stop execution; self-note: just like cs351
+
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
     # Set this to '0.0.0.0' to make it accessible from any IP address
     # on your network (not recommended for production use)
     port = int(os.getenv("PORT", 5002)) #as per part1 instructions
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port,threaded=False) #put it in single-threaded mode as per step 4 instructions
