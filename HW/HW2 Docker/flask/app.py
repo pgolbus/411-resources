@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, make_response
+from flask import Flask, make_response, request, jsonify #latter 2 imports for task 2
 
 app = Flask(__name__)
 
@@ -13,6 +13,12 @@ def hello():
         }
     )
     return response
+
+#as per step 2 instructions.."repeat" part
+@app.route('/repeat')
+def repeat():
+    user_input = request.args.get("input", "no input") #no input msg if the input is missing
+    return jsonify({"body": user_input, "status": 200})
 
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
