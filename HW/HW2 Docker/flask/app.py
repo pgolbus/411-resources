@@ -34,9 +34,14 @@ def hello1():
     )
     return response
 
+@app.route('/hang')
+def hangfunction():
+    while True:
+        continue
+
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
     # Set this to '0.0.0.0' to make it accessible from any IP address
     # on your network (not recommended for production use)
     
-    app.run(host='0.0.0.0', port=5002)
+    app.run(host='0.0.0.0', port=5002, threaded=False)
