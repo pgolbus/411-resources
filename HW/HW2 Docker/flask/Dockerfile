@@ -20,7 +20,10 @@ RUN pip install flask
 # Make port 5000 available to the world outside this container
 # Note that this is for the purposes of documentation
 # The port is actually exposed when you run the container from the command line
-EXPOSE 5000
+
+# as per the instructions from "#1 Running Flask Service"
+ENV PORT=5002
+EXPOSE $PORT 
 
 # Run app.py when the container launches
 CMD ["python3", "app.py"]
@@ -28,3 +31,12 @@ CMD ["python3", "app.py"]
 # Health check (checks every 30 seconds to see if the endpoint returns a successful response)
 # HEALTHCHECK --interval=30s --timeout=3s \
 #  CMD curl -f http://localhost:5000/healthcheck || exit 1
+
+#NOTE: I see the comment above but i decided to paste it in from the assignment directly (just in case!)
+
+# Health check (checks every 30 seconds to see if the endpoint 
+# returns a successful response)
+
+HEALTHCHECK --interval=30s --timeout=3s \
+
+CMD curl -f http://localhost:${PORT}/healthcheck || exit 1
