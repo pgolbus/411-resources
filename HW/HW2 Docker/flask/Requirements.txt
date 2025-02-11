@@ -1,0 +1,47 @@
+Agile
+#####
+
+Theme: Get GiggleGit demo into a stable enough alpha to start onboarding some adventurous clients
+
+Epic: Onboarding experience 
+
+User Story 1: As a vanilla git power-user that has never seen GiggleGit before, I want to... understand GiggleGit's dashboard and how it integrates and enchances default Git workflows in an effective manner. 
+
+
+User Story 2: As a team lead onboarding an experienced GiggleGit user, I want to...be able to see GiggleGit's applicability to our company's IDE and version control system 
+
+
+User Story 3: As a new user who has never used Git, I want to be have a seamless experience with version control and Git workflows, so I can manage projects in a way that does not overwhelm me. 
+	
+	Task: Implement a beginner friendly and simple UI option
+
+		Ticket 1: Implement Basic Git Operation Buttons
+			Design buttons for cloning, forking, merging, and pulling from the 	GiggleGit dashboard, not from terminal commands. Buttons would provide 	examples and explanations of what each function does. 
+
+		Ticket 2: Create VSCode Extension for Git Management
+			Develop a VSCode extension that interfaces with GiggleGit servers. Allows users to use Git without commands, and encourages use of the GiggleGit platform.
+
+
+This is not a user story because it does not provide background on who the user is. This may apply to users of several perspectives, and does not give details on the knowledgeability of this current user. It also does not explain why the user wants to authenticate on this new machine. This appears to be more of a requirement than a user story. 
+
+------------------------------------------------------------------------------------------------
+
+
+Project Requirements
+####################
+
+Goal: Create a collection of positive and negative snickers that play depending whether a merge is successful or not. 
+
+Non-Goal: Avoid developing a new merge compatibility testing framework. 
+
+Non-functional Requirement 1: Security 
+
+	Functional Requirement 1.1: Integrate a RBAC system that only allows PMs and engineers to access the collection of snicker sounds. 
+
+	Functional Requirement 1.2: Create an admin interface for PMs that allow them to create, edit, and remove to the collection of snickers. 
+
+Non-functional Requirement 2: Randomization in User Testing 
+
+	Functional Requirement 2.1: Use a randomization algorithm to assign current users to control or experimental groups to receive different snicker sounds.
+
+	Functional Requirement 2.2: Create an algorithm to track analytics for the two groups, generating reports that allow PMs and engineers to measure feedback. 
