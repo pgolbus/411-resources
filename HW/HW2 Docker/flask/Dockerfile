@@ -4,6 +4,8 @@ FROM ubuntu:22.04
 # Set the working directory inside the container
 WORKDIR /app
 
+ENV PORT=5002
+
 # Update and install system dependencies
 RUN apt-get update && apt-get install -y \
     python3 \
@@ -20,11 +22,11 @@ RUN pip install flask
 # Make port 5000 available to the world outside this container
 # Note that this is for the purposes of documentation
 # The port is actually exposed when you run the container from the command line
-EXPOSE 5000
+EXPOSE $PORT
 
 # Run app.py when the container launches
 CMD ["python3", "app.py"]
 
 # Health check (checks every 30 seconds to see if the endpoint returns a successful response)
-# HEALTHCHECK --interval=30s --timeout=3s \
-#  CMD curl -f http://localhost:5000/healthcheck || exit 1
+HEALTHCHECK --interval=30s --timeout=3s \
+CMD curl -f http://localhost:5000/healthcheck || exit 1
