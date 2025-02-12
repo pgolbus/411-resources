@@ -1,0 +1,22 @@
+
+# Step 1 #
+172.17.0.1 - - [12/Feb/2025 05:10:39] "GET / HTTP/1.1" 200 -
+{"response":"Hello, World!","status":200}
+
+# Step 2 #
+172.17.0.1 - - [12/Feb/2025 06:35:54] "GET /repeat?input=foo HTTP/1.1" 200 -
+{"body":"foo","status":200} 
+
+# Step 3 #
+172.17.0.1 - - [12/Feb/2025 18:37:39] "GET /health HTTP/1.1" 200 -
+{"body": "OK", "status": 200}
+
+172.17.0.1 - - [12/Feb/2025 18:37:45] "GET /healthcheck HTTP/1.1" 200 -
+{"body": "OK", "status": 200}
+
+# Step 4 #
+CONTAINER ID   NAMES              STATUS
+967dde87378b   angry_kowalevski   Up 7 seconds (health: starting)
+
+CONTAINER ID   NAMES              STATUS
+967dde87378b   angry_kowalevski   Up 2 minutes (unhealthy)
