@@ -1,9 +1,18 @@
 Project Requirements
 
-
-
-
-
+- Goal: Ensure that SnickerSync provides an efficient experience in integrating meme-based merges
+- Non-Goal: SnickerSync will not attempt to improve algorithms beyond standard GiggleGit capabilities.
+    - Non-functional requirement 1: Access Control & Role Management
+        - Functional Requirements:
+            - Implement access control so that only PMs can create, edit, and remove snickering concepts.
+            - Maintain logs of all modifications made to snickering concepts just like Git. This includes timestamps 
+                and the responsible user, accessible only to admins.
+    - Non-functional requirement 2: User Study Randomization & Data Management
+        - Functional Requirements:
+            - Automatically assign participants to either a control group or variants. This will be done 
+                by using a randomization algorithm
+            - Collect and store interaction data from the user studies. Anonymize personal information
+                to ensure compliance with privacy regulations.
 
 Agile
     
