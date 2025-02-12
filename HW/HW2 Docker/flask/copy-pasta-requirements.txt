@@ -1,0 +1,43 @@
+Project Requirements
+
+
+
+
+
+
+Agile
+    
+- Theme: Get GiggleGit demo into a stable enough alpha to start onboarding some adventurous clients
+- Epic: Onboarding experience 
+
+- Story #1: As a vanilla git power-user that has never seen GiggleGit before, I want to test and see how GiggleGit 
+    differs regular Github or Gitlab, so then I can see if it is worth using for my projects or not. 
+    - Task: Provide an in depth comparsion of GiggleGit and Github 
+        - Ticket 1: Create "GiggleGit v.s. Github" comparison table/chart
+            - Design a comparison higlighting the pros and cons of using each system
+            - Ensure each is accessible in both the documentation and onboarding flow
+        - Ticket 2: Add a guide for "Quick Start" for all new members
+            - Create a detailed tutorial, helping employees switch from Github to GiggleGit
+            - Include common commands and their GiggleGit equivalents so employees can easily learn
+
+- Story #2: As a team lead onboarding an experienced GiggleGit user, I want to have a simple process that easily 
+    adds new members without major time costs in order to start using GiggleGit easily.
+    - Task: Create an easier way for members to join the system
+        - Ticket 1: Implement an "Invite System" for all the Team Leads
+            - Allows team leads to efficiently send invites to new users via email or link
+            - Ensures that invites are sent via privacy rather than publicly
+        - Ticket 2: Create a Team Management Dashboard
+            - Develop a system where any team leads can view, add, and remove members
+            - Provides any necessary role-based access settings
+
+- Story #3: As a first-time user exploring GiggleGit, I want to go through a tutorial which walks me through any 
+    necessary features so I can get up to speed quickly.
+    - Task: Design and implement an interactive tutorial
+        - Ticket 1: Create a step by step interface for users
+            - Design a tutorial introducing new users to GiggleGit
+            - Ensure the tutorial can be revisited at later times if needed
+        - Ticket 2: Implement backend logic for the tutorial
+            - Stores a specific users progress if needed to be paused
+            - Integrate the tutorial with the use of actual GiggleGit operations
+
+
