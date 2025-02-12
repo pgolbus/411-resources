@@ -15,7 +15,7 @@ def hello():
 
 @app.route('/repeat', methods=['GET'])
 def repeat():
-    input_value = request.args.get('input', 'No input provided')
+    input_value = request.args.get('input', 'foo')
     return jsonify({"body": input_value, "status": 200})
 
 
