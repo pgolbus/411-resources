@@ -1,16 +1,24 @@
-from flask import Flask, make_response
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    response = make_response(
+    response = jsonify(
         {
             'response': 'Hello, World!',
             'status': 200
         }
     )
     return response
+
+
+@app.route('/status')
+def status():
+   return jsonify({
+    'status': 'OK',
+     'message': 'Service is running'
+    })
 
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
