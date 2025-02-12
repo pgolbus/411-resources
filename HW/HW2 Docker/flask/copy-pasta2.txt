@@ -1,2 +1,0 @@
-172.17.0.1 - - [12/Feb/2025 06:35:54] "GET /repeat?input=foo HTTP/1.1" 200 -
-{"body":"foo","status":200} 
