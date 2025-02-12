@@ -1,7 +1,9 @@
+import os
 from flask import Flask, make_response
 
 app = Flask(__name__)
 
+port = int(os.getenv("PORT"))
 @app.route('/')
 def hello():
     response = make_response(
