@@ -21,7 +21,7 @@ RUN pip install flask
 # Note that this is for the purposes of documentation
 # The port is actually exposed when you run the container from the command line
 ENV PORT=5002
-EXPOSE 5000
+EXPOSE $PORT
 
 # Run app.py when the container launches
 CMD ["python3", "app.py"]
