@@ -5,13 +5,21 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    response = make_response(
-        {
-            'response': 'Hello, World!',
-            'status': 200
-        }
-    )
+    response = jsonify({
+        'response': 'Hello, World!',
+        'status': 200
+    })
     return response
+
+@app.route('/repeat', methods=['GET'])
+def repeat():
+    # Get the "input" parameter from the GET request
+    user_input = request.args.get("input", "No input provided")  # Default if not found
+    response = {
+        "body": user_input,
+        "status": 200
+    }
+    return jsonify(response), 200 
 
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
