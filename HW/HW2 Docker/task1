@@ -1,0 +1,12 @@
+bryanayala@crc-dot1x-nat-10-239-184-98 flask % docker run -p 5002:5002 flask
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5002
+ * Running on http://172.17.0.2:5002
+Press CTRL+C to quit
+192.168.65.1 - - [12/Feb/2025 01:29:14] "GET / HTTP/1.1" 200 -
+192.168.65.1 - - [12/Feb/2025 01:39:20] "GET / HTTP/1.1" 200 -
+bryanayala@crc-dot1x-nat-10-239-184-98 flask % curl localhost:5002
+{"response":"Hello, World!","status":200}
