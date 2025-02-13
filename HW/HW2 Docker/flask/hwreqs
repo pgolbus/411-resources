@@ -1,0 +1,58 @@
+1. Agile
+
+CodeChuckle is a startup whose product is GiggleGit, a version control system “where merges are managed by memes." (It saddens me to say that this was a joke written by ChatGPT for 131)
+
+You have just been hired as employee number 
+n
+n for some small number 
+n
+n. They have the dev chops to make a demo, but you are their first serious developer. 
+
+Here is a theme and an epic: 
+
+Theme: Get GiggleGit demo into a stable enough alpha to start onboarding some adventurous clients
+Epic: Onboarding experience 
+ Complete the following tasks:
+
+Complete these user stories:
+As a vanilla git power-user that has never seen GiggleGit before, I want to be able to use the interface easily and understand the features with little help
+    Task: create an initial tutorial as an easy way for user to familiarize themselves with it
+        Ticket: Implement a tutorial that guides users to each feature
+        Ticket 2: Documentation for an overview of all the features for more detail
+As a team lead onboarding an experienced GiggleGit user, I want to allow GiggleGit to work well with our previous products and interfaces
+    Task: Integrate GiggleGit with existing Git workflows
+        Ticket: Create easy tutorial or documentation for how to transfer existing git documentations
+        Ticket2: Implenet a way to easily transfer workflows between existings ones and ones in GiggleGit that will connect the two
+User 3:
+As someone who maintains open source projects, I wanted to ensure that my projects and contributions are safe and secure
+    Task: Enforce security for commits
+        Ticket: Implement a verification key for commits and/or require users to sign in
+        Ticket2: create documentation for how to use the commit signing
+This is not a user story. Why not? What is it?
+As a user I want to be able to authenticate on a new machine 
+This is a requirement instead of a goal and is not specific enough to be a user story and does not describe their ultimate goal as a user
+
+
+2. Formal Requirements
+
+CodeChuckle is introducing a new diff tool: SnickerSync—why merge in silence when you can sync with a snicker? The PMs have a solid understanding of what it means to "sync with a snicker" and now they want to run some user studies. Your team has already created a vanilla interface capable of syncing with the base GiggleGit packages.
+
+Complete the following tasks:
+
+List one goal and one non-goal
+Create two non-functional requirements. Here are suggestions of things to think about:
+Who has access to what
+PMs need to be able to maintain the different snickering concepts
+A user study needs to have random assignments of users between control groups and variants
+For each non-functional requirement, create two functional requirements (for a grand total of four functional requirements). 
+
+Goal: Enable the code to sync in real time across teams without having to manually sync it
+Non-goal: SnickerSync will not create its own version control but instead be meant to work along exisitng systems such as Git
+Non Functional requirements:
+The system should be able to support testing to measure effectiveness and get feedback from users
+    Functional requirement: conduct a heatmap analysis
+    Functional requirement2: conduct surveys sometimes so users can give their feedback
+2:
+The systems should restrict what users can see depending on how sensitive the information is and depending on the user
+    Functional requirement: Require multiple verification in order to see certain data or information
+    Functional requirement: Implement audit logs to track actions and ensure accountability
