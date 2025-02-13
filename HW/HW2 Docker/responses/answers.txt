@@ -1,0 +1,39 @@
+1. As a vanilla git power-user that has never seen GiggleGit before, I want to quickly understand its unique features and differences from Git, so I can confidently use it without feeling lost.
+
+ 2.  As a team lead onboarding an experienced GiggleGit user, I want to have clear documentation and quick-start guides available, so my team can integrate it into our workflow without unnecessary delays.
+
+3.   As a developer managing multiple repositories, I want to efficiently handle conflicts using GiggleGit’s meme-powered merge system, so that I can resolve issues in a way that is both productive and engaging.
+
+TICKETS:
+
+Title: Meme-powered merge conflict UI
+
+Details: Design and develop a user interface for resolving merge conflicts using meme-based suggestions. The UI should present users with humorous yet practical merge resolutions and allow them to select, edit, or manually resolve conflicts.
+
+Title: Backend support for meme-based merge resolutions
+
+Details: Implement backend logic that integrates with the conflict resolution UI. The system should suggest relevant memes based on conflict types, track user choices, and apply the selected resolution to the repository.
+
+Finally, this is not a user story because it conatins no real goal to work towards.
+
+PART 2
+
+Goal: Ensure that SnickerSync provides a simple and engaging git diff experience that enhances version control productivity while incorporating humor in a non-disruptive way.
+
+Non-Goal: SnickerSync will not alter or modify the underlying Git diff logic; it will only enhance the user experience through its unique interface and interaction model.
+
+Non-Functional Requirements
+
+Access Control: Only administrators and PMs should have permissions to modify and manage the snickering concepts within SnickerSync.
+User Study Assignment: Users participating in the study must be randomly assigned to either the control group (traditional diff experience) or the experimental group (SnickerSync-enhanced experience).
+
+Non-Functional requirements:
+
+For NFR #1 (Access Control):
+
+Role-Based Permissions: Implement role-based access control (RBAC) so that only users with PM or admin roles can modify snickering concepts.
+Audit Logging: Maintain an audit log of all changes made to snickering concepts, including timestamps and the user who made each change.
+
+For NFR #2 (User Study Assignment):
+Randomized Group Allocation: The system must automatically and randomly assign new study participants to either the control group or the experimental group.
+Group Identifier Tracking: Ensure that each user’s assignment (control vs. experimental) is stored in a database and persists across sessions for consistent experience tracking.
