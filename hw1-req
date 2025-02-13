@@ -1,0 +1,29 @@
+1. Agile
+1.1 As a vanilla git power-user that has never seen GiggleGit before, I want to be able to quickly and easily understand how GiggleGit works so I am able to potentially implement it into my daily life.
+    Task: Make the onboarding experience as smooth as possible
+        Ticket 1: Create a tutorial experience
+            - Create a tutorial experience that can walks through all the different functions and abilities of GiggleGit, and make sure it is readily accessible at anytime just in case it is needed again.
+        Ticket 2: Compare and contrast GiggleGit to vanilla git
+            - Create a table that shows the differences and similarities between GiggleGit and vanilla git
+    As a team lead onboarding an experienced GiggleGit user, I want to make sure that GiggleGit is being used effectively so we can minimize the chance of potential issues or merge conflicts occuring
+        Task: Create merge guidlines
+            Ticket 1: Have a tutorial/guide that has some effective tips that could be used when merging in GiggleGit and provide solutions to potential common issues that might occur
+            Ticket 2: Host a seminar taught by the experienced GiggleGit user including a demo so they can share their knowledge and help reduce potential issues
+1.2 As a GiggleGit user working remotely, I want to be able to still make use of GiggleGit even if I am not in the office or connected to office wifi
+    Task: Allow for remote use beyond the office
+        Ticket 1: Connect your GiggleGit account to your work account so it can be accessed as long as you log into your work account.
+        Ticket 2: Add roles to each GiggleGit account so GiggleGit can have a log of who logged in to do what and what time.
+1.3 "As a user I want to be able to authenticate on a new machine" is not a user story because a user story focuses on the reason that a user might have to use this product and the value they gain, instead the statement is more of a feature the users is asking for or a functional requirement as they are asking specifically for a requirement (in this case authentication) to be added 
+
+2. Formal Requirements
+1.1 Goal: Create an additional tool which adds a snicker sound when you sync, making the process more fun and engaging.
+    Non-Goal: Adds different sounds depending on what processes you could be working on (SnickerySync focuses only on adding the snicker sound when you sync specifically)
+1.2 Non-functional Requirements
+    1. Access to different parts of SnickerSync like editing the tool itself should be restricted depending on roles.
+        1.3 Functional Requirements:
+        1. Add logs that record which account logged into what part of SnickerSync
+        2. Only allow accounts with certain roles to access certain parts of SnickerSync
+    2. The user study needs to be random in order to yield accurate results and feedback
+        1.3 Functional Requirements:
+        1. Implement a randomizer that picks users at random to put them in different groups
+        2. Add a tracker that keeps track of which random user is in which group
