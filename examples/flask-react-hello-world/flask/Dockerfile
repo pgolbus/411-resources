@@ -11,10 +11,20 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.lock
 
 # Make port 5000 available to the world outside this container
-EXPOSE 5000
+ENV PORT=5002
+EXPOSE $PORT
 
 # Define environment variable
 ENV FLASK_DEBUG=1
 
 # Run app.py when the container launches
-CMD ["python", "app.py"]
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5002"]
+
+
+# Health check (checks every 30 seconds to see if the endpoint 
+# returns a successful response)
+
+HEALTHCHECK --interval=30s --timeout=3s \
+
+CMD curl -f http://localhost:${PORT}/healthcheck || exit 1
