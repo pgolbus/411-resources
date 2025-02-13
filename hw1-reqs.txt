@@ -1,0 +1,89 @@
+AGILE
+
+Theme: Get GiggleGit demo into a stable enough stage to start onboarding some new clients
+Epic: Onboarding experience
+User Story 1:
+As a vanilla git power-user that has never seen GiggleGit before, I want to quickly understand how GiggleGit differs from traditional git, so I can decide if it’s worth using.
+
+Task: Create a concise comparison of Git vs. GiggleGit
+
+Ticket 1: Write a quickstart guide
+
+Create a one-page doc explaining the key differences between Git and GiggleGit.
+Include examples of how merges work and why memes are involved.
+Ticket 2: Implement an interactive tutorial
+
+Build a guided onboarding flow for first-time users.
+Include example repositories and step-by-step merge scenarios. Also make it easily accessible.
+
+
+User Story 2:
+As a team lead onboarding an experienced GiggleGit user, I want a simple way to set up team permissions and collaboration workflows, so my team can work efficiently.
+
+Task: Design team permission settings
+
+Ticket 1: Create roles for team members
+
+Define different levels of users (e.g., admin, reviewer, contributor).
+Implement assign roles.
+Ticket 2: Implement shared repository settings
+
+Let team leads to make different repo settings.
+Make sure merge meme settings are customizable per team.
+
+
+User Story 3:
+As a meme-loving developer, I want to customize the memes that appear during a merge, so I can personalize my workflow.
+
+Task: Add meme customization options
+
+Ticket 1: Allow users to upload custom memes
+
+Implement an interface for uploading and managing meme collections.
+Make sure moderation controls for inappropriate content.
+Ticket 2: Implement meme selection logic
+
+Allow options for random, searchable or specially selected memes for merges.
+
+
+------
+
+------
+
+
+
+
+Formal Requirements
+
+Goal:
+Make sure that SnickerSync provides anenjoyable user experience that enhances the merging process by adding humor while maintaining functionality.
+Non-Goal:
+SnickerSync will not change the main git functions, it will only help the visualization and user interaction with the merging process.
+
+Non-Functional Requirement 1:
+Access Control: PMs must be able to manage and configure different "snickering" themes and behaviors within SnickerSync.
+
+	Functional Requirements for Non-Functional Requirement 1:
+	PMs can create, edit, and delete SnickerSync themes
+
+	Provide an admin panel for PMs to set new snickering styles.
+	Making sure changes are are in the user interface without requiring a system restart.
+	Restrict theme changes to authorized users
+
+	Implement role-based access control (RBAC) to ensure only PMs can modify SnickerSync configurations.
+	Display an error message when unauthorized users attempt to access theme settings.
+
+
+Non-Functional Requirement 2:
+	User Study Group Assignment: Users participating in studies must be randomly assigned to control or experimental groups.
+
+	Functional Requirements for Non-Functional Requirement 2:
+	Automated random user assignment
+
+	Create a backend process that assigns users to groups based on prestated probabilities.
+	Make sure users remain in the same group across multiple sessions.
+	Track and log experiment participation
+
+	Store user assignments in a database for later analysis.
+	Make an interface for researchers to monitor participation metrics.
+
