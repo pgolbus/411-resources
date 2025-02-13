@@ -12,13 +12,25 @@ def hello():
         }
     )
     return response
+    
+@app.route('/repeat', methods=['GET'])
 def repeat():
-    user_input = request.args.get('input', '')
+    user_input = request.args.get('input', '')  # Get 'input' parameter
     response = make_response({
         'body': user_input,
         'status': 200
     })
     return response
+
+@app.route('/health')
+@app.route('/healthcheck')
+def health():
+    response = make_response({
+        'body': 'OK',
+        'status': 200
+    })
+    return response
+
     
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
