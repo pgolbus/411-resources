@@ -1,0 +1,6 @@
+bryanayala@crc-dot1x-nat-10-239-184-98 flask % docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"
+CONTAINER ID   NAMES               STATUS
+65fa5c06dea2   zealous_zhukovsky   Up 6 seconds (health: starting)
+bryanayala@crc-dot1x-nat-10-239-184-98 flask % docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"
+CONTAINER ID   NAMES               STATUS
+65fa5c06dea2   zealous_zhukovsky   Up About a minute (unhealthy)
