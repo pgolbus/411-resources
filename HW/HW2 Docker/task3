@@ -1,0 +1,6 @@
+bryanayala@crc-dot1x-nat-10-239-184-98 flask % curl "localhost:5002/health"
+{"body":"OK","status":200}
+192.168.65.1 - - [13/Feb/2025 05:19:02] "GET /health HTTP/1.1" 200 -
+bryanayala@crc-dot1x-nat-10-239-184-98 flask % curl "localhost:5002/healthcheck"
+{"body":"OK","status":200}
+192.168.65.1 - - [13/Feb/2025 05:19:11] "GET /healthcheck HTTP/1.1" 200 -
