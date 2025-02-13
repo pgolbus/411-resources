@@ -1,0 +1,54 @@
+Project description:
+
+    GiggleGit is a version control system "where merges are managed by memes." The goal is to refine the demo into a
+    stable alpha version suitable for onboarding early adopters. The onboarding experience will be improved by
+    enhancing usability and streamlining the initial steup process for new users.
+
+Project Requirements:
+
+    Goal: Establish a stable GiggleGit alpha that facilitates seamless onboarding for clients.
+
+    Non-Goal: Implementing advanced automation features beyond the initial onboarding experience.
+
+        Non-functional requirement 1: Security
+            Function requirements:
+                Implement user authentication to ensure secure access to GiggleGit.
+                Store access credentials securely, preventing exposure to unauthorized users.
+
+        Non-functional requirement 2: Usability
+            Functional requirements:
+                Develop an intuitive user interface to assist new users in understanding GiggleGit's features.
+                Provide sufficient and comprehensive documentation to guide users through the onboarding process.
+
+Agile
+
+    Theme: Get GiggleGit demo into a stable enough alpha to start onboarding some adventurous clients.
+
+    Epic: Onboarding experience.
+
+    User story 1: As a vanilla git power-user that has never seen GiggleGit before, I want to quickly grasp how
+                  to use it so I can evaluate its benefits.
+        Task: Create an introductory tutorial
+            Ticket 1: Develop an interactive tutorial
+                Implement a step-by-step guide covering basic and advanced features.
+            Ticket 2: Design an intuitive user dashboard
+                Ensure that key functionalities are easily accessible and visually clear.
+
+    User story 2: As a team lead onboarding an experienced GiggleGit user, I want to streamline the setup process
+                  so that my team can start using it efficiently.
+        Task: Simplify team integration
+            Ticket 1: Implement team collaboration features
+                Allow users to invite team members and manage access permissions.
+            Ticket 2: Automate repository setup
+                Develop a script to initialize repositories with predefined settings to ensure consistency and
+                reduce setup time for new teams.
+
+    User story 3: As a developer evaluating GiggleGit, I want a sandbox environment with the purpose of
+                  experimenting without affecting any actual repositories.
+        Task: Set up a testing environment
+            Ticket 1: Create a simulated repository for practice
+                Provide users with a safe environment to test features.
+            Ticket 2: Implement rollback functionality
+                Allow users to reset their changes to avoid unintended modifications.
+
+
