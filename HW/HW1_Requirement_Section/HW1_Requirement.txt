@@ -1,0 +1,59 @@
+Project Overview
+
+SnickerSync is a tool designed to improve the merging process in GiggleGit by making it more interactive and user-friendly. The goal is to release an early version for testers and gather feedback for future improvements.
+
+1. Goal and Non-Goal
+
+Goal:
+
+Ensure SnickerSync provides a smooth and engaging merging experience that integrates well with GiggleGit.
+
+Non-Goal:
+
+Developing AI-driven merge conflict resolution is not within the scope of this project.
+
+2. Non-Functional Requirements and Corresponding Functional Requirements
+
+Non-Functional Requirement 1: Access Control
+
+Only authorized users should have permission to modify SnickerSync settings, while general users should only have access to predefined configurations.
+
+Functional Requirements:
+
+1. User Role Management: Implement an authentication system where only administrators can modify SnickerSync settings, while regular users can only view them.
+2. Permission Restrictions: Restrict access to configuration settings, ensuring general users cannot edit or override predefined merge preferences.
+
+Non-Functional Requirement 2: Data Integrity
+
+User activity logs and test group assignments must be stored securely and remain unchanged throughout the testing phase.
+
+Functional Requirements:
+1. Data Encryption: Ensure user logs and test assignments are encrypted in the database to prevent tampering.
+2. Audit Trail: Implement a read-only logging system where all activity logs are stored securely and cannot be altered by users.
+
+3. User Stories, Tasks, and Tickets
+
+User Story 1:
+
+As a first-time SnickerSync user, I want to quickly understand how it differs from other diff tools so I can start using it easily.
+
+Task: Create onboarding materials.
+
+Ticket 1: Write a Simple User Guide
+ • Create an easy-to-read guide explaining SnickerSync’s key features.
+ • Compare it with traditional Git diff tools.
+
+ Ticket 2: Develop an In-App Walkthrough
+ • Implement a step-by-step tutorial in the UI.
+ • Guide users through basic merge operations with SnickerSync.
+
+User Story 2:
+
+As a product manager, I need to understand how users interact with SnickerSync’s snickering options so I can refine the experience.
+
+Task: Gather and analyze user behavior.
+
+Ticket 1: Monitor User Engagement
+ • Track how users interact with SnickerSync’s merge features.
+ • Log user interactions with 
+
