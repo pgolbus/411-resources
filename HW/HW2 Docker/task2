@@ -1,0 +1,3 @@
+bryanayala@crc-dot1x-nat-10-239-184-98 flask % curl "localhost:5002/repeat?input=foo"
+{"body":"foo","status":200}
+192.168.65.1 - - [13/Feb/2025 04:51:34] "GET /repeat?input=foo HTTP/1.1" 200 -
