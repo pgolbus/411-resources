@@ -1,0 +1,35 @@
+User Story 1:
+As a vanilla git power-user that has never seen GiggleGit before, I want to understand the basic features of GiggleGit so that I can use it effectively for my version control needs.
+
+Task: Walkthrough of GiggleGit interface
+Ticket 1: Provide an introductory tutorial
+Implement an interactive tutorial that covers the basic functions of GiggleGit (e.g., creating a repo, committing changes, merging branches).
+Ticket 2: Demonstrate key differences from vanilla git
+Include a comparison of GiggleGit’s unique features (e.g., meme-based merges) with standard git workflows.
+User Story 2:
+As a team lead onboarding an experienced GiggleGit user, I want to ensure the user can customize GiggleGit settings to suit their workflow and team requirements.
+
+Task: Customization of GiggleGit settings
+Ticket 1: Implement custom settings UI
+Create a user interface for users to easily change settings (e.g., merge meme settings, commit format).
+Ticket 2: Allow team-specific configurations
+Add the functionality for team leads to set default configurations for their team, such as merge policies or branch naming conventions.
+User Story 3:
+As a new user, I want to be able to track my Git history and understand the evolution of my project in GiggleGit, so I can easily review past changes.
+
+Task: Implement project history tracking
+Ticket 1: Visualize commit history
+Create a timeline or graph-based representation of commit history that displays key events in the project’s evolution.
+Ticket 2: Highlight key merges
+Display prominent merges (e.g., meme-based) and their context within the project timeline.
+What is NOT a user story?
+"As a user I want to be able to authenticate on a new machine"
+
+This is not a user story because it focuses on a technical requirement that doesn't directly address the user’s goal or value. It describes an implementation detail (authentication) rather than a feature that adds meaningful value to the user experience.
+
+
+
+
+
+
+
