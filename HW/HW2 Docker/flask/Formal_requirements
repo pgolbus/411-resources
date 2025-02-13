@@ -1,0 +1,18 @@
+Goal:
+Allow users to sync their git repositories while enjoying a "snicker" sound, making the sync process more engaging and entertaining.
+Non-goal:
+Focus on optimizing the snicker sound for different environments or personal preferences. (The snicker sound will be consistent for all users.)
+Non-functional Requirement 1:
+PMs need to be able to maintain different snickering concepts for user experience testing.
+
+Functional Requirement 1: Implement a settings management interface
+Create an interface that allows PMs to manage and modify snicker concepts (e.g., types of snickers or sound variations).
+Functional Requirement 2: Version control for snicker concepts
+Implement a version control system for snicker concepts so that PMs can roll back to previous versions if needed, ensuring consistency in user studies.
+Non-functional Requirement 2:
+A user study needs to have random assignments of users between control groups and variants.
+
+Functional Requirement 1: Randomize user assignments
+Implement an algorithm that automatically assigns users to either the control group or the variant group in a randomized manner.
+Functional Requirement 2: Track user group assignments
+Ensure that each user’s group assignment (control or variant) is tracked and stored securely, so that data can be analyzed properly during the study.
