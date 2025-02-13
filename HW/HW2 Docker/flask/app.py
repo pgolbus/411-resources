@@ -15,7 +15,7 @@ def hello():
     
 @app.route('/repeat', methods=['GET'])
 def repeat():
-    user_input = request.args.get('input', '')  # Get 'input' parameter
+    user_input = request.args.get('input', '')
     response = make_response({
         'body': user_input,
         'status': 200
@@ -30,7 +30,11 @@ def health():
         'status': 200
     })
     return response
-
+    
+@app.route('/hang')
+def hang():
+    while True:
+        pass
     
 if __name__ == '__main__':
     # By default flask is only accessible from localhost.
@@ -38,4 +42,4 @@ if __name__ == '__main__':
     # on your network (not recommended for production use)
     port = int(os.getenv("PORT", 5002))
 
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True, threaded=False)
