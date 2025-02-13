@@ -1,8 +1,16 @@
 from flask import Flask, make_response
 import os 
+import request
 
 app = Flask(__name__)
-
+@app.route('/')
+def input():
+    repeat = make repeat(
+        {
+            'repeat': request.args.get('input'),
+            'status' = 200
+                  }
+    return repeat
 @app.route('/')
 def hello():
     response = make_response(
