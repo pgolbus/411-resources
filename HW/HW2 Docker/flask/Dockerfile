@@ -16,11 +16,15 @@ COPY . /app
 # RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install flask
 
+# Set up an environment variable for the port inside the container change made by Amy for HW1
+ENV PORT=5001
+
 # Port 5000 is the default value for flask apps
 # Make port 5000 available to the world outside this container
 # Note that this is for the purposes of documentation
 # The port is actually exposed when you run the container from the command line
-EXPOSE 5000
+# Edited for HW1, changed from EXPOSE 5001 (on mac device) to EXPOSE $PORT
+EXPOSE $PORT
 
 # Run app.py when the container launches
 CMD ["python3", "app.py"]
