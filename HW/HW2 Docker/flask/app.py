@@ -19,4 +19,4 @@ if __name__ == '__main__':
     # on your network (not recommended for production use)
     port = int(os.getenv("PORT", 5002))
 
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
