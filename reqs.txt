@@ -1,0 +1,49 @@
+Project Requirements:
+Goal: Create an easy-to-use interface for running user studies on SnickerSync.
+
+Non-Goal: Designing new snickering concepts—PMs will define them separately.
+
+Non-Functional Requirement 1: Access Control
+	Functional Requirement:
+		. Only authorized PMs can add, edit, or remove snickering concepts.
+		.User study data must be restricted to researchers and not visible to participants.
+
+Non-Functional Requirement 2: Experiment Consistency
+	Functional Requirement:
+		.Users must be randomly assigned to control or test groups before the experiment starts.
+		.The same user will always see the same variant during the study.
+
+Agile:
+
+Theme: Get GiggleGit demo into a stable enough alpha to start onboarding some adventurous clients
+
+Epic: Onboarding experience
+
+User story 1:
+As a vanilla Git power-user that has never seen GiggleGit before, I want to quickly understand how GiggleGit’s merge process works so that I can use them in my workflow.
+
+Task: Create a simple onboarding guide
+Ticket 1: Write a concise, Git-focused onboarding doc
+. Cover essential differences between Git and GiggleGit merges in a way that Git power users will understand.
+Ticket 2: Implement an interactive walkthrough
+. Design and develop a workshop tutorial that guides users through a basic GiggleGit merge.
+
+User story 2
+As a team lead onboarding an experienced GiggleGit user, I want to easily set up GitGiggle accounts for my team so that they can start using it with minimal setup.
+
+Task: Make it simple to add team members 
+Ticket 1: Let users invite other team members
+. Allow users to invite team members via email and pre-configure their roles.
+Ticket 2: Create a "team dashboard" for managing users
+. Build a simple UI for team leads to see and manage their team members’ content.
+
+User story 3
+As a developer using a new computer, I want to log into GiggleGit without any repeating steps so that I can jump right into developing .
+
+Task: Improve authentication experience for returning users
+Ticket 1: Implement machine authentication via SSH keys
+. Allow users to register trusted machines and authenticate via SSH without re-entering credentials.
+Ticket 2: Support OAuth-based login persistence
+. Enable OAuth token storage and reuse to simplify login on multiple devices.
+
+The statement "As a user I want to be able to authenticate on a new machine" is not a complete user story because it doesn’t state a clear “why”. The user does not explain why authenticating on a new machine is important and why it matters to him/her. 
