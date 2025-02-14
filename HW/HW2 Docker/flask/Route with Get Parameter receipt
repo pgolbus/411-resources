@@ -1,0 +1,7 @@
+(base) iancampbell@Ians-MacBook-Pro flask % curl "http://localhost:5002/repeat?input=foo"
+
+{
+  "response": "foo",
+  "status": 200
+}
+(base) iancampbell@Ians-MacBook-Pro flask % 
