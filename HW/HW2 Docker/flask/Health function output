@@ -1,0 +1,11 @@
+(base) iancampbell@Ians-MacBook-Pro flask % curl "http://localhost:5002/health"
+{
+  "body": "OK",
+  "status": 200
+}
+(base) iancampbell@Ians-MacBook-Pro flask % curl "http://localhost:5002/healthcheck"
+{
+  "body": "OK",
+  "status": 200
+}
+(base) iancampbell@Ians-MacBook-Pro flask % 
