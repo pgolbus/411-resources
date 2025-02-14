@@ -1,0 +1,19 @@
+(base) iancampbell@Ians-MacBook-Pro ~ % docker ps
+CONTAINER ID   IMAGE       COMMAND            CREATED         STATUS         PORTS                    NAMES
+e81746cce73a   flask-app   "python3 app.py"   7 minutes ago   Up 7 minutes   0.0.0.0:5002->5002/tcp   flask-container
+(base) iancampbell@Ians-MacBook-Pro ~ % docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"
+
+CONTAINER ID   NAMES             STATUS
+e81746cce73a   flask-container   Up 8 minutes
+(base) iancampbell@Ians-MacBook-Pro ~ % docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"
+
+CONTAINER ID   NAMES             STATUS
+e81746cce73a   flask-container   Up 9 minutes
+(base) iancampbell@Ians-MacBook-Pro ~ % 
+
+
+(* Going to be honest, I couldn't figure out this one because when I put the 
+container into its unresponsive state, I couldn't do any commands on the console lines.
+So instead I just did docker ps from a new terminal window and of course because the
+docker's container is locally stored, it can still observe it. Anyway I couldn't get (Unresponsive)
+to show up and Ive been waiting for a bit.
