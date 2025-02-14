@@ -1,0 +1,17 @@
+(base) iancampbell@Ians-MacBook-Pro flask % docker logs flask-container
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5002
+ * Running on http://172.17.0.2:5002
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 133-813-679
+(base) iancampbell@Ians-MacBook-Pro flask % curl localhost:5002
+{
+  "response": "Hello, World!",
+  "status": 200
+}
+(base) iancampbell@Ians-MacBook-Pro flask % 
