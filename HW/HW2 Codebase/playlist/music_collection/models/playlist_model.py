@@ -17,12 +17,12 @@ class PlaylistModel:
 
     """
 
-    def __init__(self):
-        """
-        Initializes the PlaylistModel with an empty playlist and the current track set to 1.
-        """
-        self.current_track_number = 1
-        self.playlist: List[Song] = []
+def __init__(self):
+    """
+    Initializes the PlaylistModel with an empty playlist and the current track set to 1.
+    """
+    self.current_track_number = 1
+    self.playlist: List[Song] = []
 
     ##################################################
     # Song Management Functions

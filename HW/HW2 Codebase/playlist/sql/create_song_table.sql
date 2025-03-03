@@ -7,6 +7,9 @@ CREATE TABLE songs (
     genre TEXT NOT NULL,
     duration INTEGER NOT NULL CHECK(duration > 0),
     play_count INTEGER DEFAULT 0,
-    deleted BOOLEAN DEFAULT FALSE,
     UNIQUE(artist, title, year)
 );
+
+CREATE INDEX idx_songs_artist_title ON songs(artist, title);
+CREATE INDEX idx_songs_year ON songs(year);
+CREATE INDEX idx_songs_play_count ON songs(play_count);
