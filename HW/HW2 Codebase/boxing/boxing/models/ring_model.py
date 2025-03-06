@@ -1,105 +1,155 @@
 import logging
+import math
 from typing import List
 
-from meal_max.models.kitchen_model import Meal, update_meal_stats
-from meal_max.utils.logger import configure_logger
-from meal_max.utils.random_utils import get_random
+from boxing.models.boxers_model import Boxer, update_boxer_stats
+from boxing.utils.logger import configure_logger
+from boxing.utils.api_utils import get_random
 
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 
-class BattleModel:
+class RingModel:
+    """A class to manage the the ring in which boxers have fights.
+
+    Attributes:
+        ring (List[Boxer]): The list of combatants in the battle.
+    """
 
     def __init__(self):
-        self.combatants: List[Meal] = []
+        """Initializes the RingManager with an empty list of combatants.
 
-    def battle(self) -> str:
-        logger.info("Two meals enter, one meal leaves!")
+        """
+        self.ring: List[Boxer] = []
 
-        if len(self.combatants) < 2:
-            logger.error("Not enough combatants to start a battle.")
-            raise ValueError("Two combatants must be prepped for a battle.")
+    def fight(self) -> str:
+        """Simulates a fight between two combatants.
 
-        combatant_1 = self.combatants[0]
-        combatant_2 = self.combatants[1]
+        Simulates a fight between two combatants. Computes their fighting skill levels,
+        normalizes the difference, and determines the winner based on a random number.
 
-        # Log the start of the battle
-        logger.info("Battle started between %s and %s", combatant_1.meal, combatant_2.meal)
+        Returns:
+            str: The name of the winning boxer.
 
-        # Get battle scores for both combatants
-        score_1 = self.get_battle_score(combatant_1)
-        score_2 = self.get_battle_score(combatant_2)
+        Raises:
+            ValueError: If there are not enough boxers in the ring.
 
-        # Log the scores for both combatants
-        logger.info("Score for %s: %.3f", combatant_1.meal, score_1)
-        logger.info("Score for %s: %.3f", combatant_2.meal, score_2)
+        """
+        if len(self.ring) < 2:
+            logger.error("There must be two boxers to start a fight.")
+            raise ValueError("There must be two boxers to start a fight.")
 
-        # Compute the delta and normalize between 0 and 1
-        delta = abs(score_1 - score_2) / 100
+        boxer_1, boxer_2 = self.get_boxers()
 
-        # Log the delta and normalized delta
-        logger.info("Delta between scores: %.3f", delta)
+        logger.info(f"Fight started between {boxer_1.name} and {boxer_2.name}")
 
-        # Get random number from random.org
+        skill_1 = self.get_fighting_skill(boxer_1)
+        skill_2 = self.get_fighting_skill(boxer_2)
+
+        logger.debug(f"Fighting skill for {boxer_1.name}: {skill_1:.3f}")
+        logger.debug(f"Fighting skill for {boxer_2.name}: {skill_2:.3f}")
+
+        # Compute the absolute skill difference
+        # And normalize using a logistic function for better probability scaling
+        delta = abs(skill_1 - skill_2)
+        normalized_delta = 1 / (1 + math.e ** (-delta))
+
+        logger.debug(f"Raw delta between skills: {delta:.3f}")
+        logger.debug(f"Normalized delta: {normalized_delta:.3f}")
+
         random_number = get_random()
 
-        # Log the random number
-        logger.info("Random number from random.org: %.3f", random_number)
+        logger.debug(f"Random number from random.org: {random_number:.3f}")
 
-        # Determine the winner based on the normalized delta
-        if delta > random_number:
-            winner = combatant_1
-            loser = combatant_2
+        if random_number < normalized_delta:
+            winner = boxer_1
+            loser = boxer_2
         else:
-            winner = combatant_2
-            loser = combatant_1
+            winner = boxer_2
+            loser = boxer_1
 
-        # Log the winner
-        logger.info("The winner is: %s", winner.meal)
+        logger.info(f"The winner is: {winner.name}")
 
-        # Update stats for both combatants
-        update_meal_stats(winner.id, 'win')
-        update_meal_stats(loser.id, 'loss')
+        update_boxer_stats(winner.id, 'win')
+        update_boxer_stats(loser.id, 'loss')
 
-        # Remove the losing combatant from combatants
-        self.combatants.remove(loser)
+        self.clear_ring()
 
-        return winner.meal
+        return winner.name
 
-    def clear_combatants(self):
-        logger.info("Clearing the combatants list.")
-        self.combatants.clear()
+    def clear_ring(self):
+        """Clears the list of boxers.
 
-    def get_battle_score(self, combatant: Meal) -> float:
-        difficulty_modifier = {"HIGH": 1, "MED": 2, "LOW": 3}
+        """
+        if not self.ring:
+            logger.warning("Attempted to clear an empty ring.")
+            return
+        logger.info("Clearing the boxers from the ring.")
+        self.ring.clear()
 
-        # Log the calculation process
-        logger.info("Calculating battle score for %s: price=%.3f, cuisine=%s, difficulty=%s",
-                    combatant.meal, combatant.price, combatant.cuisine, combatant.difficulty)
 
-        # Calculate score
-        score = (combatant.price * len(combatant.cuisine)) - difficulty_modifier[combatant.difficulty]
+    def enter_ring(self, boxer: Boxer):
+        """Prepares a boxer by adding them to the ring for an upcoming fight.
 
-        # Log the calculated score
-        logger.info("Battle score for %s: %.3f", combatant.meal, score)
+        Args:
+            boxer (Boxer): A Boxer dataclass instance representing the combatant.
 
-        return score
+        Raises:
+            TypeError: If the input is not an instance of `Boxer`.
+            ValueError: If the ring already has two boxers (fight is full).
 
-    def get_combatants(self) -> List[Meal]:
-        logger.info("Retrieving current list of combatants.")
-        return self.combatants
+        """
+        if not isinstance(boxer, Boxer):
+            logger.error(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
+            raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
 
-    def prep_combatant(self, combatant_data: Meal):
-        if len(self.combatants) >= 2:
-            logger.error("Attempted to add combatant '%s' but combatants list is full", combatant_data.meal)
-            raise ValueError("Combatant list is full, cannot add more combatants.")
+        if len(self.ring) >= 2:
+            logger.error(f"Attempted to add boxer '{boxer.name}' but the ring is full")
+            raise ValueError("Ring is full, cannot add more boxers.")
 
-        # Log the addition of the combatant
-        logger.info("Adding combatant '%s' to combatants list", combatant_data.meal)
+        logger.info(f"Adding boxer '{boxer.name}' to the ring")
 
-        self.combatants.append(combatant_data)
+        self.ring.append(boxer)
 
-        # Log the current state of combatants
-        logger.info("Current combatants list: %s", [combatant.meal for combatant in self.combatants])
+        logger.info(f"Current boxers in the ring: {[b.name for b in self.ring]}")
+
+
+    def get_boxers(self) -> List[Boxer]:
+        """Retrieves the current list of boxers in the ring.
+
+        Returns:
+            List[Boxer]: A list of Boxer dataclass instances representing the boxers in the ring.
+
+        """
+        if not self.ring:
+            logger.warning("Retrieving boxers from an empty ring.")
+        else:
+            logger.info(f"Retrieving {len(self.ring)} boxers from the ring.")
+
+        return self.ring
+
+    def get_fighting_skill(self, boxer: Boxer) -> float:
+        """Calculates the fighting skill for a boxer based on arbitrary rules.
+
+        The fighting skill is computed as:
+        - Multiply the boxer's weight by the number of letters in their name.
+        - Subtract an age modifier (if age < 25, subtract 1; if age > 35, subtract 2).
+        - Add a reach bonus (reach / 10).
+
+        Args:
+            boxer (Boxer): A Boxer dataclass representing the combatant.
+
+        Returns:
+            float: The calculated fighting skill.
+
+        """
+        logger.info(f"Calculating fighting skill for {boxer.name}: weight={boxer.weight}, age={boxer.age}, reach={boxer.reach}")
+
+        # Arbitrary calculations
+        age_modifier = -1 if boxer.age < 25 else (-2 if boxer.age > 35 else 0)
+        skill = (boxer.weight * len(boxer.name)) + (boxer.reach / 10) + age_modifier
+
+        logger.info(f"Fighting skill for {boxer.name}: {skill:.3f}")
+        return skill
