@@ -30,8 +30,8 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
 
     Args: 
         - name (str): The boxer's name.
-        - weight (int): The boxer's weight in lbs.
-        - height (int): The boxer's height in inches. 
+        - weight (int): The boxer's weight.
+        - height (int): The boxer's height. 
         - reach (float): The boxer's reach in inches.
         - age (int): The boxer's age.
 
@@ -99,6 +99,18 @@ def delete_boxer(boxer_id: int) -> None:
 
 
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
+    """Retrieves a leaderboard of boxers from the database, sorted by wins or win percentage.
+
+    Args:
+        sort_by (str): Determines the sorting criterion of the leaderboard, either 'wins' or 'win_pct'.
+
+    Returns:
+        List[Dict[str, Any]]: A list of dictionaries, each representing a boxer with their stats and calculated win percentage.
+
+    Raises:
+        ValueError: If the 'sort_by' parameter is neither 'wins' nor 'win_pct'.
+        sqlite3.Error: If any database error occurs.
+    """
     query = """
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
@@ -142,6 +154,19 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
 
 def get_boxer_by_id(boxer_id: int) -> Boxer:
+    """ Retrieves a boxer from the table by its associated ID. 
+
+    Args:
+        boxer_id (int) : The id of the boxer to be retrieved
+
+    Returns:
+        Boxer: The boxer object associated with the inputted id. 
+
+    Raises:
+        ValueError: If the song is not found.
+        sqlite3.Error: If any database error occurs.
+
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -166,6 +191,18 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
+    """Retrieves a boxer from the table by its associated name. 
+
+    Args:
+        boxer_name (str) : The name of the boxer to be retrieved 
+
+    Returns:
+        Boxer: The boxer object associated with the inputted name. 
+
+    Raises:
+        ValueError: If the boxer is not found.
+        sqlite3.Error: If any database error occurs.
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -190,6 +227,18 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
 
 
 def get_weight_class(weight: int) -> str:
+    """Returns the weight class associated with a weight
+
+    Args:
+        weight (int): a weight value
+
+    Returns:
+        str: The weight class the inputted weight falls into 
+
+    Raises:
+        ValueError: If the weight inputted is less than 125
+
+    """
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
     elif weight >= 166:
@@ -205,6 +254,18 @@ def get_weight_class(weight: int) -> str:
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
+    """Updates the statistics of a boxer based on the fight's result by boxer ID.
+
+    Args:
+        boxer_id (int): The ID of the boxer whose stats are to be updated.
+        result (str): The fight result, which should be either 'win' or 'loss'.
+
+    Raises:
+        ValueError: If the result is neither 'win' nor 'loss', or if no boxer with the specified ID exists.
+        sqlite3.Error: If any database error occurs during the update.
+
+    """
+
     if result not in {'win', 'loss'}:
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
 
