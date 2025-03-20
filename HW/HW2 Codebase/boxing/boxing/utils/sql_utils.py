@@ -22,15 +22,18 @@ def check_database_connection():
         
     """
     try:
+        logger.info("Checking database connection...")
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         # Execute a simple query to verify the connection is active
         cursor.execute("SELECT 1;")
         conn.close()
+        logger.info("Database connection verified successfully.")
 
     except sqlite3.Error as e:
         error_message = f"Database connection error: {e}"
+        logger.error(error_message)
         raise Exception(error_message) from e
 
 def check_table_exists(tablename: str):
@@ -43,7 +46,7 @@ def check_table_exists(tablename: str):
         Exception: If the table does not exist or if there's an error during the database query.
     """
     try:
-
+        logger.info(f"Checking if table '{tablename}' exists in {DB_PATH}...")
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
@@ -55,10 +58,14 @@ def check_table_exists(tablename: str):
 
         if result is None:
             error_message = f"Table '{tablename}' does not exist."
+            logger.error(error_message)
             raise Exception(error_message)
+        
+        logger.info(f"Table '{tablename}' exists.")
 
     except sqlite3.Error as e:
         error_message = f"Table check error for '{tablename}': {e}"
+        logger.error(error_message)
         raise Exception(error_message) from e
 
 @contextmanager
@@ -73,10 +80,13 @@ def get_db_connection():
     """
     conn = None
     try:
+        logger.info(f"Opening database connection to {DB_PATH}...")
         conn = sqlite3.connect(DB_PATH)
         yield conn
     except sqlite3.Error as e:
+        logger.error(f"Database connection error: {e}")
         raise e
     finally:
         if conn:
             conn.close()
+            logger.info("Database connection closed.")
