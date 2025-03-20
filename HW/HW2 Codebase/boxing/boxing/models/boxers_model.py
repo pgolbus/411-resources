@@ -26,7 +26,20 @@ class Boxer:
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
+    """ Creates new boxer in boxer table
 
+    Args: 
+        - name (str): The boxer's name.
+        - weight (int): The boxer's weight in lbs.
+        - height (int): The boxer's height in inches. 
+        - reach (float): The boxer's reach in inches.
+        - age (int): The boxer's age.
+
+    Raises:
+        ValueError: If any field is invalid or the boxer already exists.
+        sqlite3.IntegrityError: If a boxer with the same name already exists.
+        sqlite3.Error: For any other database errors.
+    """
     if weight < 125:
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
     if height <= 0:
@@ -60,6 +73,16 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
 
 
 def delete_boxer(boxer_id: int) -> None:
+    """ Permanently deletes a boxer from the boxers table. 
+
+    Args:
+        boxer_id (int): The id of the boxer to be deleted
+
+    Raises:
+        ValueError: If the boxer with the given ID does not exist.
+        sqlite3.Error: If any database error occurs.
+
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
