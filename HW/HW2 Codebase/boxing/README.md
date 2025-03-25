@@ -65,11 +65,12 @@ Authored by Davin Martin & Minjie (Zoe) Zuo
 `docker build -t boxing-app .`
 
 ### run the container 
-`docker run -d `
-  `--name boxing-container `
-  `-v "${PWD}\data:/app/data" ` ##Take the ./data folder on my host and make it accessible at /app/data inside the container.
-  `-p 5000:5000 `
-  `boxing-app`
+docker run -d \
+  --name boxing-container \
+  -v "${PWD}/data:/app/data" \  # Take the ./data folder on my host and make it accessible at /app/data inside the container.
+  -p 5000:5000 \
+  boxing-app
+
 
 ### access
 http://127.0.0.1:5000/api/health
@@ -81,10 +82,12 @@ http://127.0.0.1:5000/api/health
 }
 
 ### useful commands during this part
-`docker ps`        # List running containers
-`docker logs boxing-container`      #View logs
-`docker exec -it boxing-container sh `  #Open shell in container
-`docker stop boxing-container`   #Stop the container
-`docker rm boxing-container`        # Remove the container
+docker ps                         # List running containers
 
+docker logs boxing-container      # View logs
 
+docker exec -it boxing-container sh   # Open shell in container
+
+docker stop boxing-container      # Stop the container
+
+docker rm boxing-container        # Remove the container
