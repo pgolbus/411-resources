@@ -57,3 +57,34 @@ Authored by Davin Martin & Minjie (Zoe) Zuo
 
 ### Last 20 Logs
 `docker logs -n 20 <container_name>`
+
+## Running the Boxing App with Docker
+
+### Build the Docker Image
+```bash
+docker build -t boxing-app .
+
+### run the container 
+docker run -d `
+  --name boxing-container `
+  -v "${PWD}\data:/app/data" ` ##Take the ./data folder on my host and make it accessible at /app/data inside the container.
+  -p 5000:5000 `
+  boxing-app
+
+###access
+http://127.0.0.1:5000/api/health
+
+###verify
+{
+  "message": "Service is running",
+  "status": "success"
+}
+
+###useful commands during this part
+docker ps        # List running containers
+docker logs boxing-container      #View logs
+docker exec -it boxing-container sh   #Open shell in container
+docker stop boxing-container   #Stop the container
+docker rm boxing-container        # Remove the container
+
+
