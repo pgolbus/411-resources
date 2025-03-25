@@ -1,0 +1,1 @@
+#!/bin/bash# Load the environment variables from .env fileif [ -f .env ]; then    export $(cat .env | xargs)fi# Check if CREATE_DB is true, and run the database creation script if soif [ "$CREATE_DB" = "true" ]; then    echo "Creating the database..."    /app/sql/create_db.shelse    echo "Skipping database creation."fi# Start the Python applicationexec python app.py
