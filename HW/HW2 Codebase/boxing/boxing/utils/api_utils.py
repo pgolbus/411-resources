@@ -23,6 +23,9 @@ def get_random() -> float:
         ValueError: If the response from random.org cannot be converted to a float or is an invalid response. 
         RuntimeError: If the request to random.org times out after 5 sec or encounters other issues.
     """
+    # Construct the full URL dynamically
+    url = f"{RANDOM_ORG_URL}&max={max}"
+
     try:
         logger.info(f"Fetching random number from {url}")
         
