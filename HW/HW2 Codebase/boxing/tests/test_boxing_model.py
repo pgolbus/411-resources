@@ -52,6 +52,22 @@ def mock_cursor(mocker):
 ######################################################
 
 # test create boxer
+def test_create_boxer(mock_cursor):
+    """Test creating a new boxer in the catalog.
+
+    """
+    create_boxer(name = "Boxer Name", weight = 190, height = 175, reach = 180.0, age = 23 )
+    expected_query = normalize_whitespace("""
+        INSERT INTO boxers (name, weight, height, reach, age)
+        VALUES (?, ?, ?, ?, ?)
+    """)
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+    assert actual_query == expected_query, "The SQL query did not match the expected structure."
+
+    # Extract the arguments used in the SQL call (second element of call_args)
+    actual_arguments = mock_cursor.execute.call_args[0][1]
+    expected_arguments = ("Boxer Name", 190, 175, 180.0, 23)
+    assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
 #test create duplicate boxer
 
