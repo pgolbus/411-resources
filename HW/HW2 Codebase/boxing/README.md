@@ -36,3 +36,10 @@ http://127.0.0.1:5000/api/health
 | Open shell in container | `docker exec -it boxing-container sh` |
 | Stop the container      | `docker stop boxing-container`        |
 | Remove the container    | `docker rm boxing-container`          |
+
+
+## Boxing module features
+- Add, delete, and get boxers
+- Enter two boxers into the ring
+- Simulate a fight and determine a winner between two boxers
+- Track wins, losses, and leaderboard
