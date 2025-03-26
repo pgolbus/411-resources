@@ -40,7 +40,7 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
         sqlite3.IntegrityError: If a boxer with the same name already exists.
         sqlite3.Error: For any other database errors.
     """
-    loger.info("Received request to add new boxer")
+    logger.info("Received request to add new boxer")
     
     if weight < 125:
         logger.error(f"Invalid weight: {weight}. Must be at least 125.")
