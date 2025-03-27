@@ -34,12 +34,15 @@ class RingModel:
         """
 
         if len(self.ring) < 2:
+            logger.error("fight failed: not enough boxers")
             raise ValueError("There must be two boxers to start a fight.")
 
         boxer_1, boxer_2 = self.get_boxers()
+        logger.info(f"Fight starting now: {boxer_1.name} vs {boxer_2.name}")
 
         skill_1 = self.get_fighting_skill(boxer_1)
         skill_2 = self.get_fighting_skill(boxer_2)
+        logger.info(f"{boxer_1.name} skill: {skill_1}, {boxer_2.name} skill: {skill_2}")
 
         # Compute the absolute skill difference
         # And normalize using a logistic function for better probability scaling
@@ -60,6 +63,7 @@ class RingModel:
 
         self.clear_ring()
 
+        logger.info(f"{winner.name} won")
         return winner.name
 
     def clear_ring(self):
@@ -68,7 +72,10 @@ class RingModel:
         Resets the ring so a new match can be set up.
         """
         if not self.ring:
+            logger.info("called clear_ring, but the ring was already empty")
             return
+
+        logger.info("Clearing ring: removing all boxers")
         self.ring.clear()
 
     def enter_ring(self, boxer: Boxer):
@@ -83,11 +90,14 @@ class RingModel:
             ValueError: If the ring is full (already has two boxers).
         """
         if not isinstance(boxer, Boxer):
+            logger.error(f"enter_ring failed: Expected Boxer, got {type(boxer).__name__}")
             raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
 
         if len(self.ring) >= 2:
+            logger.warning("enter_ring failed: Ring is already full")
             raise ValueError("Ring is full, cannot add more boxers.")
 
+        logger.info(f"{boxer.name} entered the ring")
         self.ring.append(boxer)
 
     def get_boxers(self) -> List[Boxer]:
@@ -123,4 +133,5 @@ class RingModel:
         age_modifier = -1 if boxer.age < 25 else (-2 if boxer.age > 35 else 0)
         skill = (boxer.weight * len(boxer.name)) + (boxer.reach / 10) + age_modifier
 
+        logger.debug(f"Calculated skill for {boxer.name}: {skill}")
         return skill
