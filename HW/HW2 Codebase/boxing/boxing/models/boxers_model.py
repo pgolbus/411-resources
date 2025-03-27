@@ -47,16 +47,16 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
     logger.info(f"Received request to create boxer: {name} - Weight: {weight}, Height: {height}, Reach: {reach}, Age: {age}")
 
     if weight < 125:
-        logger.warning("Invalid weight provided.")
+        logger.warning(f"Invalid weight: {weight}. Must be at least 125.")
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
     if height <= 0:
-        logger.warning("Invalid height provided.")
+        logger.warning(f"Invalid height: {height}. Must be greater than 0.")
         raise ValueError(f"Invalid height: {height}. Must be greater than 0.")
     if reach <= 0:
-        logger.warning("Invalid reach provided.")
+        logger.warning(f"Invalid reach: {reach}. Must be greater than 0.")
         raise ValueError(f"Invalid reach: {reach}. Must be greater than 0.")
     if not (18 <= age <= 40):
-        logger.warning("Invalid age provided.")
+        logger.warning(f"Invalid age: {age}. Must be between 18 and 40.")
         raise ValueError(f"Invalid age: {age}. Must be between 18 and 40.")
 
     try:
@@ -156,6 +156,10 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
             cursor = conn.cursor()
             cursor.execute(query)
             rows = cursor.fetchall()
+
+        if not rows:
+            logger.warning("The boxers database is empty.")
+            return []
 
         leaderboard = []
         for row in rows:
