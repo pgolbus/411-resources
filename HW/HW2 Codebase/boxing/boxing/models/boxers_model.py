@@ -125,7 +125,7 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
     Args:
         sort_by (str, optional): If "wins", retrieve boxers in order of greatest number of wins.
-                                 If "wins_pct", retrieve boxers in order of greatest win percentage.
+                                 If "win_pct", retrieve boxers in order of greatest win percentage.
 
     Returns:
         list[dict]: A list of dictionaries representing all boxers with more than one fight.
@@ -163,6 +163,8 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
         leaderboard = []
         for row in rows:
+            logger.info(f"Received row: {row}")
+
             boxer = {
                 'id': row[0],
                 'name': row[1],

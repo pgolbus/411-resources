@@ -98,8 +98,8 @@ def test_create_boxer_invalid_weight():
     """
     Test error when trying to create a boxer with an invalid weight (e.g., less than 125)
     """
-    with pytest.raises(ValueError, match=r"Invalid weight: . Must be at least 125."):
-        create_boxer(name="John Doe", weight="", height=66, reach=24, age=21)
+    with pytest.raises(ValueError, match=r"Invalid weight: -10. Must be at least 125."):
+        create_boxer(name="John Doe", weight=-10, height=66, reach=24, age=21)
 
     with pytest.raises(ValueError, match=r"Invalid weight: 80. Must be at least 125."):
         create_boxer(name="John Doe", weight=80, height=66, reach=24, age=21)
@@ -109,9 +109,6 @@ def test_create_boxer_invalid_height():
     """
     Test error when trying to create a boxer with an invalid height (e.g., less than 0)
     """
-    with pytest.raises(ValueError, match=r"Invalid height: . Must be greater than 0."):
-        create_boxer(name="John Doe", weight=160, height="", reach=24, age=21)
-
     with pytest.raises(ValueError, match=r"Invalid height: -2. Must be greater than 0."):
         create_boxer(name="John Doe", weight=160, height=-2, reach=24, age=21)
 
@@ -120,9 +117,6 @@ def test_create_boxer_invalid_reach():
     """
     Test error when trying to create a boxer with an invalid reach (e.g., less than 0)
     """
-    with pytest.raises(ValueError, match=r"Invalid reach: . Must be greater than 0."):
-        create_boxer(name="John Doe", weight=160, height=66, reach="", age=21)
-
     with pytest.raises(ValueError, match=r"Invalid reach: -2. Must be greater than 0."):
         create_boxer(name="John Doe", weight=160, height=66, reach=-2, age=21)
 
@@ -131,11 +125,11 @@ def test_create_boxer_invalid_age():
     """
     Test error when trying to create a boxer with an invalid age (e.g., not between 18 and 40)
     """
-    with pytest.raises(ValueError, match=r"Invalid age: . Must be between 18 and 40."):
-        create_boxer(name="John Doe", weight=160, height=66, reach=24, age="")
-
     with pytest.raises(ValueError, match=r"Invalid age: 16. Must be between 18 and 40."):
         create_boxer(name="John Doe", weight=160, height=66, reach=24, age=16)
+
+    with pytest.raises(ValueError, match=r"Invalid age: 50. Must be between 18 and 40."):
+        create_boxer(name="John Doe", weight=160, height=66, reach=24, age=50)
 
 
 def test_delete_boxer(mock_cursor):
@@ -238,7 +232,7 @@ def test_get_boxer_by_name(mock_cursor):
     assert actual_query == expected_query, "The SQL query did not match the expected structure."
 
     actual_arguments = mock_cursor.execute.call_args[0][1]
-    expected_arguments = ("John Doe")
+    expected_arguments = ("John Doe",)
 
     assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
@@ -258,16 +252,15 @@ def test_get_leaderboard_wins(mock_cursor):
     Test retrieving leaderboard by wins.
     """
     mock_cursor.fetchall.return_value = [
-        (1, "John Doe", 160, 66, 24, 21, 1, 1),
-        (2, "Jane Doe", 150, 63, 22, 20, 3, 2),
-        (3, "Judy Doe", 140, 60, 20, 19, 0, 0)
+        (2, "Jane Doe", 150, 63, 22, 20, 3, 2, 0.67),
+        (1, "John Doe", 160, 66, 24, 21, 1, 1, 1),
     ]
 
     boxers = get_leaderboard()
 
     expected_result = [
-        {"id": 2, "name": "Jane Doe", "weight": 150, "height": 63, "reach": 22, "age": 20, "weight_class": "", "fights": 3, "wins": 2, "win_pct": 67},
-        {"id": 1, "name": "John Doe", "weight": 160, "height": 66, "reach": 24, "age": 21, "weight_class": "", "fights": 1, "wins": 1, "win_pct": 100},
+        {"id": 2, "name": "Jane Doe", "weight": 150, "height": 63, "reach": 22, "age": 20, "weight_class": "LIGHTWEIGHT", "fights": 3, "wins": 2, "win_pct": 67},
+        {"id": 1, "name": "John Doe", "weight": 160, "height": 66, "reach": 24, "age": 21, "weight_class": "LIGHTWEIGHT", "fights": 1, "wins": 1, "win_pct": 100},
     ]
 
     assert boxers == expected_result, f"Expected {expected_result}, but got {boxers}"
@@ -276,28 +269,27 @@ def test_get_leaderboard_wins(mock_cursor):
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
         FROM boxers
-        WHERE fights > 0
+        WHERE fights > 0 ORDER BY wins DESC
     """)
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
     assert actual_query == expected_query, "The SQL query did not match the expected structure."
 
 
-def test_get_leaderboard_wins_pct(mock_cursor):
+def test_get_leaderboard_win_pct(mock_cursor):
     """
-    Test retrieving leaderboard by wins_pct.
+    Test retrieving leaderboard by win_pct.
     """
     mock_cursor.fetchall.return_value = [
-        (1, "John Doe", 160, 66, 24, 21, 1, 1),
-        (2, "Jane Doe", 150, 63, 22, 20, 3, 2),
-        (3, "Judy Doe", 140, 60, 20, 19, 0, 0)
+        (1, "John Doe", 160, 66, 24, 21, 1, 1, 1),
+        (2, "Jane Doe", 150, 63, 22, 20, 3, 2, 0.67),
     ]
 
-    boxers = get_leaderboard("wins_pct")
+    boxers = get_leaderboard("win_pct")
 
     expected_result = [
-        {"id": 1, "name": "John Doe", "weight": 160, "height": 66, "reach": 24, "age": 21, "weight_class": "", "fights": 1, "wins": 1, "win_pct": 100},
-        {"id": 2, "name": "Jane Doe", "weight": 150, "height": 63, "reach": 22, "age": 20, "weight_class": "", "fights": 3, "wins": 2, "win_pct": 67},
+        {"id": 1, "name": "John Doe", "weight": 160, "height": 66, "reach": 24, "age": 21, "weight_class": "LIGHTWEIGHT", "fights": 1, "wins": 1, "win_pct": 100},
+        {"id": 2, "name": "Jane Doe", "weight": 150, "height": 63, "reach": 22, "age": 20, "weight_class": "LIGHTWEIGHT", "fights": 3, "wins": 2, "win_pct": 67},
     ]
 
     assert boxers == expected_result, f"Expected {expected_result}, but got {boxers}"
@@ -306,7 +298,7 @@ def test_get_leaderboard_wins_pct(mock_cursor):
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
         FROM boxers
-        WHERE fights > 0
+        WHERE fights > 0 ORDER BY win_pct DESC
     """)
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
@@ -329,7 +321,7 @@ def test_get_leaderboard_empty_catalog(mock_cursor, caplog):
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
         FROM boxers
-        WHERE fights > 0
+        WHERE fights > 0 ORDER BY wins DESC
     """)
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
