@@ -1,29 +1,33 @@
 from dataclasses import asdict
 
 import pytest
+from boxing.models.boxers_model import (
+    Boxer,
+    create_boxer,
+    delete_boxer,
+    get_boxer_by_id,
+    get_boxer_by_name,
+    get_leaderboard,
+    get_weight_class,
+    update_boxer_stats
+)
+from boxing.models.ring_model import RingModel
 
-from boxing.models.boxers_model import BoxersModel
-from boxing.models.boxer import Boxer
-
-
-@pytest.fixture()
-def boxers_model():
-    """Fixture to provide a new instance of BoxersModel for each test."""
-    return BoxersModel()
-
+#fixtures for the boxer samples
 @pytest.fixture
-def mock_update_stats(mocker):
-    """Mock the update_stats function for testing purposes."""
-    return mocker.patch("boxing.models.boxers_model.update_stats")
+def mock_db_connection(mocker):
+    """Mock the database connection for testing."""
+    return mocker.patch("boxing.models.boxers_model.get_db_connection")
 
-"""Fixtures providing sample boxers for the tests."""
 @pytest.fixture
 def sample_boxer1():
-    return Boxer(1, 'Wesley', 175, 71, 76.0, 32, 'MIDDLEWEIGHT')
+    """Fixture providing a sample boxer for testing."""
+    return Boxer(1, 'Wesley', 175, 71, 76.0, 32)
 
 @pytest.fixture
 def sample_boxer2():
-    return Boxer(2, 'Michelle', 135, 58, 70.0, 30, 'LIGHTWEIGHT')
+    """Fixture providing another sample boxer for testing."""
+    return Boxer(2, 'Michelle', 135, 58, 70.0, 30)
 
 
 ##################################################
@@ -31,82 +35,69 @@ def sample_boxer2():
 ##################################################
 
 
-def test_create_boxer(boxers_model, mocker):
-    """Test creating a boxer.
+def test_create_boxer(mock_db_connection, mocker):
+    """Test creating a boxer."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = None  # Boxer doesn't exist yet
     
-    This test verifies that a boxer can be successfully created
-    and added to the database.
-    """
-    # Mock the database insert function
-    mock_insert = mocker.patch("boxing.models.boxers_model.insert_boxer")
-    mock_insert.return_value = 1  # Return boxer ID 1
+    # Call the function
+    create_boxer("Wesley", 175, 71, 76.0, 32)
     
-    boxer_id = boxers_model.create_boxer("Wesley", 175, 71, 76.0, 32)
-    
-    assert boxer_id == 1
-    mock_insert.assert_called_once()
-    # Verify the correct parameters were passed to insert_boxer
-    args = mock_insert.call_args[0]
-    assert args[0] == "Wesley"
-    assert args[1] == 175
-    assert args[2] == 71
-    assert args[3] == 76.0
-    assert args[4] == 32
+    # Verify database operations
+    mock_cursor.execute.assert_any_call(
+        "SELECT 1 FROM boxers WHERE name = ?", 
+        ("Wesley",)
+    )
+    mock_cursor.execute.assert_any_call(
+        "INSERT INTO boxers (name, weight, height, reach, age) VALUES (?, ?, ?, ?, ?)",
+        ("Wesley", 175, 71, 76.0, 32)
+    )
 
 
-def test_create_boxer_with_invalid_data(boxers_model):
-    """Test creating a boxer with invalid data.
+def test_create_boxer_with_invalid_data():
+    """Test creating a boxer with invalid data."""
+    # Test invalid weight
+    with pytest.raises(ValueError, match="Invalid weight: 120. Must be at least 125."):
+        create_boxer("Wesley", 120, 71, 76.0, 32)
     
-    This test verifies that attempting to create a boxer with invalid
-    data raises the appropriate exceptions.
-    """
-    # Test negative weight
-    with pytest.raises(ValueError, match="Weight must be positive"):
-        boxers_model.create_boxer("Wesley", -10, 71, 76.0, 32)
+    # Test invalid height
+    with pytest.raises(ValueError, match="Invalid height: 0. Must be greater than 0."):
+        create_boxer("Wesley", 175, 0, 76.0, 32)
     
-    # Test negative height
-    with pytest.raises(ValueError, match="Height must be positive"):
-        boxers_model.create_boxer("Wesley", 175, -5, 76.0, 32)
-    
-    # Test negative reach
-    with pytest.raises(ValueError, match="Reach must be positive"):
-        boxers_model.create_boxer("Wesley", 175, 71, -2.0, 32)
-    
-    # Test negative age
-    with pytest.raises(ValueError, match="Age must be positive"):
-        boxers_model.create_boxer("Wesley", 175, 71, 76.0, -1)
+    # Test invalid age
+    with pytest.raises(ValueError, match="Invalid age: 15. Must be between 18 and 40."):
+        create_boxer("Wesley", 175, 71, 76.0, 15)
 
 
-def test_delete_boxer(boxers_model, mocker):
-    """Test deleting a boxer.
+def test_delete_boxer(mock_db_connection, mocker):
+    """Test deleting a boxer."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (1,)  # Boxer exists
     
-    This test verifies that a boxer can be successfully deleted
-    from the database.
-    """
-    # Mock the database delete function
-    mock_delete = mocker.patch("boxing.models.boxers_model.delete_boxer_by_id")
+    # Call the function
+    delete_boxer(1)
     
-    # Mock get_boxer_by_id to return a boxer
-    mock_get = mocker.patch("boxing.models.boxers_model.get_boxer_by_id")
-    mock_get.return_value = {"id": 1, "name": "Wesley"}
-    
-    boxers_model.delete_boxer(1)
-    
-    mock_delete.assert_called_once_with(1)
+    # Verify database operations
+    mock_cursor.execute.assert_any_call("SELECT id FROM boxers WHERE id = ?", (1,))
+    mock_cursor.execute.assert_any_call("DELETE FROM boxers WHERE id = ?", (1,))
 
 
-def test_delete_nonexistent_boxer(boxers_model, mocker):
-    """Test deleting a boxer that doesn't exist.
+def test_delete_nonexistent_boxer(mock_db_connection, mocker):
+    """Test deleting a boxer that doesn't exist."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = None  # Boxer doesn't exist
     
-    This test verifies that attempting to delete a boxer that
-    doesn't exist raises the appropriate exception.
-    """
-    # Mock get_boxer_by_id to return None (boxer not found)
-    mock_get = mocker.patch("boxing.models.boxers_model.get_boxer_by_id")
-    mock_get.return_value = None
-    
-    with pytest.raises(ValueError, match="Boxer with ID 1 not found"):
-        boxers_model.delete_boxer(1)
+    with pytest.raises(ValueError, match="Boxer with ID 999 not found."):
+        delete_boxer(999)
 
 
 ##################################################
@@ -114,124 +105,107 @@ def test_delete_nonexistent_boxer(boxers_model, mocker):
 ##################################################
 
 
-def test_get_boxer_by_id(boxers_model, mocker, sample_boxer1):
-    """Test retrieving a boxer by ID.
+def test_get_boxer_by_id(mock_db_connection, mocker):
+    """Test retrieving a boxer by ID."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (1, 'Wesley', 175, 71, 76.0, 32)
     
-    This test verifies that a boxer can be successfully retrieved
-    from the database by ID.
-    """
-    # Mock the database query function
-    mock_get = mocker.patch("boxing.models.boxers_model.get_boxer_by_id_from_db")
-    mock_get.return_value = asdict(sample_boxer1)
+    # Call the function
+    boxer = get_boxer_by_id(1)
     
-    boxer = boxers_model.get_boxer_by_id(1)
+    # Verify result
+    assert boxer.id == 1
+    assert boxer.name == 'Wesley'
+    assert boxer.weight == 175
+    assert boxer.height == 71
+    assert boxer.reach == 76.0
+    assert boxer.age == 32
+    assert boxer.weight_class == 'MIDDLEWEIGHT'
+
+def test_get_boxer_by_name(mock_db_connection, mocker):
+    """Test retrieving a boxer by name."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (1, 'Wesley', 175, 71, 76.0, 32)
     
-    assert boxer["id"] == 1
-    assert boxer["name"] == "Wesley"
-    assert boxer["weight"] == 175
-    assert boxer["height"] == 71
-    assert boxer["reach"] == 76.0
-    assert boxer["age"] == 32
-    assert boxer["weight_class"] == "MIDDLEWEIGHT"
-    mock_get.assert_called_once_with(1)
+    # Call the function
+    boxer = get_boxer_by_name('Wesley')
+    
+    # Verify result
+    assert boxer.id == 1
+    assert boxer.name == 'Wesley'
 
 
-def test_get_boxer_by_name(boxers_model, mocker, sample_boxer1):
-    """Test retrieving a boxer by name.
+def test_get_nonexistent_boxer(mock_db_connection, mocker):
+    """Test retrieving a boxer that doesn't exist."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = None  # Boxer doesn't exist
     
-    This test verifies that a boxer can be successfully retrieved
-    from the database by name.
-    """
-    # Mock the database query function
-    mock_get = mocker.patch("boxing.models.boxers_model.get_boxer_by_name_from_db")
-    mock_get.return_value = asdict(sample_boxer1)
-    
-    boxer = boxers_model.get_boxer_by_name("Wesley")
-    
-    assert boxer["id"] == 1
-    assert boxer["name"] == "Wesley"
-    mock_get.assert_called_once_with("Wesley")
-
-
-def test_get_nonexistent_boxer(boxers_model, mocker):
-    """Test retrieving a boxer that doesn't exist.
-    
-    This test verifies that attempting to retrieve a boxer that
-    doesn't exist returns None.
-    """
-    # Mock the database query function to return None
-    mock_get = mocker.patch("boxing.models.boxers_model.get_boxer_by_id_from_db")
-    mock_get.return_value = None
-    
-    boxer = boxers_model.get_boxer_by_id(999)
-    
-    assert boxer is None
-    mock_get.assert_called_once_with(999)
-
+    with pytest.raises(ValueError, match="Boxer with ID 999 not found."):
+        get_boxer_by_id(999)
 
 ##################################################
 # Leaderboard Test Cases
 ##################################################
 
 
-def test_get_leaderboard_by_wins(boxers_model, mocker):
-    """Test retrieving the leaderboard sorted by wins.
+def test_get_leaderboard_by_wins(mock_db_connection, mocker):
+    """Test retrieving the leaderboard sorted by wins."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
     
-    This test verifies that the leaderboard can be successfully
-    retrieved and sorted by the number of wins.
-    """
-    # Sample leaderboard data
-    leaderboard_data = [
-        {"name": "Wesley", "wins": 10, "losses": 2, "win_pct": 0.83},
-        {"name": "Michelle", "wins": 5, "losses": 1, "win_pct": 0.83}
+    # Sample data for the leaderboard
+    mock_cursor.fetchall.return_value = [
+        (1, 'Wesley', 175, 71, 76.0, 32, 12, 10, 0.833),
+        (2, 'Michelle', 135, 58, 70.0, 30, 6, 5, 0.833)
     ]
     
-    # Mock the database query function
-    mock_get = mocker.patch("boxing.models.boxers_model.get_leaderboard_from_db")
-    mock_get.return_value = leaderboard_data
+    # Call the function
+    leaderboard = get_leaderboard("wins")
     
-    leaderboard = boxers_model.get_leaderboard("wins")
-    
+    # Verify result
     assert len(leaderboard) == 2
-    assert leaderboard[0]["name"] == "Wesley"
-    assert leaderboard[0]["wins"] == 10
-    assert leaderboard[1]["name"] == "Michelle"
-    mock_get.assert_called_once_with("wins")
+    assert leaderboard[0]['name'] == 'Wesley'
+    assert leaderboard[0]['wins'] == 10
+    assert leaderboard[1]['name'] == 'Michelle'
+    assert leaderboard[1]['wins'] == 5
 
 
-def test_get_leaderboard_by_win_pct(boxers_model, mocker):
-    """Test retrieving the leaderboard sorted by win percentage.
+def test_get_leaderboard_by_win_pct(mock_db_connection, mocker):
+    """Test retrieving the leaderboard sorted by win percentage."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
     
-    This test verifies that the leaderboard can be successfully
-    retrieved and sorted by win percentage.
-    """
-    # Sample leaderboard data - Michelle first since equal win_pct but fewer fights
-    leaderboard_data = [
-        {"name": "Michelle", "wins": 5, "losses": 1, "win_pct": 0.83},
-        {"name": "Wesley", "wins": 10, "losses": 2, "win_pct": 0.83}
+    # Sample data for the leaderboard
+    mock_cursor.fetchall.return_value = [
+        (1, 'Wesley', 175, 71, 76.0, 32, 12, 10, 0.833),
+        (2, 'Michelle', 135, 58, 70.0, 30, 6, 5, 0.833)
     ]
     
-    # Mock the database query function
-    mock_get = mocker.patch("boxing.models.boxers_model.get_leaderboard_from_db")
-    mock_get.return_value = leaderboard_data
+    # Call the function
+    leaderboard = get_leaderboard("win_pct")
     
-    leaderboard = boxers_model.get_leaderboard("win_pct")
-    
+    # Verify result
     assert len(leaderboard) == 2
-    assert leaderboard[0]["name"] == "Wesley"
-    assert leaderboard[0]["win_pct"] == 0.83
-    assert leaderboard[1]["name"] == "Michelle"
-    mock_get.assert_called_once_with("win_pct")
 
 
-def test_get_leaderboard_invalid_sort(boxers_model):
-    """Test retrieving the leaderboard with an invalid sort parameter.
-    
-    This test verifies that attempting to retrieve the leaderboard with
-    an invalid sort parameter raises the appropriate exception.
-    """
-    with pytest.raises(ValueError, match="Invalid sort parameter"):
-        boxers_model.get_leaderboard("invalid_sort")
+def test_get_leaderboard_invalid_sort():
+    """Test retrieving the leaderboard with an invalid sort parameter."""
+    with pytest.raises(ValueError, match="Invalid sort_by parameter: invalid"):
+        get_leaderboard("invalid")
+
 
 
 ##################################################
@@ -239,50 +213,46 @@ def test_get_leaderboard_invalid_sort(boxers_model):
 ##################################################
 
 
-def test_determine_weight_class():
-    """Test determining a boxer's weight class.
+def test_get_weight_class():
+    """Test determining a boxer's weight class."""
+    assert get_weight_class(125) == "FEATHERWEIGHT"
+    assert get_weight_class(135) == "LIGHTWEIGHT"
+    assert get_weight_class(175) == "MIDDLEWEIGHT"
+    assert get_weight_class(203) == "HEAVYWEIGHT"
     
-    This test verifies that a boxer's weight class is correctly
-    determined based on their weight.
-    """
-    from boxing.models.boxers_model import determine_weight_class
-    
-    assert determine_weight_class(135) == "LIGHTWEIGHT"
-    assert determine_weight_class(160) == "MIDDLEWEIGHT"
-    assert determine_weight_class(175) == "LIGHT_HEAVYWEIGHT"
-    assert determine_weight_class(200) == "HEAVYWEIGHT"
-    assert determine_weight_class(112) == "FLYWEIGHT"
-    assert determine_weight_class(118) == "BANTAMWEIGHT"
-    assert determine_weight_class(126) == "FEATHERWEIGHT"
-    assert determine_weight_class(147) == "WELTERWEIGHT"
+    with pytest.raises(ValueError, match="Invalid weight: 120. Weight must be at least 125."):
+        get_weight_class(120)
 
+##################################################
+# Stats Update Tests
+##################################################
 
-def test_validate_boxer_data():
-    """Test validation of boxer data.
+def test_update_boxer_stats(mock_db_connection, mocker):
+    """Test updating boxer stats."""
+    # Set up mock connection and cursor
+    mock_cursor = mocker.MagicMock()
+    mock_conn = mock_db_connection.return_value.__enter__.return_value
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (1,)  # Boxer exists
     
-    This test verifies that boxer data is properly validated
-    before being inserted into the database.
-    """
-    from boxing.models.boxers_model import validate_boxer_data
+    # Call the function for a win
+    update_boxer_stats(1, 'win')
     
-    # Valid data
-    try:
-        validate_boxer_data("Wesley", 175, 71, 76.0, 32)
-    except ValueError:
-        pytest.fail("validate_boxer_data raised ValueError unexpectedly for valid data")
+    # Verify database operations for a win
+    mock_cursor.execute.assert_any_call(
+        "UPDATE boxers SET fights = fights + 1, wins = wins + 1 WHERE id = ?", 
+        (1,)
+    )
     
-    # Invalid data
-    with pytest.raises(ValueError, match="Boxer name cannot be empty"):
-        validate_boxer_data("", 175, 71, 76.0, 32)
+    # Reset the mock
+    mock_cursor.reset_mock()
+    mock_cursor.fetchone.return_value = (1,)  # Boxer exists
     
-    with pytest.raises(ValueError, match="Weight must be positive"):
-        validate_boxer_data("Wesley", 0, 71, 76.0, 32)
+    # Call the function for a loss
+    update_boxer_stats(1, 'loss')
     
-    with pytest.raises(ValueError, match="Height must be positive"):
-        validate_boxer_data("Wesley", 175, 0, 76.0, 32)
-    
-    with pytest.raises(ValueError, match="Reach must be positive"):
-        validate_boxer_data("Wesley", 175, 71, 0, 32)
-    
-    with pytest.raises(ValueError, match="Age must be positive"):
-        validate_boxer_data("Wesley", 175, 71, 76.0, 0)
+    # Verify database operations for a loss
+    mock_cursor.execute.assert_any_call(
+        "UPDATE boxers SET fights = fights + 1 WHERE id = ?", 
+        (1,)
+    )
