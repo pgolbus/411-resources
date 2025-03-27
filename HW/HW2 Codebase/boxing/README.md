@@ -17,7 +17,19 @@ docker run -d
   boxing-app
 ```
 
-## Access
+# Running Unit Tests
+
+## Build the Docker Image
+`docker build -t boxing-app-tests -f ./tests_dockerfile .`
+
+## Run the Container
+```
+docker run -d 
+  --name boxing-tests-container
+  boxing-app-tests
+```
+
+# Access The Boxing App
 http://127.0.0.1:5000/api/health
 
 ## Verify
