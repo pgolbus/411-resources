@@ -36,17 +36,25 @@ def sample_boxer2():
 
 
 def test_create_boxer(mock_db_connection, mocker):
-    """Test creating a boxer."""
+    """_test creating a boxer_
+
+    Args:
+        mock_db_connection (_type_): mock the database connection for testing
+        mocker (_type_): mock the database connection for testing
+    Raises:
+        ValueError: If boxer doesn't exist yet
+        
+    """
     # Set up mock connection and cursor
     mock_cursor = mocker.MagicMock()
     mock_conn = mock_db_connection.return_value.__enter__.return_value
     mock_conn.cursor.return_value = mock_cursor
-    mock_cursor.fetchone.return_value = None  # Boxer doesn't exist yet
+    mock_cursor.fetchone.return_value = None  
     
     # Call the function
     create_boxer("Wesley", 175, 71, 76.0, 32)
     
-    # Verify database operations
+    # Verify  
     mock_cursor.execute.assert_any_call(
         "SELECT 1 FROM boxers WHERE name = ?", 
         ("Wesley",)
@@ -62,7 +70,17 @@ def test_create_boxer(mock_db_connection, mocker):
 
 
 def test_create_boxer_with_invalid_data():
-    """Test creating a boxer with invalid data."""
+    """test creating a boxer with invalid data
+
+    Args:
+        mock_db_connection (_type_): mock the database connection for testing
+        mocker (_type_): mock the database connection for testing
+    
+    Expected Errors:
+        ValueError: Invalid weight: 120. Must be at least 125.
+        ValueError: Invalid height: 0. Must be greater than 0.
+        ValueError: Invalid age: 15. Must be between 18 and 40.
+    """
     # Test invalid weight
     with pytest.raises(ValueError, match="Invalid weight: 120. Must be at least 125."):
         create_boxer("Wesley", 120, 71, 76.0, 32)
@@ -77,7 +95,13 @@ def test_create_boxer_with_invalid_data():
 
 
 def test_delete_boxer(mock_db_connection, mocker):
-    """Test deleting a boxer."""
+    """test deleting a boxer
+
+    Args:
+        mock_db_connection (_type_): mock the database connection for testing
+        mocker (_type_): mock the database connection for testing
+        
+    """
     # Set up mock connection and cursor
     mock_cursor = mocker.MagicMock()
     mock_conn = mock_db_connection.return_value.__enter__.return_value

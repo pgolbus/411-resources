@@ -20,6 +20,7 @@ from boxing.models.ring_model import RingModel
 @pytest.fixture
 def mock_db_connection(mocker):
     """Mock the database connection for testing."""
+    
     return mocker.patch("boxing.models.boxers_model.get_db_connection")
 
 @pytest.fixture
@@ -40,7 +41,13 @@ def ring():
 
 
 def test_create_boxer_with_duplicate_name(mock_db_connection, mocker):
-    """Test creating a boxer with a duplicate name."""
+    """_test creating a boxer with a duplicate name_
+
+    Args:
+        mock_db_connection (_type_): mock the database connection for testing
+        mocker (_type_): mock the database connection for testing
+        
+    """
     mock_cursor = mocker.MagicMock()
     mock_conn = mock_db_connection.return_value.__enter__.return_value
     mock_conn.cursor.return_value = mock_cursor
@@ -58,12 +65,24 @@ def test_create_boxer_with_duplicate_name(mock_db_connection, mocker):
 
 
 def test_update_boxer_stats_invalid_result():
-    """Test updating boxer stats with an invalid resul like tie."""
+    """_test updating boxer stats with an invalid resul like tie_
+
+    Args:
+        mock_db_connection (_type_): mock the database connection for testing
+        mocker (_type_): mock the database connection for testing
+        
+    """
     with pytest.raises(ValueError, match="Invalid result: tie. Expected 'win' or 'loss'."):
         update_boxer_stats(1, "tie")
 
 def test_get_boxer_by_name_not_found(mock_db_connection, mocker):
-    """Test getting a boxer by name that doesn't exist."""
+    """_test getting a boxer by name that doesn't exist_
+
+    Args:
+        mock_db_connection (_type_): mock the database connection for testing
+        mocker (_type_): mock the database connection for testing
+        
+    """
     mock_cursor = mocker.MagicMock()
     mock_conn = mock_db_connection.return_value.__enter__.return_value
     mock_conn.cursor.return_value = mock_cursor
