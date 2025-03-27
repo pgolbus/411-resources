@@ -33,11 +33,18 @@ def sample_boxer2():
     """Fixture providing another sample boxer for testing."""
     return Boxer(2, 'Apollo', 185, 74, 78.0, 30)
 
-
+""" 
+ring = ring for boxers
+sample_boxer1 = first boxer
+sample_boxer 2 = second boxer 
+mock_update_stats = sample score for win/lose for boxers
+mock_get_random = sample score to make certain boxer win
+"""
 def test_enter_ring(ring, sample_boxer1):
     """Test adding a boxer to the ring."""
     ring.enter_ring(sample_boxer1)
     
+    """Get boxers for the ring"""
     boxers = ring.get_boxers()
     assert len(boxers) == 1
     assert boxers[0].id == sample_boxer1.id
