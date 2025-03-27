@@ -51,8 +51,12 @@ def test_create_boxer(mock_db_connection, mocker):
         "SELECT 1 FROM boxers WHERE name = ?", 
         ("Wesley",)
     )
+    query_string = """
+                INSERT INTO boxers (name, weight, height, reach, age)
+                VALUES (?, ?, ?, ?, ?)
+            """
     mock_cursor.execute.assert_any_call(
-        "INSERT INTO boxers (name, weight, height, reach, age) VALUES (?, ?, ?, ?, ?)",
+        query_string,
         ("Wesley", 175, 71, 76.0, 32)
     )
 
