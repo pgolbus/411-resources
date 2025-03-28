@@ -27,23 +27,29 @@ def get_random() -> float:
         RuntimeError: If the HTTP request fails or times out
         ValueError: If the response is an invalid response
     """ 
+    logger.info("Getting random number")
     try:
         response = requests.get(RANDOM_ORG_URL, timeout=5)
 
         # Check if the request was successful
         response.raise_for_status()
+        logger.debug(f"Response: {response.text.strip()}")
 
         random_number_str = response.text.strip()
 
         try:
             random_number = float(random_number_str)
+            logger.info(f"Parsed random number: {random_number}")
         except ValueError:
-            raise ValueError(f"Invalid response from random.org: {random_number_str}")
+            logger.error(f"Invalid response: {random_number_str}")
+            raise ValueError(f"Invalid response: {random_number_str}")
 
         return random_number
-
+    
     except requests.exceptions.Timeout:
-        raise RuntimeError("Request to random.org timed out.")
+        logger.error("Request timed out.")
+        raise RuntimeError("Request timed out.")
 
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Request to random.org failed: {e}")
+        logger.exception(f"Request failed: {e}")
+        raise RuntimeError(f"Request failed: {e}")
