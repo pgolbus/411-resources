@@ -26,7 +26,29 @@ class Boxer:
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
+     """Creates a new boxer in the database with the given information
 
+    Description:
+
+    Args:
+        name (str): The name of the boxer. Must have a unique name.
+        weight (int): The weight of the boxer. Must be greater than 125 pounds.
+        height (int): The height of the boxer in inches. Must be greater than 0 inches.
+        reach (float): The reach of the boxer in inches. Must be greater than 0 inches.
+        age (int): The age of the boxer. Must be between 18 years old and 40 years old inclusive.
+        
+    Raises:
+        ValueError: The weight is not at least 125 pounds
+        ValueError: The height is not greater than 0 inches.
+        ValueError: The reach is not greather than 0 inches
+        ValueError: The age is not in between 18 years old and 40 years old inclusive
+        ValueError: There is a boxer already with the same name and it already exists.
+        IntegrityError: Multiple of the same named boxers are inserted.
+        Error: If any general errors occur
+        
+    Returns:
+        Nothing
+    """
     if weight < 125:
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
     if height <= 0:
