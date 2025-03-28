@@ -4,38 +4,39 @@ from boxing.models.ring_model import RingModel
 from boxing.models.boxers_model import Boxer
 
 class TestRingModel(unittest.TestCase):
-
+    """Unit tests for the RingModel class."""
     def setUp(self):
-        #Set up the ring and few sample boxers
+        """Set up a fresh ring and two sample boxers for each test."""
         self.ring = RingModel()
         #Two sample boxers we’ll reuse
         self.boxer1 = Boxer(id=1, name="nicole", weight=130, height=164, reach=68.0, age=20)
         self.boxer2 = Boxer(id=2, name="Ivy", weight=120, height=158, reach=70.0, age=21)
 
     def test_enter_ring(self):
-        #test on add one boxer to the ring
+        """Test: allow adding a single boxer to the ring."""
         self.ring.enter_ring(self.boxer1)
         self.assertEqual(len(self.ring.get_boxers()), 1)
 
     def test_enter_ring_error(self):
-        #Don’t let invalid type enter the ring
+        """Test: raise TypeError if non-Boxer object is added."""
         with self.assertRaises(TypeError):
             self.ring.enter_ring("not a boxer")
 
     def test_enter_ring_overflow(self):
-        #only hold two boxers max
+        """Test: raise ValueError if trying to add more than 2 boxers."""
         self.ring.enter_ring(self.boxer1)
         self.ring.enter_ring(self.boxer2)
         with self.assertRaises(ValueError):
             self.ring.enter_ring(self.boxer1)
 
     def test_clear_ring(self):
-        #Make sure clear the ring when needed
+        """Test: clear all boxers from the ring."""
         self.ring.enter_ring(self.boxer1)
         self.ring.clear_ring()
         self.assertEqual(len(self.ring.get_boxers()), 0)
 
     def test_with_not_enough_boxers(self):
+        """Test: raise error if a fight is started with less than 2 boxers."""
         self.ring.enter_ring(self.boxer1)
         with self.assertRaises(ValueError):
             self.ring.fight()
@@ -43,7 +44,7 @@ class TestRingModel(unittest.TestCase):
     @patch('boxing.models.ring_model.get_random', return_value=0.1)
     @patch('boxing.models.ring_model.update_boxer_stats')
     def test_fight_return_winner_and_clears_ring(self, mock_update_stats, mock_rand):
-        # With both boxers in, we should get a winner and see stats update
+        """Test: run a fight, return the winner, and clear the ring."""
         self.ring.enter_ring(self.boxer1)
         self.ring.enter_ring(self.boxer2)
 
@@ -56,6 +57,7 @@ class TestRingModel(unittest.TestCase):
         self.assertEqual(mock_update_stats.call_count, 2)  # one win, one loss
 
     def test_skill_float(self):
+        """Test: return a float when calculating fighting skill."""
         skill = self.ring.get_fighting_skill(self.boxer1)
         self.assertIsInstance(skill, float)
 

@@ -145,6 +145,52 @@ get_leaderboard() {
 
 # TODO: Add Ring Smoketests
 
+#Error handling and additional test cases.
+enter_ring() {
+  name=$1
+  echo "Let $name into the ring..."
+  response=$(curl -s -X POST "$BASE_URL/enter-ring" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"$name\"}")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "$name entered the ring."
+  else
+    echo "Failed to enter $name. Error:"
+    echo "$response" | jq .
+  fi
+}
+
+fight() {
+  echo "fight..."
+  response=$(curl -s -X GET "$BASE_URL/fight")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Fight complete."
+    echo "$response" | jq .
+  else
+    echo "Fight failed (expected if < 2 boxers)."
+    echo "$response" | jq .
+  fi
+}
+
+clear_ring() {
+  echo "Clear the ring..."
+  response=$(curl -s -X POST "$BASE_URL/clear-boxers")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Ring cleared."
+  else
+    echo "Failed to clear the ring."
+    echo "$response" | jq .
+  fi
+}
+
+get_boxers_in_ring() {
+  echo "Fetching boxers currently in the ring..."
+  response=$(curl -s "$BASE_URL/get-boxers")
+  echo "$response" | jq .
+}
+
+
 
 ############################################################
 #
@@ -176,5 +222,28 @@ get_leaderboard "wins"
 get_leaderboard "win_pct"
 
 # TODO: Run Ring Smoketests
+clear_ring
+enter_ring "John Doe"
+fight  # Expect fail
+clear_ring
+
+enter_ring "John Doe"
+enter_ring "Judy Doe"
+enter_ring "Jane Doe"  # This should NOT be allowed because>2 boxer
+
+#reset
+clear_ring
+
+#entering a boxer who doesn’t exist in the database
+enter_ring "Zoe"  # Should fail
+
+#noral fight
+enter_ring "John Doe"
+enter_ring "Judy Doe"
+fight
+
+#Final clean-up
+clear_ring
+
 
 echo "All tests passed successfully!"
