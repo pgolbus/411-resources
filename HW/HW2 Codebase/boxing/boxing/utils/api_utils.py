@@ -14,6 +14,19 @@ RANDOM_ORG_URL = os.getenv("RANDOM_ORG_URL",
 
 
 def get_random() -> float:
+    """
+    Gets a random decimal number between 0 and 1 from the url
+
+    Makes an HTTP request to the RANDOM_ORG_URL endpoint tries to
+    parse the result into a float.
+
+    Returns:
+        float: A random number from the url
+
+    Raises:
+        RuntimeError: If the HTTP request fails or times out
+        ValueError: If the response is an invalid response
+    """ 
     try:
         response = requests.get(RANDOM_ORG_URL, timeout=5)
 
