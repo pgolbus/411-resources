@@ -30,9 +30,14 @@ def configure_logger(logger):
 
     # Add the handler to the logger
     logger.addHandler(handler)
+    logger.debug("Logger has been configured with a stream handler and formatter")
 
     # We also need to add the handler to the Flask logger
     if has_request_context():
+        logger.debug("Flask request context detected, attaching Flask app logger handlers")
         app_logger = current_app.logger
         for handler in app_logger.handlers:
             logger.addHandler(handler)
+        logger.debug("Flask logger handlers successfully attached")
+    else:
+        logger.debug("No Flask request context")
