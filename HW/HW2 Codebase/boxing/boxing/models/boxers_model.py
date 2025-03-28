@@ -13,6 +13,9 @@ configure_logger(logger)
 
 @dataclass
 class Boxer:
+    """
+    This class represents a boxer  with a unique string id, name, weight, height, reach, age and weight class
+    """
     id: int
     name: str
     weight: int
@@ -22,10 +25,25 @@ class Boxer:
     weight_class: str = None
 
     def __post_init__(self):
+        """automatically assigns a weight class depending on the weight"""
         self.weight_class = get_weight_class(self.weight)  # Automatically assign weight class
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
+
+    """
+    this creates a new boxer in the database.
+
+    Parameters: 
+        name(str): the name of the boxer
+        weight(int): the weight of  the boxer in lbs
+        height(int): height of the boxer in inches
+        reach(float): reach of the boxer in inches
+        age(int): age of the boxer in years
+
+    Raises:
+        ValueError if weight<125, height<=0, reach<=0, age<18 or age>40
+    """
 
     if weight < 125:
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
@@ -60,6 +78,14 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
 
 
 def delete_boxer(boxer_id: int) -> None:
+    """
+    deletes a boxer from the database through  their boxer id
+    Parameters:
+            boxer_id(int): the ID of the boxer
+            
+    Raises: 
+            ValueError if the boxer wwith given  id is not found
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -76,6 +102,18 @@ def delete_boxer(boxer_id: int) -> None:
 
 
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
+    """
+    retrieves the leaderboard depending on the sorting condition given
+    
+    Parameters:
+        sort_by(str): must be either "win_pct" or "wins" but the default is "wins"
+        
+    Returns:
+        List[dict[str, Any]]: A list of dictionaries which shows the leaderboard
+        
+    Raises: 
+        ValueError if the sort_by parameter is not "wins" or "wins_pct"
+    """
     query = """
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
@@ -119,6 +157,17 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
 
 def get_boxer_by_id(boxer_id: int) -> Boxer:
+    """
+    retrieves a boxer based  on the id given
+
+    Parameters:
+        boxer_id(int): the id of the boxer
+    Returns: 
+        the boxer object with the given id and all other attributes
+
+    Raises: 
+        ValueError if the boxer with the given id is not found
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -143,6 +192,20 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
+    """
+    retrieves the boxer based on the name given
+
+    Parameters:
+        boxer_name(str): the name of the boxer
+    
+    Returns: 
+        the boxer object with the given name and all other attributes
+
+    Raises:
+        ValueError if the boxer with the given name is not found
+
+
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -167,6 +230,15 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
 
 
 def get_weight_class(weight: int) -> str:
+    """
+    retrieves the weight class based on  the given weight
+    
+    Parameters:
+        weight(int): the  weight of the boxer
+    Returns:
+        str: the weight class of the boxer
+    Raises:
+        ValueError if the weight is less than 125"""
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
     elif weight >= 166:
@@ -182,6 +254,17 @@ def get_weight_class(weight: int) -> str:
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
+    """
+    updates the stats(if they win or lose) depending on the given id
+    
+    Parameters:
+        boxer_id(int): the id of the boxer
+        result(str): the result  which can either be "win" or "loss"
+        
+    Raises:
+        ValueError if result is not "win" or "loss" or if the boxer with the given id is not found
+    
+    """
     if result not in {'win', 'loss'}:
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
 
