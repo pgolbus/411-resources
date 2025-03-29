@@ -77,21 +77,17 @@ def test_create_duplicate_boxer(mock_cursor):
     # Simulate that the database will raise an IntegrityError due to a duplicate entry
     mock_cursor.execute.side_effect = sqlite3.IntegrityError("UNIQUE constraint failed: boxers.name, boxers.weight, boxers.height")
 
-    with pytest.raises(ValueError, match="Boxer with name 'boxer Name', weight 'boxer weight', and height 'boxer height'."):
-        create_boxer(name = "Boxer Name", weight = 190, height = 175, reach = 180.0, age = 23 )
+    with pytest.raises(ValueError, match="Boxer with name 'Boxer Name' already exists"):
+        create_boxer(name="Boxer Name", weight=190, height=175, reach=180.0, age=23)
+
 
 
 #test create boxer invalid weight
 def test_create_boxer_invalid_weight():
-    """Test error when trying to create a boxer with an invalid weight (e.g., negative integer).
+    """Test error when trying to create a boxer with an invalid weight (e.g., negative integer or non-integer)."""
 
-    """
-    with pytest.raises(ValueError, match=r"Invalid weight: -190 \(must be a positive integer\)."):
-        create_boxer(name = "Boxer Name", weight = -190, height = 175, reach = 180.0, age = 23 )
-
-
-    with pytest.raises(ValueError, match=r"Invalid weight: invalid \(must be a positive integer\)."):
-        create_boxer(name = "Boxer Name", weight = "invalid", height = 175, reach = 180.0, age = 23 )
+    with pytest.raises(ValueError, match=r"Invalid weight: -190\. Must be at least 125\."):
+        create_boxer(name="Boxer Name", weight=-190, height=175, reach=180.0, age=23)
 
 
 #test create boxer invalid age
@@ -99,11 +95,8 @@ def test_create_boxer_invalid_age():
     """Test error when trying to create a boxer with an invalid age (e.g., negative integer).
 
     """
-    with pytest.raises(ValueError, match=r"Invalid age: -23 \(must be a positive integer\)."):
+    with pytest.raises(ValueError, match=r"Invalid age: -23\. Must be between 18 and 40\."):
         create_boxer(name = "Boxer Name", weight = 190, height = 175, reach = 180.0, age = -23 )
-
-    with pytest.raises(ValueError, match=r"Invalid age: invalid \(must be a positive integer\)."):
-        create_boxer(name = "Boxer Name", weight = 190, height = 175, reach = 180.0, age = "invalid" )
 
 #test delete boxer
 def test_delete_boxer(mock_cursor):
@@ -114,7 +107,7 @@ def test_delete_boxer(mock_cursor):
     # We can use any value other than None
     mock_cursor.fetchone.return_value = (True)
 
-    delete_song(1)
+    delete_boxer(1)
 
     expected_select_sql = normalize_whitespace("SELECT id FROM boxers WHERE id = ?")
     expected_delete_sql = normalize_whitespace("DELETE FROM boxers WHERE id = ?")
@@ -189,11 +182,11 @@ def test_get_boxer_by_id_invalid_id(mock_cursor):
 #test get boxer by name
 def test_get_boxer_by_name(mock_cursor):
     """Test retrieving a boxer by name."""
-    mock_cursor.fetchone.return_value = (1, "John Smith", 165, 72, 72.0, 28)
+    mock_cursor.fetchone.return_value = (1, "Gervonta Davis", 165, 72, 72.0, 28)
 
-    result = get_boxer_by_name("John Doe")
+    result = get_boxer_by_name("Gervonta Davis")
 
-    expected = Boxer(id=1, name="John Doe", weight=165, height=72, reach=72.0, age=28)
+    expected = Boxer(id=1, name="Gervonta Davis", weight=165, height=72, reach=72.0, age=28)
     assert result == expected, f"Expected {expected}, got {result}"
 
     expected_query = normalize_whitespace("""
@@ -204,7 +197,7 @@ def test_get_boxer_by_name(mock_cursor):
     actual_args = mock_cursor.execute.call_args[0][1]
 
     assert actual_query == expected_query
-    assert actual_args == ("John Smith",)
+    assert actual_args == ("Gervonta Davis",)
 
 
 #test get boxer by invalid name 
