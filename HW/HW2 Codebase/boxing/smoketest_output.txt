@@ -1,133 +1,19 @@
-🔁 SMOKETEST STARTING...
-👉 Clearing ring...
-{
-  "message": "Boxers have been cleared from ring.",
-  "status": "success"
-}
-
-
-🥊 Adding boxer Aarnav...
-{
-  "message": "Boxer 'Aarnav' added successfully",
-  "status": "success"
-}
-
-
-🥊 Adding boxer Taha...
-{
-  "details": "Boxer with name 'Taha' already exists",
-  "message": "An internal error occurred while adding the boxer",
-  "status": "error"
-}
-
-
-🚫 Adding duplicate boxer Aarnav...
-{
-  "details": "Boxer with name 'Aarnav' already exists",
-  "message": "An internal error occurred while adding the boxer",
-  "status": "error"
-}
-
-
-🚪 Entering Aarnav into ring...
-{
-  "boxers": [
-    {
-      "age": 21,
-      "height": 185.0,
-      "id": 3,
-      "name": "Aarnav",
-      "reach": 78.5,
-      "weight": 160.0,
-      "weight_class": "LIGHTWEIGHT"
-    }
-  ],
-  "message": "Boxer 'Aarnav' is now in the ring.",
-  "status": "success"
-}
-
-
-🚪 Entering Taha into ring...
-{
-  "boxers": [
-    {
-      "age": 21,
-      "height": 185.0,
-      "id": 3,
-      "name": "Aarnav",
-      "reach": 78.5,
-      "weight": 160.0,
-      "weight_class": "LIGHTWEIGHT"
-    },
-    {
-      "age": 20,
-      "height": 178.0,
-      "id": 2,
-      "name": "Taha",
-      "reach": 76.0,
-      "weight": 155.0,
-      "weight_class": "LIGHTWEIGHT"
-    }
-  ],
-  "message": "Boxer 'Taha' is now in the ring.",
-  "status": "success"
-}
-
-
-🚫 Entering third boxer (should fail)...
-{
-  "details": "Boxer 'Travis' not found.",
-  "message": "An internal error occurred while entering the boxer into the ring",
-  "status": "error"
-}
-
-
-🥊 FIGHT!
-{
-  "message": "Fight complete",
-  "status": "success",
-  "winner": "Aarnav"
-}
-
-
-📈 Leaderboard:
-{
-  "leaderboard": [
-    {
-      "age": 21,
-      "fights": 1,
-      "height": 185.0,
-      "id": 3,
-      "name": "Aarnav",
-      "reach": 78.5,
-      "weight": 160.0,
-      "weight_class": "LIGHTWEIGHT",
-      "win_pct": 100.0,
-      "wins": 1
-    },
-    {
-      "age": 20,
-      "fights": 2,
-      "height": 178.0,
-      "id": 2,
-      "name": "Taha",
-      "reach": 76.0,
-      "weight": 155.0,
-      "weight_class": "LIGHTWEIGHT",
-      "win_pct": 0.0,
-      "wins": 0
-    }
-  ],
-  "status": "success"
-}
-
-
-🗑️ Deleting boxer with ID 1...
-{
-  "details": "Boxer with ID 1 not found.",
-  "message": "An internal error occurred while deleting the boxer",
-  "status": "error"
-}
-
-
-✅ SMOKETEST COMPLETE
+Checking health endpoint...
+Health check passed
+Checking DB connection...
+DB check passed
+Clearing boxers...
+Adding boxer Aarnav...
+Boxer Aarnav added
+Adding boxer Taha...
+Boxer Taha added
+Entering Aarnav into the ring...
+Aarnav entered ring
+Entering Taha into the ring...
+Taha entered ring
+Triggering fight...
+Fight complete
+Getting leaderboard...
+Leaderboard loaded
+Cleaning up boxers...
+Smoke tests passed!
