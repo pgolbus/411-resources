@@ -31,7 +31,7 @@ class RingModel:
         Simulates a fight between two boxers in the ring.
             
         Args:
-            boxer1 (Boxer): The first boxer added to the ring.
+            boxer1 (boxer): The first boxer added to the ring.
             boxer2 (boxer): the second boxer added to the ring.
 
         Raises:
