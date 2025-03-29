@@ -70,18 +70,121 @@ def test_create_boxer(mock_cursor):
     assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
 #test create duplicate boxer
+def test_create_duplicate_boxer(mock_cursor):
+    """Test creating a boxer with a duplicate name, weight, and height (should raise an error).
+
+    """
+    # Simulate that the database will raise an IntegrityError due to a duplicate entry
+    mock_cursor.execute.side_effect = sqlite3.IntegrityError("UNIQUE constraint failed: boxers.name, boxers.weight, boxers.height")
+
+    with pytest.raises(ValueError, match="Boxer with name 'boxer Name', weight 'boxer weight', and height 'boxer height'."):
+        create_boxer(name = "Boxer Name", weight = 190, height = 175, reach = 180.0, age = 23 )
+
 
 #test create boxer invalid weight
+def test_create_boxer_invalid_weight():
+    """Test error when trying to create a boxer with an invalid weight (e.g., negative integer).
+
+    """
+    with pytest.raises(ValueError, match=r"Invalid weight: -190 \(must be a positive integer\)."):
+        create_boxer(name = "Boxer Name", weight = -190, height = 175, reach = 180.0, age = 23 )
+
+
+    with pytest.raises(ValueError, match=r"Invalid weight: invalid \(must be a positive integer\)."):
+        create_boxer(name = "Boxer Name", weight = "invalid", height = 175, reach = 180.0, age = 23 )
+
 
 #test create boxer invalid age
+def test_create_boxer_invalid_age():
+    """Test error when trying to create a boxer with an invalid age (e.g., negative integer).
+
+    """
+    with pytest.raises(ValueError, match=r"Invalid age: -23 \(must be a positive integer\)."):
+        create_boxer(name = "Boxer Name", weight = 190, height = 175, reach = 180.0, age = -23 )
+
+    with pytest.raises(ValueError, match=r"Invalid age: invalid \(must be a positive integer\)."):
+        create_boxer(name = "Boxer Name", weight = 190, height = 175, reach = 180.0, age = "invalid" )
 
 #test delete boxer
+def test_delete_boxer(mock_cursor):
+    """Test deleting a boxer from the catalog by boxer ID.
 
-#test delete boxer invalid id 
+    """
+    # Simulate the existence of a boxer w/ id=1
+    # We can use any value other than None
+    mock_cursor.fetchone.return_value = (True)
+
+    delete_song(1)
+
+    expected_select_sql = normalize_whitespace("SELECT id FROM boxers WHERE id = ?")
+    expected_delete_sql = normalize_whitespace("DELETE FROM boxers WHERE id = ?")
+
+    # Access both calls to `execute()` using `call_args_list`
+    actual_select_sql = normalize_whitespace(mock_cursor.execute.call_args_list[0][0][0])
+    actual_delete_sql = normalize_whitespace(mock_cursor.execute.call_args_list[1][0][0])
+
+    assert actual_select_sql == expected_select_sql, "The SELECT query did not match the expected structure."
+    assert actual_delete_sql == expected_delete_sql, "The UPDATE query did not match the expected structure."
+
+    # Ensure the correct arguments were used in both SQL queries
+    expected_select_args = (1,)
+    expected_delete_args = (1,)
+
+    actual_select_args = mock_cursor.execute.call_args_list[0][0][1]
+    actual_delete_args = mock_cursor.execute.call_args_list[1][0][1]
+
+    assert actual_select_args == expected_select_args, f"The SELECT query arguments did not match. Expected {expected_select_args}, got {actual_select_args}."
+    assert actual_delete_args == expected_delete_args, f"The UPDATE query arguments did not match. Expected {expected_delete_args}, got {actual_delete_args}."
+
+
+
+#test delete boxer invalid id
+def test_delete_boxer_invalid_id(mock_cursor):
+    """Test error when trying to delete a non-existent boxer.
+
+    """
+    # Simulate that no song exists with the given ID
+    mock_cursor.fetchone.return_value = None
+
+    with pytest.raises(ValueError, match="Boxer with ID 999 not found"):
+        delete_boxer(999)
+    
 
 #test get boxer by id
+def test_get_boxer_by_id(mock_cursor):
+    """Test getting a boxer by id.
 
-#test get boxer by id invalid id 
+    """
+    mock_cursor.fetchone.return_value = (1, "Boxer Name", 190, 175, 180.0, 23, False)
+
+    result = get_boxer_by_id(1)
+
+    expected_result = Boxer(1, "Boxer Name", 190, 175, 180.0, 23)
+
+    assert result == expected_result, f"Expected {expected_result}, got {result}"
+
+    expected_query = normalize_whitespace("SELECT id, name, weight, height, reach, age FROM boxers WHERE id = ?")
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+
+    assert actual_query == expected_query, "The SQL query did not match the expected structure."
+
+    actual_arguments = mock_cursor.execute.call_args[0][1]
+    expected_arguments = (1,)
+
+    assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
+
+
+
+#test get boxer by id invalid id
+def test_get_boxer_by_id_invalid_id(mock_cursor):
+    """Test error when getting a non-existent boxer.
+
+    """
+    mock_cursor.fetchone.return_value = None
+
+    with pytest.raises(ValueError, match="Boxer with ID 999 not found"):
+        get_boxer_by_id(999)
+
 
 #test get boxer by name
 def test_get_boxer_by_name(mock_cursor):
