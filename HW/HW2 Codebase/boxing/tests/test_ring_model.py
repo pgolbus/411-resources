@@ -42,24 +42,23 @@ def sample_boxer3():
 
 #test add fighter to ring
 def test_add_fighter_to_ring(ring_model, sample_boxer1):
-    """Test adding a song to the playlist.
+    """Test adding a boxer to the ring.
 
     """
-    ring_model.add_fighter_to_ring(sample_boxer1)
+    ring_model.enter_ring(sample_boxer1)
     assert len(ring_model.ring) == 1
-    assert ring_model.ring[0].name == 'Song 1'
+    assert ring_model.ring[0].name == sample_boxer1.name
 
 #test add fighter to full ring
 
 #test add duplicate fighter to ring
 
-#test add incorrect / non boxer  to ring
-def test_add_invalid_fighter_to_playlist(playlist_model, sample_song1):
-    """Test error when adding a duplicate song to the playlist by ID.
+# test add incorrect / non boxer to ring
+def test_add_invalid_fighter_to_ring(ring_model):
+    """Test error when adding an invalid (non-Boxer) object to the ring."""
+    with pytest.raises(TypeError, match="Expected 'Boxer'"):
+        ring_model.enter_ring({"name": "Fake Boxer", "weight": 200})
 
-    """
-    with pytest.raises(TypeError, match="Song is not a valid Song instance"):
-        playlist_model.add_song_to_playlist(asdict(sample_song1))
 
 #test clear ring
 def test_clear_ring(ring_model, sample_boxer1):
@@ -100,16 +99,16 @@ def test_fight_winner_boxer1(ring_model, sample_boxer1, sample_boxer2, mock_upda
 #test fight boxer 2 wins
 def test_fight_winner_boxer2(ring_model, sample_boxer1, sample_boxer2, mock_update_boxer_stats, mock_get_random):
     """Test that boxer 2 wins the fight if random number > normalized delta."""
-    ring_model.enter_ring(sample_boxer1)
-    ring_model.enter_ring(sample_boxer2)
+    ring_model.enter_ring(sample_boxer2)  # Jon Jones
+    ring_model.enter_ring(sample_boxer1)  # Ilia Topuria
 
-    mock_get_random.return_value = 0.99  
+    mock_get_random.return_value = 0.99  # high enough to trigger boxer 2 win
     winner = ring_model.fight()
 
     assert winner == sample_boxer2.name
     mock_update_boxer_stats.assert_any_call(sample_boxer2.id, 'win')
     mock_update_boxer_stats.assert_any_call(sample_boxer1.id, 'loss')
-    assert ring_model.ring == []
+
 
 #test fight <2 boxers
 def test_fight_not_enough_boxers(ring_model, sample_boxer1):

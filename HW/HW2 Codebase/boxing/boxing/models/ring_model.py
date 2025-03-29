@@ -88,10 +88,10 @@ class RingModel:
             TypeError: If the object provided is not an instance of Boxer.
             ValueError: If the ring is already full (has 2 boxers).
         """
-        logger.info(f"Adding boxer {boxer.name} to the ring...")
         if not isinstance(boxer, Boxer):
             logger.error("Invalid type, expected 'Boxer'.")
             raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
+        logger.info(f"Adding boxer {boxer.name} to the ring...")
 
         if len(self.ring) >= 2:
             logger.error("Ring is full; boxer not added.")
