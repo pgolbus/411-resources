@@ -41,14 +41,35 @@ def sample_boxer3():
 
 
 #test add fighter to ring
+def test_add_fighter_to_ring(ring_model, sample_boxer1):
+    """Test adding a song to the playlist.
+
+    """
+    ring_model.add_fighter_to_ring(sample_boxer1)
+    assert len(ring_model.ring) == 1
+    assert ring_model.ring[0].name == 'Song 1'
 
 #test add fighter to full ring
 
 #test add duplicate fighter to ring
 
 #test add incorrect / non boxer  to ring
+def test_add_invalid_fighter_to_playlist(playlist_model, sample_song1):
+    """Test error when adding a duplicate song to the playlist by ID.
+
+    """
+    with pytest.raises(TypeError, match="Song is not a valid Song instance"):
+        playlist_model.add_song_to_playlist(asdict(sample_song1))
 
 #test clear ring
+def test_clear_ring(ring_model, sample_boxer1):
+    """Test clearing the entire ring.
+
+    """
+    ring_model.ring.append(sample_boxer1)
+
+    ring_model.clear_ring()
+    assert len(ring_model.ring) == 0, "Ring should be empty after clearing"
 
 #test clear empty ring
 
