@@ -1,11 +1,9 @@
 import pytest
 import requests
 
-from playlist.utils.api_utils import get_random
-
+from boxing.utils.api_utils import get_random
 
 RANDOM_NUMBER = 4
-
 
 @pytest.fixture
 def mock_random_org(mocker):
@@ -19,7 +17,6 @@ def mock_random_org(mocker):
 
 def test_get_random(mock_random_org):
     """Test retrieving a random number from random.org.
-
     """
     result = get_random(10)
 
@@ -31,7 +28,6 @@ def test_get_random(mock_random_org):
 
 def test_get_random_request_failure(mocker):
     """Test handling of a request failure when calling random.org.
-
     """
     # Simulate a request failure
     mocker.patch("requests.get", side_effect=requests.exceptions.RequestException("Connection error"))
@@ -41,7 +37,6 @@ def test_get_random_request_failure(mocker):
 
 def test_get_random_timeout(mocker):
     """Test handling of a timeout when calling random.org.
-
     """
     # Simulate a timeout
     mocker.patch("requests.get", side_effect=requests.exceptions.Timeout)
@@ -51,7 +46,6 @@ def test_get_random_timeout(mocker):
 
 def test_get_random_invalid_response(mock_random_org):
     """Test handling of an invalid response from random.org.
-
     """
     # Simulate an invalid response (non-digit)
     mock_random_org.text = "invalid_response"
