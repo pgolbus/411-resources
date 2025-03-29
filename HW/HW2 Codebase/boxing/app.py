@@ -23,20 +23,27 @@ configure_logger(app.logger)
 
 ####################################################
 #
+# Root Route (just to avoid 404 confusion)
+#
+####################################################
+
+@app.route('/', methods=['GET'])
+def index() -> Response:
+    """Root route to confirm the app is running."""
+    return make_response(jsonify({
+        'status': 'success',
+        'message': 'Boxing Flask app is running. Use /api/* routes.'
+    }), 200)
+
+
+####################################################
+#
 # Healthchecks
 #
 ####################################################
 
-
 @app.route('/api/health', methods=['GET'])
 def healthcheck() -> Response:
-    """
-    Health check route to verify the service is running.
-
-    Returns:
-        JSON response indicating the health status of the service.
-
-    """
     app.logger.info("Health check endpoint hit")
     return make_response(jsonify({
         'status': 'success',
@@ -46,16 +53,6 @@ def healthcheck() -> Response:
 
 @app.route('/api/db-check', methods=['GET'])
 def db_check() -> Response:
-    """Route to check if the database connection and boxers table are functional.
-
-    Returns:
-        JSON response indicating the database health status.
-
-    Raises:
-        404 error if the boxers table is not found.
-        500 error if there is an issue with the database connection.
-
-    """
     try:
         check_database_connection()
         app.logger.info("Database connection is OK.")
@@ -90,28 +87,9 @@ def db_check() -> Response:
 #
 ##########################################################
 
-
 @app.route('/api/add-boxer', methods=['POST'])
 def add_boxer() -> Response:
-    """Route to add a new boxer to the gym.
-
-    Expected JSON Input:
-        - name (str): The boxer's name.
-        - weight (int): The boxer's weight.
-        - height (int): The boxer's height.
-        - reach (float): The boxer's reach in inches.
-        - age (int): The boxer's age.
-
-    Returns:
-        JSON response indicating the success of the boxer addition.
-
-    Raises:
-        400 error if input validation fails.
-        500 error if there is an issue adding the boxer to the database.
-
-    """
     app.logger.info("Received request to create new boxer")
-
     try:
         data = request.get_json()
 
@@ -164,23 +142,8 @@ def add_boxer() -> Response:
 
 @app.route('/api/delete-boxer/<int:boxer_id>', methods=['DELETE'])
 def delete_boxer(boxer_id: int) -> Response:
-    """Route to delete a boxer by ID.
-
-    Path Parameter:
-        - boxer_id (int): The ID of the boxer to delete.
-
-    Returns:
-        JSON response indicating success of the operation.
-
-    Raises:
-        400 error if the boxer does not exist.
-        500 error if there is an issue removing the boxer from the database.
-
-    """
     try:
         app.logger.info(f"Received request to delete boxer with ID {boxer_id}")
-
-        # Check if the boxer exists before attempting to delete
         boxer = boxers_model.get_boxer_by_id(boxer_id)
         if not boxer:
             app.logger.warning(f"Boxer with ID {boxer_id} not found.")
@@ -191,14 +154,13 @@ def delete_boxer(boxer_id: int) -> Response:
 
         boxers_model.delete_boxer(boxer_id)
         app.logger.info(f"Successfully deleted boxer with ID {boxer_id}")
-
         return make_response(jsonify({
             "status": "success",
             "message": f"Boxer with ID {boxer_id} deleted successfully"
         }), 200)
 
     except Exception as e:
-        app.logger.error(f"Failed to add boxer: {e}")
+        app.logger.error(f"Failed to delete boxer: {e}")
         return make_response(jsonify({
             "status": "error",
             "message": "An internal error occurred while deleting the boxer",
@@ -208,22 +170,8 @@ def delete_boxer(boxer_id: int) -> Response:
 
 @app.route('/api/get-boxer-by-id/<int:boxer_id>', methods=['GET'])
 def get_boxer_by_id(boxer_id: int) -> Response:
-    """Route to get a boxer by its ID.
-
-    Path Parameter:
-        - boxer_id (int): The ID of the boxer.
-
-    Returns:
-        JSON response containing the boxer details if found.
-
-    Raises:
-        400 error if the boxer is not found.
-        500 error if there is an issue retrieving the boxer from the database.
-
-    """
     try:
         app.logger.info(f"Received request to retrieve boxer with ID {boxer_id}")
-
         boxer = boxers_model.get_boxer_by_id(boxer_id)
 
         if not boxer:
@@ -250,22 +198,8 @@ def get_boxer_by_id(boxer_id: int) -> Response:
 
 @app.route('/api/get-boxer-by-name/<string:boxer_name>', methods=['GET'])
 def get_boxer_by_name(boxer_name: str) -> Response:
-    """Route to get a boxer by its name.
-
-    Path Parameter:
-        - boxer_name (str): The name of the boxer.
-
-    Returns:
-        JSON response containing the boxer details if found.
-
-    Raises:
-        400 error if the boxer name is missing or not found.
-        500 error if there is an issue retrieving the boxer from the database.
-
-    """
     try:
         app.logger.info(f"Received request to retrieve boxer with name '{boxer_name}'")
-
         boxer = boxers_model.get_boxer_by_name(boxer_name)
 
         if not boxer:
@@ -290,30 +224,11 @@ def get_boxer_by_name(boxer_name: str) -> Response:
         }), 500)
 
 
-############################################################
-#
-# Ring
-#
-############################################################
-
-
 @app.route('/api/fight', methods=['GET'])
 def bout() -> Response:
-    """Route that triggers the fight between the two current boxers.
-
-    Returns:
-        JSON response indicating the winner of the fight.
-
-    Raises:
-        400 error if the fight cannot be triggered due to insufficient combatants.
-        500 error if there is an issue during the fight.
-
-    """
     try:
         app.logger.info("Initiating fight...")
-
         winner = ring_model.fight()
-
         app.logger.info(f"Fight complete. Winner: {winner}")
         return make_response(jsonify({
             "status": "success",
@@ -339,20 +254,9 @@ def bout() -> Response:
 
 @app.route('/api/clear-boxers', methods=['POST'])
 def clear_boxers() -> Response:
-    """Route to clear the list of boxers from the ring.
-
-    Returns:
-        JSON response indicating success of the operation.
-
-    Raises:
-        500 error if there is an issue clearing boxers.
-
-    """
     try:
         app.logger.info("Clearing all boxers...")
-
         ring_model.clear_ring()
-
         app.logger.info("Boxers cleared from ring successfully.")
         return make_response(jsonify({
             "status": "success",
@@ -370,19 +274,6 @@ def clear_boxers() -> Response:
 
 @app.route('/api/enter-ring', methods=['POST'])
 def enter_ring() -> Response:
-    """Route to have a boxer enter the ring for the next fight.
-
-    Expected JSON Input:
-        - name (str): The boxer's name.
-
-    Returns:
-        JSON response indicating the success of the boxer entering the ring.
-
-    Raises:
-        400 error if the request is invalid (e.g., boxer name missing or too many boxers in the ring).
-        500 error if there is an issue with the boxer entering the ring.
-
-    """
     try:
         data = request.get_json()
         boxer_name = data.get("name")
@@ -395,7 +286,6 @@ def enter_ring() -> Response:
             }), 400)
 
         app.logger.info(f"Attempting to enter {boxer_name} into the ring.")
-
         boxer = boxers_model.get_boxer_by_name(boxer_name)
 
         if not boxer:
@@ -415,9 +305,7 @@ def enter_ring() -> Response:
             }), 400)
 
         boxers = ring_model.get_boxers()
-
         app.logger.info(f"Boxer '{boxer_name}' entered the ring. Current boxers: {boxers}")
-
         return make_response(jsonify({
             "status": "success",
             "message": f"Boxer '{boxer_name}' is now in the ring.",
@@ -435,20 +323,9 @@ def enter_ring() -> Response:
 
 @app.route('/api/get-boxers', methods=['GET'])
 def get_boxers() -> Response:
-    """Route to get the list of boxers in the ring.
-
-    Returns:
-        JSON response with the list of boxers.
-
-    Raises:
-        500 error if there is an issue getting the boxers.
-
-    """
     try:
         app.logger.info("Retrieving list of boxers...")
-
         boxers = ring_model.get_boxers()
-
         app.logger.info(f"Retrieved {len(boxers)} boxer(s).")
         return make_response(jsonify({
             "status": "success",
@@ -464,32 +341,10 @@ def get_boxers() -> Response:
         }), 500)
 
 
-############################################################
-#
-# Leaderboard
-#
-############################################################
-
-
 @app.route('/api/leaderboard', methods=['GET'])
 def get_leaderboard() -> Response:
-    """Route to get the leaderboard of boxers sorted by wins or win percentage.
-
-    Query Parameters:
-        - sort (str): The field to sort by ('wins', or 'win_pct'). Default is 'wins'.
-
-    Returns:
-        JSON response with a sorted leaderboard of boxers.
-
-    Raises:
-        400 error if an invalid sort parameter is provided.
-        500 error if there is an issue generating the leaderboard.
-
-    """
     try:
-        # Get the sort parameter from the query string, default to 'wins'
         sort_by = request.args.get('sort', 'wins').lower()
-
         valid_sort_fields = {'wins', 'win_pct'}
 
         if sort_by not in valid_sort_fields:
@@ -500,11 +355,8 @@ def get_leaderboard() -> Response:
             }), 400)
 
         app.logger.info(f"Generating leaderboard sorted by '{sort_by}'")
-
         leaderboard_data = boxers_model.get_leaderboard(sort_by)
-
         app.logger.info(f"Leaderboard generated successfully. {len(leaderboard_data)} boxers ranked.")
-
         return make_response(jsonify({
             "status": "success",
             "leaderboard": leaderboard_data
@@ -521,9 +373,8 @@ def get_leaderboard() -> Response:
 
 if __name__ == '__main__':
     app.logger.info("Starting Flask app...")
-
     try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(host='0.0.0.0', port=5000, debug=True)
     except Exception as e:
         app.logger.error(f"Flask app encountered an error: {e}")
     finally:
