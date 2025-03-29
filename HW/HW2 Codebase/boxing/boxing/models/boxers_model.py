@@ -82,6 +82,21 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
 
 
 def delete_boxer(boxer_id: int) -> None:
+    """Deletes a boxer from the database based on the given boxer ID
+
+    Description:
+    
+    Args:
+        boxer_id (int): A ID associated with a boxer's information in the database
+        
+    Raises:
+        ValueError: Boxer ID was not found in the fetch
+        Error: If any general errors occur
+        
+    Returns:
+        Nothing
+    """
+    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -98,6 +113,21 @@ def delete_boxer(boxer_id: int) -> None:
 
 
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
+    """Deletes a boxer from the database based on the given boxer ID
+
+    Description:
+        
+    Args:
+        boxer_id (int): A ID associated with a boxer's information in the database
+        
+    Raises:
+        ValueError: Boxer ID was not found in the fetch
+        Error: If any general errors occur
+        
+    Returns:
+        Nothing
+    """
+    
     query = """
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
@@ -141,6 +171,22 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
 
 def get_boxer_by_id(boxer_id: int) -> Boxer:
+    """Searches the database for a boxers information given Boxers ID. 
+
+    Description:
+        
+    Args:
+        boxer_id (int): A ID associated with a boxer's information in the database
+        
+    Raises:
+        ValueError: Boxer ID was not found in the fetch
+        Error: If any general errors occur
+        
+    Returns:
+        Boxer information 
+    """
+
+    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -165,6 +211,21 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
+    """Searches the database for a name 
+
+    Description:
+        
+    Args:
+        boxer_name (str): The unique name of a boxer
+        
+    Raises:
+        ValueError: Boxer ID was not found in the fetch
+        Error: If any general errors occur
+        
+    Returns:
+        Boxer
+    """
+    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -189,6 +250,20 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
 
 
 def get_weight_class(weight: int) -> str:
+    """Searches the database for a name 
+
+    Description:
+        
+    Args:
+        weight (int): The weight of the boxer. Must be greater than 125 pounds.
+        
+    Raises:
+        ValueError: The weight was invalid. 
+        
+    Returns:
+        Boxer
+    """
+    
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
     elif weight >= 166:
@@ -204,6 +279,20 @@ def get_weight_class(weight: int) -> str:
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
+    """Searches the database for a name 
+
+    Description:
+        
+    Args:
+        boxer_id (int): A ID associated with a boxer's information in the database
+        
+    Raises:
+        ValueError: Boxer with the given ID was not found
+        
+    Returns:
+        Nothing
+    """
+    
     if result not in {'win', 'loss'}:
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
 
