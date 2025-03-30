@@ -41,7 +41,7 @@ def sample_boxer3():
 
 
 #test add fighter to ring
-def test_add_fighter_to_ring(ring_model, sample_boxer1):
+def test_add_boxer_to_ring(ring_model, sample_boxer1):
     """Test adding a boxer to the ring.
 
     """
@@ -50,11 +50,25 @@ def test_add_fighter_to_ring(ring_model, sample_boxer1):
     assert ring_model.ring[0].name == sample_boxer1.name
 
 #test add fighter to full ring
+def test_add_boxer_to_full_ring(ring_model, sample_boxer1):
+    """Test error when adding a boxer to a full ring.
+
+    """
+    ring_model.add_boxer_to_ring(sample_boxer1)
+    with pytest.raises(ValueError, match="Boxer cannot be added. Ring is already full."):
+        ring_model.add_boxer_to_ring(sample_boxer1)
 
 #test add duplicate fighter to ring
+def test_add_duplicate_boxer_to_playlist(ring_model, sample_boxer1):
+    """Test error when adding a duplicate boxer to the ring.
+
+    """
+    ring_model.add_boxer_to_ring(sample_boxer1)
+    with pytest.raises(ValueError, match="Boxer already exists in the ring"):
+        ring_model.add_boxer_to_ring(sample_boxer1)
 
 # test add incorrect / non boxer to ring
-def test_add_invalid_fighter_to_ring(ring_model):
+def test_add_invalid_boxer_to_ring(ring_model):
     """Test error when adding an invalid (non-Boxer) object to the ring."""
     with pytest.raises(TypeError, match="Expected 'Boxer'"):
         ring_model.enter_ring({"name": "Fake Boxer", "weight": 200})
@@ -71,12 +85,28 @@ def test_clear_ring(ring_model, sample_boxer1):
     assert len(ring_model.ring) == 0, "Ring should be empty after clearing"
 
 #test clear empty ring
+def test_clear_empty_ring(ring_model):
+    ring_model.clear_ring()
+    with pytest.raises(ValueError, match="Ring is already empty"):
+        ring_model.clear_ring()
+    
 
 ##################################################
 # Getter Tests
 ##################################################
 
-#test get boxers
+#test get all boxers
+def test_get_all_boxers(ring_model, sample_ring):
+    """Test successfully retrieving all songs from the playlist.
+
+    """
+    ring_model.ring.extend(sample_ring)
+
+    all_boxers = ring_model.get_all_boxers()
+    assert len(all_boxers) == 2
+    assert all_boxers[0].id == 1
+    assert all_boxers[1].id == 2
+
 
 ##################################################
 # Fight Tests
