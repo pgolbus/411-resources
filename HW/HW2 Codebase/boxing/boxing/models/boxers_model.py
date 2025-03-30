@@ -1,3 +1,11 @@
+"""
+Module for managing boxer records.
+
+This module defines the Boxer dataclass and provides functions to create, delete, retrieve,
+and update boxer records in a SQLite database. All operations are performed with input validation,
+appropriate error handling, and detailed logging.
+"""
+
 from dataclasses import dataclass
 import logging
 import sqlite3
