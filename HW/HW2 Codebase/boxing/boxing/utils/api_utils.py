@@ -14,6 +14,16 @@ RANDOM_ORG_URL = os.getenv("RANDOM_ORG_URL",
 
 
 def get_random() -> float:
+    """
+    it gets a random decimal number from random.org
+
+    Returns:
+        float: The random  decimal number from random.org with 2 decimal places
+
+    Raises:
+        ValueError is there is an invalid number that is not a float from random.org
+        RuntimeError if the request to random.org does not work or times out
+    """
     try:
         response = requests.get(RANDOM_ORG_URL, timeout=5)
 
