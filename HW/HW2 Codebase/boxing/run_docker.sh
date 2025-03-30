@@ -8,6 +8,8 @@ CONTAINER_PORT=5000
 DB_VOLUME_PATH=$(pwd)/db # Adjust this to the desired host path for the database persistence
 BUILD=true # Set this to true if you want to build the image
 
+chmod +x entrypoint.sh
+
 # Check if we need to build the Docker image
 if [ "$BUILD" = true ]; then
   echo "Building Docker image..."
@@ -42,10 +44,12 @@ fi
 
 # Run the Docker container with the necessary ports and volume mappings
 echo "Running Docker container..."
+echo "Running image: ${IMAGE_NAME}:${CONTAINER_TAG}"
+
 docker run -d \
-  --name ${IMAGE_NAME}_container \
+  --name "${IMAGE_NAME}_container" \
   --env-file .env \
-  -p ${HOST_PORT}:${CONTAINER_PORT} \
-  -v ${DB_VOLUME_PATH}:/app/db \
-  ${IMAGE_NAME}:${CONTAINER_TAG}
+  -p "${HOST_PORT}:${CONTAINER_PORT}" \
+  -v "${DB_VOLUME_PATH}:/app/db" \
+  "${IMAGE_NAME}:${CONTAINER_TAG}"
 echo "Docker container is running on port ${HOST_PORT}."
