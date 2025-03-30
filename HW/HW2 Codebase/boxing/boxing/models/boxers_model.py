@@ -40,7 +40,7 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
         with get_db_connection() as conn:
             cursor = conn.cursor()
 
-            # Check if the boxer already exists (name must be unique)
+            # Check if the boxer already exists (name must be unique.)
             cursor.execute("SELECT 1 FROM boxers WHERE name = ?", (name,))
             if cursor.fetchone():
                 raise ValueError(f"Boxer with name '{name}' already exists")
