@@ -91,16 +91,15 @@ def test_clear_ring(ring_model, sample_boxer1):
 ##################################################
 
 #test get all boxers
-def test_get_all_boxers(ring_model, sample_ring):
-    """Test successfully retrieving all boxers from the ring.
-
-    """
-    ring_model.ring.extend(sample_ring)
+def test_get_all_boxers(ring_model, sample_boxer1, sample_boxer2):
+    """Test successfully retrieving all boxers from the ring."""
+    ring_model.enter_ring(sample_boxer1)
+    ring_model.enter_ring(sample_boxer2)
 
     all_boxers = ring_model.get_boxers()
     assert len(all_boxers) == 2
-    assert all_boxers[0].id == 1
-    assert all_boxers[1].id == 2
+    assert all_boxers[0].id == sample_boxer1.id
+    assert all_boxers[1].id == sample_boxer2.id
 
 
 ##################################################
