@@ -162,11 +162,13 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
     elif sort_by == "wins":
         query += " ORDER BY wins DESC"
     else:
+        logger.error(f"Invalid leaderboard sort parameter: {sort_by}")
         raise ValueError(f"Invalid sort_by parameter: {sort_by}")
 
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
+            logger.debug("Executing leaderboard query.")
             cursor.execute(query)
             rows = cursor.fetchall()
 
@@ -185,10 +187,12 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
                 'win_pct': round(row[8] * 100, 1)  # Convert to percentage
             }
             leaderboard.append(boxer)
+        logger.info(f"Leaderboard retrieval successful. {len(leaderboard)} boxers found.")
 
         return leaderboard
 
     except sqlite3.Error as e:
+        logger.error(f"Database error during leaderboard retrieval: {e}")
         raise e
 
 
