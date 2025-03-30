@@ -253,7 +253,7 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
         boxer_name (str): The name of the boxer.
 
     Returns:
-        Boxer: An instance of the Boxer dataclass with the boxer's details.
+        Boxer: An instance of the Boxer dataclass with the boxer's input.
 
     Raises:
         ValueError: If no boxer is found with the provided name.
@@ -288,7 +288,7 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
 
 
 def get_weight_class(weight: int) -> str:
-    """Determines the weight class for a given boxer weight.
+    """Determines the weight class for a given boxers weight.
 
     Args:
         weight (int): The weight of the boxer.
@@ -297,7 +297,7 @@ def get_weight_class(weight: int) -> str:
         str: The corresponding weight class.
 
     Raises:
-        ValueError: If the weight is below the minimum valid value (125).
+        ValueError: If the weight is below the minimum valid value of 125.
     """
     logger.debug(f"Determining weight class for weight {weight}.")
     if weight >= 203:
@@ -316,7 +316,7 @@ def get_weight_class(weight: int) -> str:
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
-    """Updates a boxer's fight stats based on match results.
+    """Updates a boxer's fight stats based on the match results.
 
     Args:
         boxer_id (int): The unique identifier of the boxer.
@@ -324,7 +324,7 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
 
     Raises:
         ValueError: If an invalid result is provided or if no boxer is found.
-        sqlite3.Error: If a database error occurs during the update.
+        sqlite3.Error: If a database error occurs.
     """
     logger.info(f"Updating stats for boxer with ID {boxer_id}, result: {result}.")
     if result not in {'win', 'loss'}:
