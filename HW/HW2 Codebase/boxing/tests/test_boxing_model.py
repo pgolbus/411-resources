@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from boxing.models.boxer_model import (
+from boxing.models.boxers_model import (
     Boxer,
     create_boxer,
     delete_boxer,
@@ -230,5 +230,30 @@ def test_get_random_boxer(mock_cursor, mocker):
 
 
 def test_update_win_count(mock_cursor):
-   
+    """Test updating the win count of a boxer."""
+    mock_cursor.fetchone.return_value = (1, "Boxer Name", 30, "Heavyweight", "American", 10)
+
+    # Simulating the update of win count
+    update_win_count(1, 12)
+
+    expected_update_query = normalize_whitespace("""
+        UPDATE boxers SET win_count = ? WHERE id = ?
+    """)
+    actual_update_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+
+    assert actual_update_query == expected_update_query, "The UPDATE query did not match the expected structure."
+
+    # Verify that the update query used the correct arguments
+    expected_update_args = (12, 1)
+    actual_update_args = mock_cursor.execute.call_args[0][1]
+
+    assert actual_update_args == expected_update_args, f"The SQL query arguments did not match. Expected {expected_update_args}, got {actual_update_args}"
+
+
+def test_update_win_count_bad_id(mock_cursor):
+    """Test error when updating a non-existent boxer's win count."""
+    mock_cursor.fetchone.return_value = None
+
+    with pytest.raises(ValueError, match="Boxer with ID 999 not found"):
+        update_win_count(999, 15)
 
