@@ -125,3 +125,4 @@ class RingModel:
         skill = (boxer.weight * len(boxer.name)) + (boxer.reach / 10) + age_modifier
 
         return skill
+

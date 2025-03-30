@@ -306,3 +306,4 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
 
     except sqlite3.Error as e:
         raise e
+

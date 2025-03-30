@@ -34,3 +34,4 @@ def get_random() -> float:
 
     except requests.exceptions.RequestException as e:
         raise RuntimeError(f"Request to random.org failed: {e}")
+
