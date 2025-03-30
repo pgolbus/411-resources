@@ -36,6 +36,8 @@ class RingModel:
             ring (List[Boxer]): A list holding the boxers currently in the ring.
         """
         self.ring: List[Boxer] = []
+        logger.debug("RingModel initialized with an empty ring.")
+
 
     def fight(self) -> str:
         """Conducts a fight between two boxers in the ring.
@@ -50,20 +52,27 @@ class RingModel:
         Raises:
             ValueError: If there are fewer than two boxers in the ring.
         """
+        logger.info("Fight initiated.")
+
         if len(self.ring) < 2:
+            logger.error("Fight cannot be started: less than two boxers in the ring.")
             raise ValueError("There must be two boxers to start a fight.")
 
         boxer_1, boxer_2 = self.get_boxers()
+        logger.debug(f"Boxers in ring: {boxer_1.name} and {boxer_2.name}")
 
         skill_1 = self.get_fighting_skill(boxer_1)
         skill_2 = self.get_fighting_skill(boxer_2)
+        logger.debug(f"Calculated fighting skills: {boxer_1.name}={skill_1}, {boxer_2.name}={skill_2}")
 
         # Compute the absolute skill difference
         # And normalize using a logistic function for better probability scaling
         delta = abs(skill_1 - skill_2)
         normalized_delta = 1 / (1 + math.e ** (-delta))
+        logger.debug(f"Delta: {delta}, Normalized delta: {normalized_delta}")
 
         random_number = get_random()
+        logger.debug(f"Random number generated: {random_number}")
 
         if random_number < normalized_delta:
             winner = boxer_1
@@ -72,10 +81,13 @@ class RingModel:
             winner = boxer_2
             loser = boxer_1
 
+        logger.info(f"Fight result: {winner.name} wins over {loser.name}.")
         update_boxer_stats(winner.id, 'win')
         update_boxer_stats(loser.id, 'loss')
+        logger.debug("Boxer stats updated.")
 
         self.clear_ring()
+        logger.info("Ring cleared after fight.")
 
         return winner.name
 
@@ -85,8 +97,10 @@ class RingModel:
         If the ring is already empty, no action is taken.
         """
         if not self.ring:
+            logger.debug("Clear ring called but the ring is already empty.")
             return
         self.ring.clear()
+        logger.debug("Ring cleared successfully.")
 
     def enter_ring(self, boxer: Boxer):
         if not isinstance(boxer, Boxer):
