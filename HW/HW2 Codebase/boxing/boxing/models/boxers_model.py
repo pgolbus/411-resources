@@ -247,9 +247,23 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
+    """Retrieves a boxer record by their unique name.
+
+    Args:
+        boxer_name (str): The name of the boxer.
+
+    Returns:
+        Boxer: An instance of the Boxer dataclass with the boxer's input.
+
+    Raises:
+        ValueError: If no boxer is found with the provided name.
+        sqlite3.Error: If a database error occurs during retrieval.
+    """
+    logger.info(f"Retrieving boxer with name '{boxer_name}'.")
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
+            logger.debug(f"Executing query to get boxer with name '{boxer_name}'.")
             cursor.execute("""
                 SELECT id, name, weight, height, reach, age
                 FROM boxers WHERE name = ?
@@ -258,19 +272,34 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
             row = cursor.fetchone()
 
             if row:
+                logger.debug(f"Boxer '{boxer_name}' found.")
                 boxer = Boxer(
                     id=row[0], name=row[1], weight=row[2], height=row[3],
                     reach=row[4], age=row[5]
                 )
                 return boxer
             else:
+                logger.error(f"Boxer '{boxer_name}' not found.")
                 raise ValueError(f"Boxer '{boxer_name}' not found.")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error during retrieval of boxer '{boxer_name}': {e}")
         raise e
 
 
 def get_weight_class(weight: int) -> str:
+    """Determines the weight class for a given boxers weight.
+
+    Args:
+        weight (int): The weight of the boxer.
+
+    Returns:
+        str: The corresponding weight class.
+
+    Raises:
+        ValueError: If the weight is below the minimum valid value of 125.
+    """
+    logger.debug(f"Determining weight class for weight {weight}.")
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
     elif weight >= 166:
@@ -280,30 +309,49 @@ def get_weight_class(weight: int) -> str:
     elif weight >= 125:
         weight_class = 'FEATHERWEIGHT'
     else:
+        logger.error(f"Invalid weight: {weight}. Weight must be at least 125.")
         raise ValueError(f"Invalid weight: {weight}. Weight must be at least 125.")
 
     return weight_class
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
+    """Updates a boxer's fight stats based on the match results.
+
+    Args:
+        boxer_id (int): The unique identifier of the boxer.
+        result (str): The result of the fight, either 'win' or 'loss'.
+
+    Raises:
+        ValueError: If an invalid result is provided or if no boxer is found.
+        sqlite3.Error: If a database error occurs.
+    """
+    logger.info(f"Updating stats for boxer with ID {boxer_id}, result: {result}.")
     if result not in {'win', 'loss'}:
+        logger.error(f"Invalid fight result: {result}. Expected 'win' or 'loss'.")
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
 
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
 
+            logger.debug(f"Verifying existence of boxer with ID {boxer_id}.")
             cursor.execute("SELECT id FROM boxers WHERE id = ?", (boxer_id,))
             if cursor.fetchone() is None:
+                logger.error(f"Boxer with ID {boxer_id} not found.")
                 raise ValueError(f"Boxer with ID {boxer_id} not found.")
 
             if result == 'win':
+                logger.debug("Incrementing fights and wins count.")
                 cursor.execute("UPDATE boxers SET fights = fights + 1, wins = wins + 1 WHERE id = ?", (boxer_id,))
             else:  # result == 'loss'
+                logger.debug("Incrementing fights count.")
                 cursor.execute("UPDATE boxers SET fights = fights + 1 WHERE id = ?", (boxer_id,))
 
             conn.commit()
+            logger.info(f"Stats updated successfully for boxer with ID {boxer_id}.")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error during stats update for boxer with ID {boxer_id}: {e}")
         raise e
 
