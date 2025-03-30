@@ -96,6 +96,10 @@ class RingModel:
         if len(self.ring) >= 2:
             logger.error("Ring is full; boxer not added.")
             raise ValueError("Ring is full, cannot add more boxers.")
+        
+        if any(b.id == boxer.id for b in self.ring):
+            logger.error("Boxer already exists in the ring.")
+            raise ValueError("Boxer already exists in the ring")
 
         self.ring.append(boxer)
         logger.info(f"Boxer {boxer.name} added to the ring.")
