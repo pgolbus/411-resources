@@ -9,6 +9,10 @@ if [ ! -d "$VENV_DIR" ]; then
   echo "Creating virtual environment..."
   python3 -m venv $VENV_DIR
   source $VENV_DIR/bin/activate
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7afc7a4 (aksldjfha)
 
   # Install dependencies from requirements.lock if it exists
   if [ -f "$REQUIREMENTS_FILE" ]; then
