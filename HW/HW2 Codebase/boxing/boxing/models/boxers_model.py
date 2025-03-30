@@ -150,6 +150,7 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
         ValueError: If an invalid sort_by parameter is provided.
         sqlite3.Error: If a database error occurs during retrieval.
     """
+    logger.info(f"Retrieving leaderboard sorted by '{sort_by}'.")
     query = """
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
@@ -209,9 +210,11 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
         ValueError: If no boxer is found with the provided ID.
         sqlite3.Error: If a database error occurs during retrieval.
     """
+    logger.info(f"Retrieving boxer with ID {boxer_id}.")
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
+            logger.debug(f"Executing query to get boxer with ID {boxer_id}.")
             cursor.execute("""
                 SELECT id, name, weight, height, reach, age
                 FROM boxers WHERE id = ?
@@ -220,15 +223,18 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
             row = cursor.fetchone()
 
             if row:
+                logger.debug(f"Boxer with ID {boxer_id} found.")
                 boxer = Boxer(
                     id=row[0], name=row[1], weight=row[2], height=row[3],
                     reach=row[4], age=row[5]
                 )
                 return boxer
             else:
+                logger.error(f"Boxer with ID {boxer_id} not found.")
                 raise ValueError(f"Boxer with ID {boxer_id} not found.")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error during retrieval of boxer with ID {boxer_id}: {e}")
         raise e
 
 
