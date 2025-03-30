@@ -111,18 +111,24 @@ def delete_boxer(boxer_id: int) -> None:
         ValueError: If no boxer is found with the provided ID.
         sqlite3.Error: If a database error occurs during deletion.
     """
+    logger.info(f"Initiating deletion of boxer with ID {boxer_id}.")
+
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-
+            logger.debug(f"Verifying existence of boxer with ID {boxer_id}.")
             cursor.execute("SELECT id FROM boxers WHERE id = ?", (boxer_id,))
             if cursor.fetchone() is None:
+                logger.error(f"Deletion failed: Boxer with ID {boxer_id} not found.")
                 raise ValueError(f"Boxer with ID {boxer_id} not found.")
 
+            logger.debug(f"Deleting boxer with ID {boxer_id}.")
             cursor.execute("DELETE FROM boxers WHERE id = ?", (boxer_id,))
             conn.commit()
+            logger.info(f"Boxer with ID {boxer_id} deleted successfully.")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error during deletion of boxer with ID {boxer_id}: {e}")
         raise e
 
 
