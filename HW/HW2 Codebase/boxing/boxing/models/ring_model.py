@@ -22,9 +22,8 @@ class RingModel:
 
     def __init__(self):
        """ Intializes an empty boxing ring."""
-
-        self.ring: List[Boxer] = []
-        logger.info("RingModel initialized with an empty ring.")
+       self.ring: List[Boxer] = []
+       logger.info("RingModel initialized with an empty ring.")
 
     def fight(self) -> str:
         """
@@ -42,7 +41,7 @@ class RingModel:
         """
 
         if len(self.ring) < 2:
-             logger.error("Attempted to start a fight with fewer than two boxers.")
+            logger.error("Attempted to start a fight with fewer than two boxers.")
             raise ValueError("There must be two boxers to start a fight.")
 
         boxer_1, boxer_2 = self.get_boxers()
@@ -60,7 +59,7 @@ class RingModel:
         normalized_delta = 1 / (1 + math.e ** (-delta))
 
         random_number = get_random()
-         logger.debug(f"Random number generated: {random_number}, Normalized delta: {normalized_delta}")
+        logger.debug(f"Random number generated: {random_number}, Normalized delta: {normalized_delta}")
 
         if random_number < normalized_delta:
             winner = boxer_1
@@ -113,7 +112,7 @@ class RingModel:
             raise ValueError("Ring is full, cannot add more boxers.")
 
         self.ring.append(boxer)
-         logger.info(f"Boxer {boxer.name} entered the ring.")
+        logger.info(f"Boxer {boxer.name} entered the ring.")
 
     def get_boxers(self) -> List[Boxer]:    
         """
