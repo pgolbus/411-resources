@@ -21,18 +21,25 @@ def ring_model():
     return RingModel()
 
 
-def test_fight_success(ring_model, boxer1, boxer2):
+def test_fight_success(monkeypatch, ring_model, boxer1, boxer2):
+    """
+    Test the fight function.
+    We control randomness by patching get_random to return a fixed value.
+    We also patch update_boxer_stats to avoid side effects.
+    """
+    monkeypatch.setattr("boxing.models.ring_model.get_random", lambda: 0.0)
+   
+    monkeypatch.setattr("boxing.models.ring_model.update_boxer_stats", lambda boxer_id, result: None)
 
-    # Retrieve the boxers from the database
-    boxer1 = get_boxer_by_name("Boxer 1")
-    boxer2 = get_boxer_by_name("Boxer 2")
-    
+   
     ring_model.enter_ring(boxer1)
     ring_model.enter_ring(boxer2)
 
-    winner = ring_model.fight()
+    winner_name = ring_model.fight()
+    assert winner_name == boxer1.name
+    
+    assert len(ring_model.ring) == 0
 
-    assert winner in [boxer1.name, boxer2.name]
 
 def test_fight_with_less_than_two_boxers(ring_model, boxer1):
     """Test trying to start a fight with fewer than two boxers."""
@@ -98,21 +105,7 @@ def test_get_fighting_skill(ring_model, boxer1, boxer2):
     assert isinstance(skill1, float), "Fighting skill should be a float."
     assert isinstance(skill2, float), "Fighting skill should be a float."
     assert skill1 != skill2, "Fighting skills should differ for different boxers."
-
-
-def test_fight_random_number_logic(mocker, ring_model, boxer1, boxer2):
-    """Test that the random number influences the fight outcome."""
     
-    mock_random = mocker.patch('boxing.utils.api_utils.get_random', return_value=0.5)
-    
-    ring_model.enter_ring(boxer1)
-    ring_model.enter_ring(boxer2)
-
-    winner = ring_model.fight()
-    print(winner)
-
-    assert winner in ['Boxer 1', 'Boxer 2'], f"Expected winner to be Boxer 1 or Boxer 2, but got {winner}"
-
 
 def test_get_boxers(ring_model, boxer1, boxer2):
     """Test retrieving boxers currently in the ring."""
