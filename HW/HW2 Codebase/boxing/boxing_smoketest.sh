@@ -138,3 +138,28 @@ clear_ring() {
 # Leaderboard                                                                  
 #                                                                               
 ############################################################  
+
+
+# Health checks
+check_health
+check_db
+
+# create boxers
+
+# get boxers by name and ID
+
+# Place boxers in ring
+
+# check ring state
+
+# trigger fight
+trigger_fight
+
+# clear ring
+clear_ring
+
+# get leaderboard
+
+# delete boxers
+
+echo "All boxing tests passed successfully!"
