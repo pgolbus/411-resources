@@ -289,7 +289,6 @@ def get_boxer_by_name(boxer_name: str) -> Response:
             "details": str(e)
         }), 500)
 
-
 ############################################################
 #
 # Ring
