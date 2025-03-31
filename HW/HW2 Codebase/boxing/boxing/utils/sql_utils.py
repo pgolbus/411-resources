@@ -11,7 +11,7 @@ configure_logger(logger)
 
 
 # load the db path from the environment with a default value
-DB_PATH = os.getenv("DB_PATH", "/Users/zakiaraujo/Documents/Boston University/Undergrad 2/S25/CS411/Problem Sets/411-resources/HW/HW2 Codebase/boxing/db_data/boxing.db")
+DB_PATH = os.getenv("DB_PATH", "HW/HW2 Codebase/boxing/db_data/boxing.db")
 
 
 def check_database_connection():
