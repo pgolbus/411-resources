@@ -143,8 +143,6 @@ get_leaderboard() {
 #
 ############################################################
 
-# TODO: Add Ring Smoketests
-
 #Error handling and additional test cases.
 enter_ring() {
   name=$1
@@ -221,7 +219,6 @@ get_boxer_by_name "Jane Doe"
 get_leaderboard "wins"
 get_leaderboard "win_pct"
 
-# TODO: Run Ring Smoketests
 clear_ring
 enter_ring "John Doe"
 fight  # Expect fail
