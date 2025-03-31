@@ -7,12 +7,12 @@ from boxing.models.ring_model import RingModel
 @pytest.fixture()
 def boxer1():
     """Fixture to create a new Boxer instance for testing."""
-    return Boxer(id=1, name="Boxer One", weight=80, reach=70, age=30)
+    return Boxer(id=1, name="Boxer One", weight=130, reach=70, age=30, height=180)
 
 @pytest.fixture()
 def boxer2():
     """Fixture to create another Boxer instance for testing."""
-    return Boxer(id=2, name="Boxer Two", weight=85, reach=72, age=32)
+    return Boxer(id=2, name="Boxer Two", weight=170, reach=72, age=32, height=170)
 
 @pytest.fixture()
 def ring_model():
@@ -36,7 +36,7 @@ def test_enter_ring_full(ring_model, boxer1, boxer2):
     ring_model.enter_ring(boxer2)
 
     with pytest.raises(ValueError, match="Ring is full, cannot add more boxers."):
-        ring_model.enter_ring(Boxer(id=3, name="Boxer Three", weight=75, reach=68, age=28))
+        ring_model.enter_ring(Boxer(id=3, name="Boxer Three", weight=175, reach=68, age=28, height=160))
 
 
 def test_enter_ring_invalid_type(ring_model):
@@ -54,8 +54,8 @@ def test_clear_ring(ring_model, boxer1, boxer2):
     assert len(ring_model.ring) == 0
 
 def test_clear_ring_empty(ring_model):
-    """Test clearing an empty ring."""
-    with pytest.raises(ValueError, match="Ring is empty, cannot clear it."):
+    """Test clearing an empty ring should raise an error."""
+    with pytest.raises(ValueError, match="Attempted to clear an empty ring."):
         ring_model.clear_ring()
 
 
