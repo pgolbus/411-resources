@@ -1,13 +1,3 @@
-from dotenv import load_dotenv
-from flask import Flask, jsonify, make_response, Response, request
-# from flask_cors import CORS
-
-from boxing.models import boxers_model
-from boxing.models.ring_model import RingModel
-from boxing.utils.logger import configure_logger
-from boxing.utils.sql_utils import check_database_connection, check_table_exists
-
-
 #!/bin/bash
 
 # Define the base URL for the Flask API
