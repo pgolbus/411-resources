@@ -1,19 +1,33 @@
-from flask import Flask, make_response
+import os
+from flask import Flask, request
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    response = make_response(
-        {
-            'response': 'Hello, World!',
-            'status': 200
-        }
-    )
-    return response
+    return {"response": "Hello, World!", "status": 200}
 
-if __name__ == '__main__':
-    # By default flask is only accessible from localhost.
-    # Set this to '0.0.0.0' to make it accessible from any IP address
-    # on your network (not recommended for production use)
-    app.run(host='0.0.0.0', debug=True)
+@app.route('/repeat', methods=['GET'])
+def repeat():
+    input_value = request.args.get('input', default='No input provided')  # Improved default message
+    return {
+        "body": input_value,
+        "status": 200
+    }, 200
+
+@app.route('/healthcheck', methods=['GET'])  # Optional health check route
+def healthcheck():
+    return  {
+  "body": "OK",
+  "status": 200
+    }, 200
+
+@app.route('/hang', methods=['GET'])
+def hang():
+    while True:
+        pass  # Infinite loop
+
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 5000))  # Ensure this is set to the correct port
+    app.run(host='0.0.0.0', port=port,  threaded=False)
