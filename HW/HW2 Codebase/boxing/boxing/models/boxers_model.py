@@ -26,36 +26,69 @@ class Boxer:
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
-
+    """Creates a new boxer with the given attributes.
+    
+    Args:
+        name: The name of the boxer
+        weight: The weight of the boxer in pounds
+        height: The height of the boxer in inches
+        reach: The reach of the boxer in inches
+        age: The age of the boxer in years
+        
+    Returns:
+        None
+        
+    Raises:
+        ValueError: If a boxer with the same name already exists
+        ValueError: If weight is less than 125 pounds
+        ValueError: If height is not greater than 0
+        ValueError: If reach is not greater than 0
+        ValueError: If age is not between 18 and 40
+    """
+    logger.info(f"Attempting to create boxer: {name} with weight={weight}, height={height}, reach={reach}, age={age}")
+    
     if weight < 125:
+        logger.error(f"Invalid weight: {weight}. Must be at least 125.")
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
+    
     if height <= 0:
+        logger.error(f"Invalid height: {height}. Must be greater than 0.")
         raise ValueError(f"Invalid height: {height}. Must be greater than 0.")
+    
     if reach <= 0:
+        logger.error(f"Invalid reach: {reach}. Must be greater than 0.")
         raise ValueError(f"Invalid reach: {reach}. Must be greater than 0.")
+    
     if not (18 <= age <= 40):
+        logger.error(f"Invalid age: {age}. Must be between 18 and 40.")
         raise ValueError(f"Invalid age: {age}. Must be between 18 and 40.")
-
+    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-
+            
             # Check if the boxer already exists (name must be unique)
+            logger.debug(f"Checking if boxer with name '{name}' already exists")
             cursor.execute("SELECT 1 FROM boxers WHERE name = ?", (name,))
+            
             if cursor.fetchone():
+                logger.error(f"Boxer with name '{name}' already exists")
                 raise ValueError(f"Boxer with name '{name}' already exists")
-
+            
+            logger.debug(f"Inserting new boxer '{name}' into database")
             cursor.execute("""
                 INSERT INTO boxers (name, weight, height, reach, age)
                 VALUES (?, ?, ?, ?, ?)
             """, (name, weight, height, reach, age))
-
+            
             conn.commit()
-
+            logger.info(f"Successfully created boxer: {name}")
+            
     except sqlite3.IntegrityError:
+        logger.error(f"Database integrity error: Boxer with name '{name}' already exists")
         raise ValueError(f"Boxer with name '{name}' already exists")
-
     except sqlite3.Error as e:
+        logger.error(f"Database error when creating boxer '{name}': {str(e)}")
         raise e
 
 

@@ -32,3 +32,5 @@ EXPOSE 5000
 
 # Run the entrypoint script when the container launches
 CMD ["/app/entrypoint.sh"]
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
