@@ -1,0 +1,15 @@
+The first step is to run the official installer
+
+> sh get-docker.sh
+
+After that, you need to add your user to the docker "group". Otherwise you
+will have to run docker as ROOT. We'll discuss all of this later.
+Long story short, after running the installer, run
+
+> sudo groupadd docker
+> sudo usermod -aG docker $USER
+> newgrp docker
+
+Now you should be able to run
+
+> docker run hello-world

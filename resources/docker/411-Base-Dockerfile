@@ -1,0 +1,87 @@
+# Note that this base Dockerfile is meant as a barebonnes starting point
+# Modify it to your hearts content
+
+#########################
+# Step 1: build the image
+
+# # the -f flag specifies the Dockerfile. The . specifies the current working
+# # directory as the build context
+
+# docker build -t 411-base-image:1.0.0 -f 411-Base-Dockerfile .
+
+#########################
+# Step 2: create a directory for persistant local storage
+# # You are going to want to be able to write data to your hard drive that
+# # "persists" outside of the container. The first step is to create a
+# # directory that is "mounted" inside of the container. What does "mounted"
+# # mean?
+# # # https://www.geeksforgeeks.org/mount-command-in-linux-with-examples/
+
+# mkdir container_storage
+
+#########################
+# Step 3: run the container with persistent storage.
+# # Running the container both creates it and starts it
+# # The -it flags start it in interactive terminal mode
+# # -v attaches the volume
+# # -p maps the https port (443) from the host into the container
+
+# docker run -it \
+#            -v </path/to/container_storage>/container_storage:/usr/src/app \
+#            -p 443:443 \
+#            --name my-411-container \
+#            411-base-image:1.0.0
+
+# # note that you MUST specify a path to container_storage. If it is in the same directory as where you are
+# # running docker it's at .
+
+# docker run -it \
+#            -v ./container_storage:/usr/src/app \
+#            -p 443:443 \
+#            --name my-411-container \
+#            411-base-image:1.0.0
+
+#########################
+# Step 4: exit the container
+
+# exit
+
+# # or
+
+# ctrl-d
+
+########################
+# Step 5: stop the container
+
+# docker stop my-411-container
+
+#######################
+# Step 6: restart the container
+# # The -i flag starts it in interactive mode. It already has the terminal, storage and ports
+# # from whan you ran it
+
+# docker start -i my-411-container
+
+#######################
+
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
+
+# Install git
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+# Create a directory for persistent storage
+RUN mkdir -p /usr/src/app
+
+# Set the working directory to our app directory
+WORKDIR /usr/src/app
+
+# VOLUME instruction creates a mount point and marks it as holding externally mounted volumes
+VOLUME ["/usr/src/app"]
+
+# EXPOSE the https port (443) on the container. Note that this acts more as documentation
+# You must actually map the port when you run the container
+EXPOSE 443
+
+# Command to keep the container running in interactive terminal mode
+CMD [ "bash" ]

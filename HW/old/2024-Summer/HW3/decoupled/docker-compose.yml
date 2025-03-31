@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  flask-app:
+    build: ./service
+    # image: chopsticks_flask-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_DEBUG=1
+
+  react-app:
+    build:
+      context: ./client
+      args:
+        REACT_APP_FLASK_API: http://${FLOATING_IP}:5000/tictactoe
+    # image: decoupled_react-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - flask-app
