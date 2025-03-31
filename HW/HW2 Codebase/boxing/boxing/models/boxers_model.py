@@ -57,6 +57,7 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
 
     except sqlite3.Error as e:
         raise e
+    return cursor.lastrowid
 
 
 def delete_boxer(boxer_id: int) -> None:
