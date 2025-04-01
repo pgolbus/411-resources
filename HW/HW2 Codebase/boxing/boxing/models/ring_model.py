@@ -50,6 +50,7 @@ class RingModel:
         
         if not self.ring:
             return
+        logger.info("ring is cleared now.")
         self.ring.clear()
 
     def enter_ring(self, boxer: Boxer):
@@ -63,22 +64,21 @@ class RingModel:
             ValueError: If the ring is already full (contains two boxers).
         """
         
+        logger.info("Received request to add a boxer to the ring")
+        
         if not isinstance(boxer, Boxer):
+            logger.error("Invalid type: Boxer is not a valid Boxer instance")
             raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
 
         if len(self.ring) >= 2:
+            logger.error(f"Ring is full, cannot add more boxers.")
             raise ValueError("Ring is full, cannot add more boxers.")
 
         self.ring.append(boxer)
+        logger.info(f"Successfully added boxer to ring: {boxer.id} - {boxer.name} ({boxer.age} years, {boxer.weight} pounds, {boxer.height} inches, {boxer.reach} inches)")
 
     def get_boxers(self) -> List[Boxer]:
         """Returns the list of boxers currently in the ring."""
-        
-        if not self.ring:
-            pass
-        else:
-            pass
-
         return self.ring
 
     def get_fighting_skill(self, boxer: Boxer) -> float:
