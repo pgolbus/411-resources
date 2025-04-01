@@ -22,8 +22,8 @@ RUN apt-get update && apt-get install -y sqlite3
 # Add a shell script that loads the .env file and handles database creation
 COPY ./sql/create_db.sh /app/sql/create_db.sh
 COPY ./sql/init_db.sql /app/sql/init_db.sql
-RUN chmod +x /app/sql/create_db.sh
-
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 # Define a volume for persisting the database
 VOLUME ["/app/db"]
 
@@ -31,4 +31,6 @@ VOLUME ["/app/db"]
 EXPOSE 5000
 
 # Run the entrypoint script when the container launches
-CMD ["/app/entrypoint.sh"]
+
+
+CMD ["sh", "/app/entrypoint.sh"]
