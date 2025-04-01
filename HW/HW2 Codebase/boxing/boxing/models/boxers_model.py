@@ -78,9 +78,11 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
             logger.info(f"Boxer '{name}' successfully added to the database.")
 
     except sqlite3.IntegrityError:
+        logger.error(f"Boxer with name '{name}' already exists")
         raise ValueError(f"Boxer with name '{name}' already exists")
 
     except sqlite3.Error as e:
+        logger.error(f"error while creating boxer: {e}")
         raise e
 
 

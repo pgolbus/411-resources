@@ -62,13 +62,15 @@ add_boxer() {
   
 
   echo "Adding boxer ($name - $age, $height) to the ring..."
-  curl -s -X POST "$BASE_URL/create-boxer" -H "Content-Type: application/json" \
-   -d "{\"name\":\"$name\", \"weight\":$weight, \"height\":$height, \"reach\":$reach, \"age\":$age}" | grep -q '"status": "success"'
+  response=$(curl -s -X POST "$BASE_URL/add-boxer" -H "Content-Type: application/json" \
+    -d "{\"name\":\"$name\", \"weight\":$weight, \"height\":$height, \"reach\":$reach, \"age\":$age}")
+  echo "$response" | grep -q '"status": "success"'
 
   if [ $? -eq 0 ]; then
     echo "boxer added successfully."
   else
     echo "Failed to add boxer."
+    echo "$response"
     exit 1
   fi
 }
