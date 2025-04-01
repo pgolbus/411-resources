@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Define the base URL for the Flask API
-PORT=5001
-BASE_URL="http://localhost:$PORT/api"
+BASE_URL="http://localhost:5000/api"
 
 # Flag to control whether to echo JSON output
 ECHO_JSON=false
@@ -19,7 +18,7 @@ done
 
 ###############################################
 #
-# Health checks
+# Health Checks
 #
 ###############################################
 
@@ -48,52 +47,42 @@ check_db() {
 }
 
 
-############################################################
+##########################################################
+#
+# Boxer Management
+#
+##########################################################
+
+add_boxer() {
+  name=$1
+  weight=$2
+  height=$3
+  reach=$4
+  age=$5
+
+  echo "Adding boxer ($name) to the ring..."
+  curl -s -X POST "$BASE_URL/add-boxer" -H "Content-Type: application/json" \
+    -d "{\"name\":\"$name\", \"weight\":$weight, \"height\":$height, \"reach\":$reach, \"age\":$age}" | grep -q '"status": "success"'
+
+  if [ $? -eq 0 ]; then
+    echo "Boxer added successfully."
+  else
+    echo "Failed to add boxer."
+    exit 1
+  fi
+}
+
+
+###############################################
 #
 # Ring Management
 #
-############################################################
+###############################################
 
-add_boxer_to_ring() {
-  id=$1
-  name=$2
-  age=$3
-  weight=$4
-  reach=$5
-  height=$6
-
-  echo "Adding boxer: $name (ID: $id, Age: $age, Weight: $weight, Reach: $reach, Height: $height)..."
-  response=$(curl -s -X POST "$BASE_URL/enter-ring" \
-    -H "Content-Type: application/json" \
-    -d "{\"id\": $id, \"name\": \"$name\", \"age\": $age, \"weight\": $weight, \"reach\": $reach, \"height\": $height}")
-  if echo "$response" | grep -q '"status": "success"'; then
-    echo "Boxer added successfully."
-  else
-    echo "Failed to add boxer to ring."
-    echo "$response"
-    exit 1
-  fi
-}
-
-get_all_boxers_from_ring() {
-  echo "Retrieving all boxers from the ring..."
-  response=$(curl -s -X GET "$BASE_URL/get-boxers")
-
-  if echo "$response" | grep -q '"status": "success"'; then
-    echo "All boxers retrieved successfully."
-    if [ "$ECHO_JSON" = true ]; then
-      echo "Boxers JSON:"
-      echo "$response" | jq .
-    fi
-  else
-    echo "Failed to retrieve all boxers from ring."
-    exit 1
-  fi
-}
 
 clear_ring() {
-  echo "Clearing the ring..."
-  response=$(curl -s -X POST "$BASE_URL/clear-ring")
+  echo "Clearing ring..."
+  response=$(curl -s -X POST "$BASE_URL/clear-boxers")
 
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Ring cleared successfully."
@@ -103,10 +92,77 @@ clear_ring() {
   fi
 }
 
-s
+enter_ring() {
+  name=$1
+  echo "Entering boxer into ring: $name..."
+  response=$(curl -s -X POST "$BASE_URL/enter-ring" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\": \"$name\"}")
 
-# Health checks
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer entered ring successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Ring JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to enter boxer to ring."
+    exit 1
+  fi
+}
+
+get_boxers() {
+  echo "Retrieving boxers from the ring..."
+  response=$(curl -s -X GET "$BASE_URL/get-boxers")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxers retrieved successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Boxers JSON:"
+      echo "$response" | jq .
+     fi
+  else
+    echo "Failed to retrieve boxers."
+    exit 1
+  fi
+}
+
+fight() {
+  echo "Starting a fight between boxers..."
+  response=$(curl -s -X GET "$BASE_URL/fight")
+  if echo "$response" | grep -q '"status": "success"'; then
+    winner=$(echo "$response" | jq -r '.winner')
+    echo "Fight completed successfully. Winner: $winner"
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Fight Result JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to start a fight."
+    exit 1
+  fi
+}
+
+# Health Checks
 check_health
 check_db
 
+# Add boxers
+add_boxer "Boxer 1" 150 68 70 30
+add_boxer "Boxer 2" 155 70 72 28
+add_boxer "Boxer 3" 160 66 68 32
+
+clear_ring
+
+enter_ring "Boxer 1"
+enter_ring "Boxer 2"
+get_boxers
+fight
+get_boxers
+
+enter_ring "Boxer 1"
+clear_ring
+get_boxers
+
+echo "All tests passed  successfully!"
 
