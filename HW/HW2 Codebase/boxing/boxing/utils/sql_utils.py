@@ -15,6 +15,13 @@ DB_PATH = os.getenv("DB_PATH", "/app/sql/boxing.db")
 
 
 def check_database_connection():
+    """
+    Check connection to the database
+
+    Raises:
+        Exception: If the database connection is not OK.
+
+    """
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
@@ -28,6 +35,16 @@ def check_database_connection():
         raise Exception(error_message) from e
 
 def check_table_exists(tablename: str):
+    """
+    Queries the SQLite master table to check if the table, tablename, exists.
+
+    Args:
+        tablename (str): The name of the table being checked.
+
+    Raises:
+        Exception: If the table does not exist.
+
+    """
     try:
 
         conn = sqlite3.connect(DB_PATH)
@@ -49,6 +66,16 @@ def check_table_exists(tablename: str):
 
 @contextmanager
 def get_db_connection():
+    """
+    Context manager for SQLite database connection.
+
+    Yields:
+        sqlite3.Connection: The connection object.
+
+    Raises:
+        sqlite3.Error: If there is an issue connecting to the database.
+
+    """
     conn = None
     try:
         conn = sqlite3.connect(DB_PATH)
