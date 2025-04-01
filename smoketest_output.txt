@@ -1,0 +1,26 @@
+▶️ Testing root endpoint...
+{
+  "response": "Hello, World!",
+  "status": 200
+}
+▶️ Creating boxer Boxer1...
+{
+  "error": "Boxer already exists"
+}
+▶️ Creating boxer Boxer2...
+{
+  "error": "Boxer already exists"
+}
+▶️ Trying to create a third boxer (should fail)...
+{
+  "error": "Cannot add more than 2 boxers"
+}
+▶️ Getting all boxers...
+{
+  "boxers": [
+    "Boxer1",
+    "Boxer2"
+  ]
+}
+▶️ Making them fight...
+✅ Smoketest complete.
