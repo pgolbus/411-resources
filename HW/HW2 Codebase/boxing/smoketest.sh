@@ -202,19 +202,6 @@ get_boxers() {
   fi
 }
 
-get_fighting_skills() {
-  boxer_id=$1
-  echo "Retrieving fighting skills from boxer: $boxer_id ..."
-  response=$(curl -s -X GET "$BASE_URL/get-fighting-skills/$boxer_id")
-
-  if echo "$response" | grep -q '"status":'; then
-    echo "Boxer's fighting skills retrieved successfully."
-  else
-    echo "Failed to retrieve boxer's fighting skills."
-    exit 1
-  fi
-}
-
 
 ######################################################
 #
@@ -226,7 +213,7 @@ get_fighting_skills() {
 get_leaderboard() {
   sortfield=$1
   echo "Getting boxer leaderboard sorted by win_pct..."
-  response=$(curl -s -X GET "$BASE_URL/leaderboard?sort=$sortfield")
+  response=$(curl -s -X GET "$BASE_URL/leaderboard")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "boxer leaderboard retrieved successfully."
     if [ "$ECHO_JSON" = true ]; then
@@ -252,21 +239,37 @@ add_boxer "John" 167 72 20 36
 add_boxer "Tom" 125 70 12 30
 add_boxer "Sam" 190 75 30 40
 
+# Error add boxer with same name
+# add_boxer "Tom" 140 70 12 28
+# It outputs the error message, but terminates the testing
+
+# Get boxers
 get_boxers
 
+# delete boxer
+delete_boxer 4
+
+# get boxxers by attributes
 get_boxer_by_id 1
 get_boxer_by_id 2
 get_boxer_by_name "Tom"
 
+# add boxers to a ring
 enter_ring "Mike" 170 80 12 25
 enter_ring "John" 167 72 20 36
 
-bout
-
-get_fighting_skills 3
-
+# clear ring
 clear_boxers
 
+# add boxers back to a ring
+enter_ring "Mike" 170 80 12 25
+enter_ring "John" 167 72 20 36
+
+# Error test add third boxer to ring
+# add_boxer "Tom" 125 70 12 30 
+# It outputs the error message, but terminates the testing
+
+fight
 
 get_leaderboard
 
