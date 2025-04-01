@@ -59,7 +59,7 @@ add_boxer() {
   reach=$4
   age=$5
 
-  echo "Adding boxer: $name"
+  echo "Adding boxer: $name ($age yrs)"
   response=$(curl -s -X POST "$BASE_URL/add-boxer" -H "Content-Type: application/json" \
     -d "{\"name\": \"$name\", \"weight\": $weight, \"height\": $height, \"reach\": $reach, \"age\": $age}")
 
