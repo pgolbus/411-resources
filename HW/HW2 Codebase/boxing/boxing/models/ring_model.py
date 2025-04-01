@@ -20,8 +20,8 @@ class RingModel:
 
     """
     def __init__(self):
-    """initialize to an empty ring
-    """
+        """initialize to an empty ring
+        """
         self.ring: List[Boxer] = []
 
     def fight(self) -> str:
@@ -46,7 +46,7 @@ class RingModel:
 
         skill_1 = self.get_fighting_skill(boxer_1)
         skill_2 = self.get_fighting_skill(boxer_2)
-        logger.info("Skills received from boxers.")
+        logger.info("Fighting skills received from boxers.")
 
         # Compute the absolute skill difference
         # And normalize using a logistic function for better probability scaling
@@ -90,13 +90,18 @@ class RingModel:
             ValueError: If the ring is full.
 
         """
+        logger.info("Boxer is requesting to enter the ring.")
         if not isinstance(boxer, Boxer):
+            logger.error("Invalid boxer type was entered.")
             raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
 
         if len(self.ring) >= 2:
+            logger.error("Invalid request: cannot have more than 2 boxers in the ring.")
             raise ValueError("Ring is full, cannot add more boxers.")
 
         self.ring.append(boxer)
+        logger.info("Boxer is added and entering the ring.")
+
 
     def get_boxers(self) -> List[Boxer]:
         """Returns a list of boxers in the ring.
@@ -109,11 +114,14 @@ class RingModel:
 
         """
         if not self.ring:
-            pass
+            logger.error("There are no boxers to retrieve from the ring.")
+            raise ValueError("Invalid request: Ring is empty, unable to retrieve boxers.")
         else:
             pass
 
+        logger.info("Fetching the boxers in the ring...")
         return self.ring
+        
 
     def get_fighting_skill(self, boxer: Boxer) -> float:
         """Returns the boxers skill rating.
@@ -126,4 +134,5 @@ class RingModel:
         age_modifier = -1 if boxer.age < 25 else (-2 if boxer.age > 35 else 0)
         skill = (boxer.weight * len(boxer.name)) + (boxer.reach / 10) + age_modifier
 
+        logger.info("Retrieving the boxer's fighting skill...")
         return skill
