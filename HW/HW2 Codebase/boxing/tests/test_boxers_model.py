@@ -136,3 +136,95 @@ def test_delete_boxer_not_found(fake_db_connection) -> None:
     fake_db_connection.fetchone_value = None
     with pytest.raises(ValueError, match="not found"):
         delete_boxer(2)
+        
+def test_get_leaderboard_success(fake_db_connection) -> None:
+    """Test that get_leaderboard returns a valid leaderboard list.
+
+    Verifies that the leaderboard is returned as a list with correct boxer details
+    when a valid sort parameter is provided.
+
+    Args:
+        fake_db_connection: Fixture that provides a fake database connection.
+    """
+    leaderboard = get_leaderboard("wins")
+    assert isinstance(leaderboard, list)
+    assert leaderboard[0]["name"] == "Test Boxer"
+    leaderboard_pct = get_leaderboard("win_pct")
+    assert leaderboard_pct[0]["win_pct"] == round(0.6 * 100, 1)
+
+
+def test_get_leaderboard_invalid_sort() -> None:
+    """Test that get_leaderboard raises a ValueError for an invalid sort parameter."""
+    with pytest.raises(ValueError, match="Invalid sort_by parameter"):
+        get_leaderboard("invalid")
+
+
+def test_get_boxer_by_id_success(fake_db_connection) -> None:
+    """Test that get_boxer_by_id returns a Boxer object for a valid ID.
+
+    Args:
+        fake_db_connection: Fixture that provides a fake database connection.
+    """
+    boxer = get_boxer_by_id(1)
+    assert isinstance(boxer, Boxer)
+    assert boxer.name == "Test Boxer"
+
+
+def test_get_boxer_by_id_not_found(fake_db_connection) -> None:
+    """Test that get_boxer_by_id raises a ValueError when no boxer is found for the given ID.
+
+    Args:
+        fake_db_connection: Fixture that provides a fake database connection.
+    """
+    fake_db_connection.fetchone_value = None
+    with pytest.raises(ValueError, match="not found"):
+        get_boxer_by_id(2)
+
+
+def test_get_boxer_by_name_success(fake_db_connection) -> None:
+    """Test that get_boxer_by_name returns a Boxer object for a valid name.
+
+    Args:
+        fake_db_connection: Fixture that provides a fake database connection.
+    """
+    fake_db_connection.fetchone_value = (1, "Test Boxer", 150, 70, 72.0, 25)
+    boxer = get_boxer_by_name("Test Boxer")
+    assert isinstance(boxer, Boxer)
+    assert boxer.id == 1
+
+
+def test_get_boxer_by_name_not_found(fake_db_connection) -> None:
+    """Test that get_boxer_by_name raises a ValueError when the boxer is not found.
+
+    Args:
+        fake_db_connection: Fixture that provides a fake database connection.
+    """
+    fake_db_connection.fetchone_value = None
+    with pytest.raises(ValueError, match="not found"):
+        get_boxer_by_name("Unknown Boxer")
+
+
+def test_get_weight_class_heavy() -> None:
+    """Test that get_weight_class returns 'HEAVYWEIGHT' for a weight of 205."""
+    assert get_weight_class(205) == "HEAVYWEIGHT"
+
+
+def test_get_weight_class_middle() -> None:
+    """Test that get_weight_class returns 'MIDDLEWEIGHT' for a weight of 170."""
+    assert get_weight_class(170) == "MIDDLEWEIGHT"
+
+
+def test_get_weight_class_light() -> None:
+    """Test that get_weight_class returns 'LIGHTWEIGHT' for a weight of 140."""
+    assert get_weight_class(140) == "LIGHTWEIGHT"
+
+
+def test_get_weight_class_feather() -> None:
+    """Test that get_weight_class returns 'FEATHERWEIGHT' for a weight of 130."""
+    assert get_weight_class(130) == "FEATHERWEIGHT"
+
+
+def test_get_weight_class_invalid() -> None:
+    """Test that get_weight_class raises a ValueError for an invalid weight (below 125)."""
+    with pytest.raises(ValueError, match="Invalid weight"):
+        get_weight_class(120)
