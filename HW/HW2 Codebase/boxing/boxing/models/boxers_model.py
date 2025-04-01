@@ -26,10 +26,8 @@ class Boxer:
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
-    """Creates a new boxer in the database with the given information
-
-    Description:
-
+    """Creates a new boxer in the database with the given information.
+    
     Args:
         name (str): The name of the boxer. Must have a unique name.
         weight (int): The weight of the boxer. Must be greater than 125 pounds.
@@ -38,16 +36,17 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
         age (int): The age of the boxer. Must be between 18 years old and 40 years old inclusive.
         
     Raises:
-        ValueError: The weight is not at least 125 pounds
+        ValueError: The weight is not at least 125 pounds.
         ValueError: The height is not greater than 0 inches.
-        ValueError: The reach is not greather than 0 inches
-        ValueError: The age is not in between 18 years old and 40 years old inclusive
+        ValueError: The reach is not greather than 0 inches.
+        ValueError: The age is not in between 18 years old and 40 years old inclusive.
         ValueError: There is a boxer already with the same name and it already exists.
         IntegrityError: Multiple of the same named boxers are inserted.
-        Error: If any general errors occur
+        Error: If any connection failure to database occurs.
         
     Returns:
-        Nothing
+        Nothing.
+        
     """
     if weight < 125:
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
@@ -82,19 +81,18 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
 
 
 def delete_boxer(boxer_id: int) -> None:
-    """Deletes a boxer from the database based on the given boxer ID
-
-    Description:
+    """Deletes a boxer from the database based on the given boxer ID.
     
     Args:
-        boxer_id (int): A ID associated with a boxer's information in the database
+        boxer_id (int): A ID associated with a boxer's information in the database.
         
     Raises:
-        ValueError: Boxer ID was not found in the fetch
-        Error: If any general errors occur
+        ValueError: Boxer ID was not found in the fetch.
+        Error: If any connection failure to database occurs.
         
     Returns:
-        Nothing
+        Nothing.
+        
     """
     
     try:
@@ -113,19 +111,18 @@ def delete_boxer(boxer_id: int) -> None:
 
 
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
-    """Deletes a boxer from the database based on the given boxer ID
-
-    Description:
-        
+    """Retreieves a list of boxers from the data base sorted by win percentage or wins if the boxer has at least one match.
+    
     Args:
-        boxer_id (int): A ID associated with a boxer's information in the database
+        sort_by (str): Default set to "wins", selects whether the leaderboard is sorted by wins or win percentage based on if equal to "wins" or "win_pct".
         
     Raises:
-        ValueError: Boxer ID was not found in the fetch
-        Error: If any general errors occur
+        ValueError: If sort_by is not set to either "win_pct" or "wins".
+        Error: If any connection failure to database occurs.
         
-    Returns:
-        Nothing
+    Returns: 
+        leaderboard (list): A list of dictionaries of boxers sorted by win percentage or total wins.
+          
     """
     
     query = """
@@ -171,19 +168,18 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
 
 def get_boxer_by_id(boxer_id: int) -> Boxer:
-    """Searches the database for a boxers information given Boxers ID. 
-
-    Description:
-        
+    """Searches the database for a boxers information given Boxers ID and returns a Boxer object.
+    
     Args:
-        boxer_id (int): A ID associated with a boxer's information in the database
+        boxer_id (int): A ID associated with a boxer's information in the database.
         
     Raises:
-        ValueError: Boxer ID was not found in the fetch
-        Error: If any general errors occur
+        ValueError: boxer ID was not found in the fetch.
+        Error: If any connection failure to database occurs.
         
     Returns:
-        Boxer information 
+        Boxer (object): A Boxer object with the given boxer_id.
+        
     """
 
     
@@ -211,19 +207,18 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
-    """Searches the database for a name 
-
-    Description:
+    """Searches the database for a str that matches boxer_name and returns a Boxer object
         
     Args:
-        boxer_name (str): The unique name of a boxer
+        boxer_name (str): The unique name of a boxer.
         
     Raises:
-        ValueError: Boxer ID was not found in the fetch
-        Error: If any general errors occur
+        ValueError: Boxer name was not found in the fetch.
+        Error: If any connection failure to database occurs.
         
     Returns:
-        Boxer
+        Boxer (object): A Boxer object with the given boxer_name.
+        
     """
     
     try:
@@ -250,18 +245,17 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
 
 
 def get_weight_class(weight: int) -> str:
-    """Searches the database for a name 
+    """Determines the weightclass of given integer.
 
-    Description:
-        
     Args:
-        weight (int): The weight of the boxer. Must be greater than 125 pounds.
+        weight (int): The int the function is comparing. Must be greater than 125 pounds. Represents weigth of boxer.
         
     Raises:
-        ValueError: The weight was invalid. 
+        ValueError: weight was not at least 125.
         
     Returns:
-        Boxer
+        weight_class (str): returns 'HEAVYWEIGHT','MIDDLEWEIGHT','LIGHTWEIGHT','FEATHERWEIGHT' based on the range varible weight is in.
+        
     """
     
     if weight >= 203:
@@ -279,18 +273,20 @@ def get_weight_class(weight: int) -> str:
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
-    """Searches the database for a name 
-
-    Description:
+    """Updates the number of fights a boxer with the given boxer_id has completed and updates the number of wins based on result in the database.
         
     Args:
-        boxer_id (int): A ID associated with a boxer's information in the database
+        boxer_id (int): A ID associated with a boxer's information in the database.
+        result (str): The result of a boxers match. Must be 'win' or 'loss.
         
     Raises:
-        ValueError: Boxer with the given ID was not found
+        ValueError: result(str) is not equal to 'win' or 'loss'.
+        ValueError: Boxer with the given ID was not found.
+        Error: If any connection failure to database occurs.
         
     Returns:
         Nothing
+        
     """
     
     if result not in {'win', 'loss'}:
