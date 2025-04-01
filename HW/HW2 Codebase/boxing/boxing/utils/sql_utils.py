@@ -28,6 +28,17 @@ def check_database_connection():
         raise Exception(error_message) from e
 
 def check_table_exists(tablename: str):
+    """
+    Check if the table exists by querying the SQLite master table.
+
+    Args:
+        tablename (str): The name of the table to check.
+
+    Raises:
+        Exception: If the table does not exist.
+
+    """
+    
     try:
 
         conn = sqlite3.connect(DB_PATH)
@@ -49,6 +60,16 @@ def check_table_exists(tablename: str):
 
 @contextmanager
 def get_db_connection():
+    """Context manager for SQLite database connection.
+
+    Yields:
+        sqlite3.Connection: The SQLite connection object.
+
+    Raises:
+        sqlite3.Error: If there is an issue connecting to the database.
+
+    """
+    
     conn = None
     try:
         conn = sqlite3.connect(DB_PATH)
