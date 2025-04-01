@@ -11,22 +11,22 @@ def ring_model():
     return RingModel()
 
 @pytest.fixture
-def mock_update_boxer_stats():
+def mock_update_boxer_stats(mocker):
     """Mock the update_boxer_stats function for testing."""
-    return Mock()
+    return mocker.patch("boxing.models.ring_model.update_boxer_stats")
 
 """Fixtures providing sample boxers for the tests."""
 @pytest.fixture
 def sample_boxer1():
-    return Boxer(id=1, name="Boxer 1", age=33, weight=148, reach=72)
+    return Boxer(id=1, name="Boxer 1", age=33, weight=148, reach=72, height=70)
 
 @pytest.fixture
 def sample_boxer2():
-    return Boxer(id=2, name="Boxer 2", age=23, weight=146, reach=70)
+    return Boxer(id=2, name="Boxer 2", age=23, weight=146, reach=70, height=68)
 
 @pytest.fixture
 def sample_boxer3():
-    return Boxer(id=3, name="Boxer 3", age=40, weight=140, reach=75)
+    return Boxer(id=3, name="Boxer 3", age=40, weight=140, reach=75, height=69)
 
 @pytest.fixture
 def sample_ring(sample_boxer1, sample_boxer2):
@@ -86,7 +86,7 @@ def test_get_one_boxer(ring_model, sample_boxer1):
 
     all_boxers = ring_model.get_boxers()
     assert len(all_boxers) == 1
-    assert retrieved_boxers[0].id == 1
+    assert all_boxers[0].id == 1
 
 def test_get_all_boxers(ring_model, sample_boxer1, sample_boxer2):
     """Test successfully retrieving all boxers from the ring.
@@ -97,8 +97,8 @@ def test_get_all_boxers(ring_model, sample_boxer1, sample_boxer2):
 
     all_boxers = ring_model.get_boxers()
     assert len(all_boxers) == 2
-    assert retrieved_boxers[0].id == 1
-    assert retrieved_boxers[1].id == 2
+    assert all_boxers[0].id == 1
+    assert all_boxers[1].id == 2
 
 def test_get_all_boxers_empty(ring_model):
     """Test retrieving boxers from an empty ring.

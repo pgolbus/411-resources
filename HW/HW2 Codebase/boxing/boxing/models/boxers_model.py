@@ -26,7 +26,7 @@ class Boxer:
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
-     """Creates a new boxer in the database with the given information
+    """Creates a new boxer in the database with the given information
 
     Description:
 
