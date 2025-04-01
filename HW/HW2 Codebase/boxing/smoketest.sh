@@ -94,7 +94,7 @@ get_boxer_by_id() {
   boxer_id=$1
 
   echo "Getting boxer by ID ($boxer_id)..."
-  response=$(curl -s -X GET "$BASE_URL/get-boxer-from-catalog-by-id/$boxer_id")
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-id/$boxer_id")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "boxer retrieved successfully by ID ($boxer_id)."
     if [ "$ECHO_JSON" = true ]; then
@@ -112,7 +112,7 @@ get_boxer_by_name() {
   boxer_name=$1
 
   echo "Getting boxer by Name ($boxer_name)..."
-  response=$(curl -s -X GET "$BASE_URL/get-boxer-from-catalog-by-name/$boxer_name")
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-name/$boxer_name")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "boxer retrieved successfully by Name ($boxer_name)."
     if [ "$ECHO_JSON" = true ]; then
@@ -151,7 +151,7 @@ bout() {
 
 clear_boxers() {
   echo "Clearing ring..."
-  response=$(curl -s -X POST "$BASE_URL/clear-ring")
+  response=$(curl -s -X POST "$BASE_URL/clear-boxers")
 
   if echo "$response" | grep -q '"status": "success"'; then
     echo "ring cleared successfully."
@@ -220,8 +220,9 @@ get_fighting_skills() {
 
 # Function to get the boxer leaderboard sorted by win_pct
 get_leaderboard() {
+  sortfield=$1
   echo "Getting boxer leaderboard sorted by win_pct..."
-  response=$(curl -s -X GET "$BASE_URL/boxer-leaderboard?sort=win_pct")
+  response=$(curl -s -X GET "$BASE_URL/leaderboard?sort=$sortfield")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "boxer leaderboard retrieved successfully."
     if [ "$ECHO_JSON" = true ]; then
