@@ -26,7 +26,6 @@ class Boxer:
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
-
     """creates a boxer based on given characteristics
  
      Args:

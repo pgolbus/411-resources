@@ -20,12 +20,12 @@ class RingModel:
 
     """
     def __init__(self):
-    """initialize to an empti ring
+    """initialize to an empty ring
     """
         self.ring: List[Boxer] = []
 
     def fight(self) -> str:
-            """determine a fight outcome.
+        """determine a fight outcome.
 
         Args:
             self (Boxer): The boxer fighting.
@@ -39,12 +39,14 @@ class RingModel:
 
         """
         if len(self.ring) < 2:
+            logger.error("Invalid value: There are not enough boxers in the ring.")
             raise ValueError("There must be two boxers to start a fight.")
 
         boxer_1, boxer_2 = self.get_boxers()
 
         skill_1 = self.get_fighting_skill(boxer_1)
         skill_2 = self.get_fighting_skill(boxer_2)
+        logger.info("Skills received from boxers.")
 
         # Compute the absolute skill difference
         # And normalize using a logistic function for better probability scaling
@@ -72,8 +74,10 @@ class RingModel:
 
         """
         if not self.ring:
+            logger.error("Attempted to clear an empty ring.")
             return
         self.ring.clear()
+        logger.info("Ring was successfully cleared.")
 
     def enter_ring(self, boxer: Boxer):
         """Adds a boxer to the ring.
