@@ -207,7 +207,7 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
-    """Searches the database for a str that matches boxer_name and returns a Boxer object
+    """Searches the database for a str that matches boxer_name and returns a Boxer object.
         
     Args:
         boxer_name (str): The unique name of a boxer.
@@ -285,7 +285,7 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
         Error: If any connection failure to database occurs.
         
     Returns:
-        Nothing
+        Nothing.
         
     """
     
