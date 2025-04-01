@@ -15,6 +15,12 @@ def boxer1():
 def boxer2():
     return Boxer(id=2, name="testboxer2", weight=250, age=25, reach=80)
 
+#mock definitions
+
+@pytest.fixture
+def mock_update_boxer_stats(mocker):
+    return mocker.patch("boxing.models.ring_model.update_boxer_stats")
+
 ##################################################
 # Enter/Clear Ring Test Cases
 ##################################################
@@ -52,7 +58,7 @@ def test_clear_empty_ring(ring_model):
 ##################################################
 
     
-def test_fight(ring_model, boxer1, boxer2, mock_update_boxer_stats, mock_get_random):
+def test_fight(ring_model, boxer1, boxer2, mock_update_boxer_stats):
     """tests that fight returns a winner, updates boxer stats, and clears ring
     """
     ring_model.enter_ring(boxer1)
