@@ -119,13 +119,17 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
 
 def get_boxer_by_id(boxer_id: int) -> Boxer:
-    """ 
-        Retrieves a boxer from the database based on their ID. 
-        Args: boxer_id (int): The ID of the boxer to retrieve.
-        Returns: Boxer: A `Boxer` object representing the retrieved boxer.
-        Raises:
-            ValueError: If a boxer with the given ID is not found.
-            sqlite3.Error: If there is an error during database operation.
+    """Retrieves a boxer from the database based on their ID.
+
+    Args:
+        boxer_id (int): The ID of the boxer to retrieve.
+
+    Returns:
+        Boxer: A `Boxer` object representing the retrieved boxer.
+
+    Raises:
+        ValueError: If a boxer with the given ID is not found.
+        sqlite3.Error: If there is an error during database operation.
     """
     
     try:
@@ -143,22 +147,29 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
                     id=row[0], name=row[1], weight=row[2], height=row[3],
                     reach=row[4], age=row[5]
                 )
+                logger.info(f"Successfully boxer by id: {boxer.id} - {boxer.name} ({boxer.age} years, {boxer.weight} pounds, {boxer.height} inches, {boxer.reach} inches)")
                 return boxer
             else:
+                logger.error(f"Boxer with ID {boxer_id} not found.")
                 raise ValueError(f"Boxer with ID {boxer_id} not found.")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error while getting boxer by id: {e}")
         raise e
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
-    """
-        Retrieves a boxer from the database based on their name.
-        Args: boxer_name (str): The name of the boxer to retrieve.
-        Returns: Boxer: A `Boxer` object representing the retrieved boxer.
-        Raises:
-            ValueError: If a boxer with the given name is not found.
-            sqlite3.Error: If there is an error during database operation.
+    """Retrieves a boxer from the database based on their name.
+
+    Args:
+        boxer_name (str): The name of the boxer to retrieve.
+
+    Returns:
+        Boxer: A `Boxer` object representing the retrieved boxer.
+
+    Raises:
+        ValueError: If a boxer with the given name is not found.
+        sqlite3.Error: If there is an error during database operation.
     """
     
     try:
@@ -176,20 +187,28 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
                     id=row[0], name=row[1], weight=row[2], height=row[3],
                     reach=row[4], age=row[5]
                 )
+                logger.info(f"Successfully boxer by name: {boxer.id} - {boxer.name} ({boxer.age} years, {boxer.weight} pounds, {boxer.height} inches, {boxer.reach} inches)")
                 return boxer
             else:
+                logger.error(f"Boxer '{boxer_name}' not found.")
                 raise ValueError(f"Boxer '{boxer_name}' not found.")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error while getting boxer by name: {e}")
         raise e
 
 
 def get_weight_class(weight: int) -> str:
-    """
-        Determines the weight class of a boxer based on their weight.
-        Args: weight (int): The weight of the boxer in pounds.
-        Returns: str: The weight class of the boxer (HEAVYWEIGHT, MIDDLEWEIGHT, LIGHTWEIGHT, FEATHERWEIGHT).
-        Raises: ValueError: If the provided weight is invalid (must be at least 125).
+    """Determines the weight class of a boxer based on their weight.
+
+    Args:
+        weight (int): The weight of the boxer in pounds.
+
+    Returns:
+        str: The weight class of the boxer (HEAVYWEIGHT, MIDDLEWEIGHT, LIGHTWEIGHT, FEATHERWEIGHT).
+
+    Raises:
+        ValueError: If the provided weight is invalid (must be at least 125).
     """
     
     if weight >= 203:
@@ -201,23 +220,27 @@ def get_weight_class(weight: int) -> str:
     elif weight >= 125:
         weight_class = 'FEATHERWEIGHT'
     else:
+        logger.error(f"Invalid weight: {weight}. Weight must be at least 125.")
         raise ValueError(f"Invalid weight: {weight}. Weight must be at least 125.")
 
+    logger.info(f"Weight class of {weight} is {weight_class}")
     return weight_class
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
-    """
-        Updates the fight statistics (fights and wins) for a boxer.
-        Args:
-            boxer_id (int): The ID of the boxer to update.
-            result (str): The result of the fight ('win' or 'loss').
-        Raises:
-            ValueError: If the `result` is invalid or if a boxer with the given ID is not found.
-            sqlite3.Error: If there is an error during database operation.
+    """Updates the fight statistics (fights and wins) for a boxer.
+
+    Args:
+        boxer_id (int): The ID of the boxer to update.
+        result (str): The result of the fight ('win' or 'loss').
+
+    Raises:
+        ValueError: If the `result` is invalid or if a boxer with the given ID is not found.
+        sqlite3.Error: If there is an error during database operation.
     """
     
     if result not in {'win', 'loss'}:
+        logger.error(f"Invalid result: {result}. Expected 'win' or 'loss'.")
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
 
     try:
@@ -226,6 +249,7 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
 
             cursor.execute("SELECT id FROM boxers WHERE id = ?", (boxer_id,))
             if cursor.fetchone() is None:
+                logger.error(f"Boxer with ID {boxer_id} not found.")
                 raise ValueError(f"Boxer with ID {boxer_id} not found.")
 
             if result == 'win':
@@ -234,6 +258,8 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
                 cursor.execute("UPDATE boxers SET fights = fights + 1 WHERE id = ?", (boxer_id,))
 
             conn.commit()
+            logger.info(f"boxer with {boxer_id}'s status has been updated to {result}")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error while updating boxer status: {e}")
         raise e
