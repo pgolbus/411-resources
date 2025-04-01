@@ -119,6 +119,15 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
 
 def get_boxer_by_id(boxer_id: int) -> Boxer:
+    """ 
+        Retrieves a boxer from the database based on their ID. 
+        Args: boxer_id (int): The ID of the boxer to retrieve.
+        Returns: Boxer: A `Boxer` object representing the retrieved boxer.
+        Raises:
+            ValueError: If a boxer with the given ID is not found.
+            sqlite3.Error: If there is an error during database operation.
+    """
+    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -143,6 +152,15 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
+    """
+        Retrieves a boxer from the database based on their name.
+        Args: boxer_name (str): The name of the boxer to retrieve.
+        Returns: Boxer: A `Boxer` object representing the retrieved boxer.
+        Raises:
+            ValueError: If a boxer with the given name is not found.
+            sqlite3.Error: If there is an error during database operation.
+    """
+    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -167,6 +185,13 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
 
 
 def get_weight_class(weight: int) -> str:
+    """
+        Determines the weight class of a boxer based on their weight.
+        Args: weight (int): The weight of the boxer in pounds.
+        Returns: str: The weight class of the boxer (HEAVYWEIGHT, MIDDLEWEIGHT, LIGHTWEIGHT, FEATHERWEIGHT).
+        Raises: ValueError: If the provided weight is invalid (must be at least 125).
+    """
+    
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
     elif weight >= 166:
@@ -182,6 +207,16 @@ def get_weight_class(weight: int) -> str:
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
+    """
+        Updates the fight statistics (fights and wins) for a boxer.
+        Args:
+            boxer_id (int): The ID of the boxer to update.
+            result (str): The result of the fight ('win' or 'loss').
+        Raises:
+            ValueError: If the `result` is invalid or if a boxer with the given ID is not found.
+            sqlite3.Error: If there is an error during database operation.
+    """
+    
     if result not in {'win', 'loss'}:
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
 
