@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Variables
-IMAGE_NAME= "hw2"
-CONTAINER_TAG= "latest"
+IMAGE_NAME= hw2
+CONTAINER_TAG= latest
 HOST_PORT=5001
 CONTAINER_PORT=5001
 DB_VOLUME_PATH= "./db_data" # Adjust this to the desired host path for the database persistence
@@ -41,5 +41,6 @@ fi
 
 # Run the Docker container with the necessary ports and volume mappings
 echo "Running Docker container..."
+docker run -d --name ${IMAGE_NAME}_container -p ${HOST_PORT}:${CONTAINER_PORT} -v ${DB_VOLUME_PATH}:/app/db ${IMAGE_NAME}:${CONTAINER_TAG}
 
 echo "Docker container is running on port ${HOST_PORT}."
