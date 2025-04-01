@@ -76,7 +76,7 @@ get_boxer_by_id() {
 get_boxer_by_name() {
   name=$1
   echo "Getting boxer by name: $name"
-  response=$(curl -s "$BASE_URL/get-boxer-by-name/$name")
+  response=$(curl -s "$BASE_URL/get-boxer-by-name/$(echo $name | sed 's/ /%20/g')")
   echo "$response" | grep -q '"status": "success"'
   [[ $? -eq 0 ]] && echo "Boxer retrieved successfully." || { echo "Failed to retrieve boxer."; echo "$response"; exit 1; }
   $ECHO_JSON && echo "$response" | jq .
