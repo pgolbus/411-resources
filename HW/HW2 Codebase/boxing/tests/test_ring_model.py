@@ -51,7 +51,7 @@ def test_clear_empty_ring(ring_model):
     """test clear_ring when the ring is already clear
     """
     ring_model.clear_ring()  
-    assert ring_model.ring == []
+    assert len(ring_model.ring) == 0
 
 ##################################################
 # Fight Test Cases
