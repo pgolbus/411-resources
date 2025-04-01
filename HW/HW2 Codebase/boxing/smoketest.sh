@@ -135,17 +135,21 @@ get_boxer_by_name() {
 #
 ############################################################
 
-bout() {
-  echo "Starting ring fight..."
-  response=$(curl -s -X POST "$BASE_URL/fight")
-
-  if echo "$response" | grep -q '"status": "success"'; then
-    echo "fight started successfully."
+fight() {
+  echo "Starting a fight"
+  response=$(curl -s -X GET "$BASE_URL/fight")
+  echo "$response" | grep -q '"status": "success"'
+  if [ $? -eq 0 ]; then
+    echo "Fight executed successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Fight result after JSON:"
+      echo "$response" | jq .
+    fi
   else
-    echo "Failed to start fight."
+    echo "Fight could not start correctly"
+    echo "$response"
     exit 1
   fi
-
 }
 
 
