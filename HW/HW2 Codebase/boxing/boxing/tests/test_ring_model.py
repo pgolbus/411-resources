@@ -9,8 +9,8 @@ class TestRingModel(unittest.TestCase):
         """Set up a fresh ring and two sample boxers for each test."""
         self.ring = RingModel()
         #Two sample boxers we’ll reuse
-        self.boxer1 = Boxer(id=1, name="nicole", weight=130, height=164, reach=68.0, age=20)
-        self.boxer2 = Boxer(id=2, name="Ivy", weight=120, height=158, reach=70.0, age=21)
+        self.boxer1 = Boxer(id=1, name="nicole", weight=140, height=164, reach=68.0, age=20)
+        self.boxer2 = Boxer(id=2, name="Ivy", weight=130, height=158, reach=70.0, age=21)
 
     def test_enter_ring(self):
         """Test: allow adding a single boxer to the ring."""
@@ -50,7 +50,7 @@ class TestRingModel(unittest.TestCase):
 
         winner_name=self.ring.fight()
         # Check that a winner was returned by name
-        self.assertIn(winner, [self.boxer1.name, self.boxer2.name])
+        self.assertIn(winner_name, [self.boxer1.name, self.boxer2.name])
          # Ring should now be empty
         self.assertEqual(len(self.ring.get_boxers()), 0)
         # One win + one loss = 2 calls to update_boxer_stats

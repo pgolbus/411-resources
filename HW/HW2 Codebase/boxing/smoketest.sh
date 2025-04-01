@@ -213,7 +213,7 @@ get_boxers_in_ring() {
 ############################################################
 
 # Initialize the database
-sqlite3 data/boxing.db < sql/init_db.sql
+#sqlite3 data/boxing.db < sql/init_db.sql
 
 # Health checks
 check_health
