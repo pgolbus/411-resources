@@ -13,7 +13,7 @@ configure_logger(logger)
 
 class RingModel:
     """
-        A class to manage boxing matches between two boxers in the ring.
+    A class to manage boxing matches between two boxers in the ring.
 
     Attributes:
         ring (List[Boxer]): The list of boxers currently in the ring.
