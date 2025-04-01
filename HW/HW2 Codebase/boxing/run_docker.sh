@@ -4,7 +4,7 @@
 IMAGE_NAME="boxapp"
 CONTAINER_TAG="latest"
 HOST_PORT=5001
-CONTAINER_PORT=5000
+CONTAINER_PORT=5001
 DB_VOLUME_PATH="./db_data"  # Adjust this to the desired host path for the database persistence
 BUILD=true # Set this to true if you want to build the image
 
