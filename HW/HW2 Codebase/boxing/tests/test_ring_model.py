@@ -158,8 +158,10 @@ def test_fight_with_one_boxer(ring_model, sample_boxer1):
     with pytest.raises(ValueError, match="There must be two boxers to start a fight."):
         ring_model.fight()
 
-def test_fight_success(ring_model, sample_boxer1, sample_boxer2, mocker, mock_update_boxer_stats):
-    """Test a full fight between two boxers.
+def test_fight_boxer1_wins(ring_model, sample_boxer1, sample_boxer2, mocker, mock_update_boxer_stats):
+    """Test a full fight between two boxers where boxer1 wins.
+
+    Patching get_random to return 0.0 (low number) to select boxer 1 as the winner.
 
     """
     ring_model.enter_ring(sample_boxer1)
@@ -168,9 +170,48 @@ def test_fight_success(ring_model, sample_boxer1, sample_boxer2, mocker, mock_up
     mocker.patch("boxing.models.ring_model.get_random", return_value=0.0)
     
     winner_name = ring_model.fight()
-    assert winner_name == sample_boxer1.name
+    assert winner_name == sample_boxer1.name, f"Expected winner to be {sample_boxer1.name}, got {winner_name}"
 
     mock_update_boxer_stats.assert_any_call(sample_boxer1.id, 'win')
     mock_update_boxer_stats.assert_any_call(sample_boxer2.id, 'loss')
 
+    assert len(ring_model.ring) == 0, "Ring should be cleared after match finished"
+
+def test_fight_boxer2_wins(ring_model, sample_boxer1, sample_boxer2, mocker, mock_update_boxer_stats):
+    """Test a full fight between two boxers where boxer2 wins.
+
+    Patching get_random to return 1.0 (high number) to select boxer2 as the winner.
+
+    """
+    ring_model.enter_ring(sample_boxer1)
+    ring_model.enter_ring(sample_boxer2)
+
+    mocker.patch("boxing.models.ring_model.get_random", return_value=1.0)
+
+    winner_name = ring_model.fight()
+    assert winner_name == sample_boxer2.name, f"Expected winner to be {sample_boxer2.name}, got {winner_name}"
+
+    mock_update_boxer_stats.assert_any_call(sample_boxer2.id, 'win')
+    mock_update_boxer_stats.assert_any_call(sample_boxer1.id, 'loss')
+    assert len(ring_model.ring) == 0, "Ring should be cleared after match finished"
+
+
+def test_fight_equal_skills(ring_model, sample_boxer1, sample_boxer2, mocker, mock_update_boxer_stats):
+    """Test a fight where both boxers have equal fighting skills.
+
+    Make the boxers have equal fighting skill by patching get_fighting_skill to return 1000 for both boxers. Also patch get_random to return 0.5, in this case normalized_delta will always be 0.5 since the fighting skill of the two boxers are equal, this should make boxer2 win, as 0.5<0.5 is false.
+
+    """
+    mocker.patch.object(ring_model, "get_fighting_skill", return_value=1000)
+
+    ring_model.enter_ring(sample_boxer1)
+    ring_model.enter_ring(sample_boxer2)
+
+    mocker.patch("boxing.models.ring_model.get_random", return_value=0.5)
+
+    winner_name = ring_model.fight()
+    assert winner_name == sample_boxer2.name, f"Expected winner to be {sample_boxer2.name}, got {winner_name}"
+
+    mock_update_boxer_stats.assert_any_call(sample_boxer2.id, 'win')
+    mock_update_boxer_stats.assert_any_call(sample_boxer1.id, 'loss')
     assert len(ring_model.ring) == 0, "Ring should be cleared after match finished"
