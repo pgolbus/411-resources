@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Variables
-IMAGE_NAME= hw2
-CONTAINER_TAG= latest
+IMAGE_NAME= "hw2"
+CONTAINER_TAG= "latest"
 HOST_PORT=5001
 CONTAINER_PORT=5001
 DB_VOLUME_PATH= "./db_data" # Adjust this to the desired host path for the database persistence
