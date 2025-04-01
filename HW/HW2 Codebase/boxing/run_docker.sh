@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-IMAGE_NAME= "smoketest_image"
+IMAGE_NAME= "hw2"
 CONTAINER_TAG= "latest"
 HOST_PORT=5001
 CONTAINER_PORT=5001
