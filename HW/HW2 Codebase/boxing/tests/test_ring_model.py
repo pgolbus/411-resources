@@ -39,6 +39,11 @@ def boxer3():
     """Fixture to create a third Boxer instance for testing."""
     return Boxer(id=3, name="Boxer 3", age=20, weight=138, height=40, reach=55)
 
+@pytest.fixture
+def mock_update_boxer_stats(mocker):
+    """Mock the update_boxer_stats function."""
+    return mocker.patch("boxing.models.ring_model.update_boxer_stats")
+
 ##################################################
 # Ring Test Cases
 ##################################################
@@ -73,16 +78,17 @@ def test_clear_ring(ring_model, boxer1, boxer2):
 # Fight Test Cases
 ##################################################
 
-def test_fight(ring_model, boxer1, boxer2):
+def test_fight(ring_model, boxer1, boxer2, mock_update_boxer_stats):
     """Test conducting a fight between two boxers."""
     ring_model.enter_ring(boxer1)
     ring_model.enter_ring(boxer2)
+    assert len(ring_model.ring) == 2
 
-    winner_name = ring_model.fight()
-    assert winner_name in ["Boxer 1", "Boxer 2"]
-    # Ring should be cleared after fight
-    assert len(ring_model.ring) == 0  
+    ring_model.fight()
 
+    mock_update_boxer_stats.assert_called()
+    assert len(ring_model.ring) == 0 
+    
 def test_fight_with_less_than_two_boxers(ring_model, boxer1):
     """Test error when trying to conduct a fight with less than two boxers."""
     ring_model.enter_ring(boxer1)
