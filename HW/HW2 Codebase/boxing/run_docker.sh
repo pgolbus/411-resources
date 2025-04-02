@@ -1,45 +1,46 @@
 #!/bin/bash
 
-# Variables
-IMAGE_NAME=
-CONTAINER_TAG=
-HOST_PORT=5000
+# Variables (fill these in!)
+IMAGE_NAME="boxing_image"
+CONTAINER_TAG="latest"
+CONTAINER_NAME="${IMAGE_NAME}_container"
+HOST_PORT=5001
 CONTAINER_PORT=5000
-DB_VOLUME_PATH=  # Adjust this to the desired host path for the database persistence
-BUILD=  # Set this to true if you want to build the image
+DB_VOLUME_PATH="./db"
+ENV_FILE=".env"
+BUILD=true
 
-# Check if we need to build the Docker image
+# Build Docker image
 if [ "$BUILD" = true ]; then
   echo "Building Docker image..."
-
+  docker build -t ${IMAGE_NAME}:${CONTAINER_TAG} .
 else
   echo "Skipping Docker image build..."
 fi
 
-# Check if the database directory exists; if not, create it
+# Create DB directory if it doesn't exist
 if [ ! -d "${DB_VOLUME_PATH}" ]; then
   echo "Creating database directory at ${DB_VOLUME_PATH}..."
-
+  mkdir -p "${DB_VOLUME_PATH}"
 fi
 
-# Stop and remove the running container if it exists
-if [ "$(docker ps -q -a -f name=${IMAGE_NAME}_container)" ]; then
-    echo "Stopping running container: ${IMAGE_NAME}_container"
-
-
-    # Check if the stop was successful
-    if [ $? -eq 0 ]; then
-        echo "Removing container: ${IMAGE_NAME}_container"
-
-    else
-        echo "Failed to stop container: ${IMAGE_NAME}_container"
-        exit 1
-    fi
+# Stop and remove existing container
+if [ "$(docker ps -q -a -f name=${CONTAINER_NAME})" ]; then
+  echo "Stopping existing container: ${CONTAINER_NAME}..."
+  docker stop ${CONTAINER_NAME}
+  echo "🗑️ Removing container: ${CONTAINER_NAME}..."
+  docker rm ${CONTAINER_NAME}
 else
-    echo "No running container named ${IMAGE_NAME}_container found."
+  echo "ℹNo existing container named ${CONTAINER_NAME} found."
 fi
 
-# Run the Docker container with the necessary ports and volume mappings
+# Run the Docker container
 echo "Running Docker container..."
+docker run -d \
+  --name ${CONTAINER_NAME} \
+  -p ${HOST_PORT}:${CONTAINER_PORT} \
+  --env-file ${ENV_FILE} \
+  -v "${DB_VOLUME_PATH}":/app/db \
+  ${IMAGE_NAME}:${CONTAINER_TAG}
 
-echo "Docker container is running on port ${HOST_PORT}."
+echo "Docker container '${CONTAINER_NAME}' is running on http://localhost:${HOST_PORT}"
