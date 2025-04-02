@@ -234,7 +234,7 @@ boxer1="smoketestboxer1_$suffix"
 boxer2="smoketestboxer2_$suffix"
 
 add_boxer "$boxer1" 200 150 75.0 35
-add_boxer "$boxer2" 100 250 75.5 30
+add_boxer "$boxer2" 350 250 75.5 30
 
 
 # get boxer by name
