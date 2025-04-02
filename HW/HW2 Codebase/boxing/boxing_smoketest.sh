@@ -165,7 +165,8 @@ trigger_fight() {
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Fight successfully initiated."
   else
-    echo "Failed to initiate fight."
+    echo "Failed to initiate fight. Server response:"
+    echo "$response" | jq .
     exit 1
   fi
 }
