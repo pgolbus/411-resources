@@ -72,6 +72,18 @@ add_boxer() {
   fi
 }
 
+delete_boxer() {
+  boxer_id=$1
+  echo "Deleting boxer by ID ($boxer_id)..."
+  response=$(curl -s -X DELETE "$BASE_URL/delete-boxer/$boxer_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer deleted successfully by ID ($boxer_id)."
+  else
+    echo "Failed to delete boxer by ID ($boxer_id)."
+    exit 1
+  fi
+}
+
 get_boxer_by_id() {
   boxer_id=$1
 
@@ -196,7 +208,7 @@ get_boxer_by_id 2
 
 
 add_boxer "Boxer 3" 160 66 68 32
-get_boxer_by_id 3
+delete_boxer 3
 
 clear_ring
 
