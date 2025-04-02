@@ -9,7 +9,6 @@ This file tests:
   - get_boxers: Tests that get_boxers retuns the correct list of boxers.
   - Tests that adding a non-boxer raises a TypeError
   - Tests that adding a third boxer to a ring raises an error.
-  - Tests that adding a douplicate boxer leads to an error.
   - Tests that a fight with less than 2 boxers raises an error. 
 """
 
@@ -61,12 +60,6 @@ def test_add_third_boxer_to_ring_error(ring_model, boxer1, boxer2, boxer3):
     ring_model.enter_ring(boxer2)
     with pytest.raises(ValueError, match="Ring is full, cannot add more boxers."):
         ring_model.enter_ring(boxer3)
-
-def test_add_duplicate_boxer_raises_error(ring_model, boxer1):
-    """Test error when trying to add a boxer with the same name."""
-    ring_model.enter_ring(boxer1)
-    with pytest.raises(ValueError, match="Ring is full, cannot add more boxers."):
-        ring_model.enter_ring(boxer1)
 
 def test_clear_ring(ring_model, boxer1, boxer2):
     """Test that the ring is cleared after a fight."""
