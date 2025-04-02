@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.lock
 
 # Make port 5000 available to the world outside this container
-ENV PORT=5002
+ENV PORT=5000
 EXPOSE $PORT
 
 # Define environment variable

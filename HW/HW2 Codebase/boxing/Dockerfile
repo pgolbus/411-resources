@@ -24,6 +24,7 @@ COPY ./sql/create_db.sh /app/sql/create_db.sh
 COPY ./sql/init_db.sql /app/sql/init_db.sql
 RUN chmod +x /app/sql/create_db.sh
 
+
 # Define a volume for persisting the database
 VOLUME ["/app/db"]
 
@@ -32,3 +33,7 @@ EXPOSE 5000
 
 # Run the entrypoint script when the container launches
 CMD ["/app/entrypoint.sh"]
+
+COPY ./entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
