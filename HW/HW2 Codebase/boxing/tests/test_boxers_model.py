@@ -34,6 +34,22 @@ def mock_db_connection(mocker):
 # Create Boxer Test Cases
 ##################################################
 
+def test_create_valid_boxer(mock_db_connection):
+    """Test create boxer given a valid boxer
+	
+ 	"""
+    mock_conn, mock_cursor = mock_db_connection
+        
+    with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
+        boxer = create_boxer(name="valid", weight=150, height=71, reach=50, age=30)
+		
+    assert boxer.name == "valid"
+    assert boxer.weight == 150
+    assert boxer.height == 71
+    assert boxer.reach == 50
+    assert boxer.age == 30
+
+
 def test_invalid_weight():
     """Test error when the boxer is under 125 pounds
 	
@@ -148,7 +164,7 @@ def test_get_leaderboard_invalid_sort_by(mock_db_connection):
 # Get Boxer by ID Test Cases
 ##################################################
 def test_get_boxers_by_ID(mock_db_connection):
-	
+	"""gets get boxer by ID if given a valid ID"""
     mock_conn, mock_cursor = mock_db_connection
 
 	
@@ -182,6 +198,8 @@ def test_get_boxer_by_id_not_found(mock_db_connection):
 
 
 def test_get_boxers_by_name(mock_db_connection):
+	"""tests get boxer by name if given value parameters"""
+	
     mock_conn, mock_cursor = mock_db_connection
     with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
         boxer = get_boxer_by_name('dup')
@@ -210,22 +228,27 @@ def test_get_boxer_by_name_not_found(mock_db_connection):
 # Get Boxer by Weight Class Test Cases
 ##################################################
 def test_invalid_weight():
+	"""tests the get boxer by weight if given a invalid weight"""
     with pytest.raises(ValueError, match="Invalid weight: -1. Weight must be at least 125."):
         get_weight_class(-1)
 
 def test_get_Heavyweight():
+	"""tests whether if the given weight is in the heavyweight class"""
     weight = get_weight_class(300)
     assert weight == "HEAVYWEIGHT"
 
 def test_get_middleweight():
+	"""tests if the gieven integers is in the middle weight class"""
     weight = get_weight_class(166)
     assert weight == "MIDDLEWEIGHT"
 
 def test_get_lightweight():
+	"""tests if the given weight is in the lightweight class"""
     weight = get_weight_class(133)
     assert weight == "LIGHTWEIGHT"
 
 def test_get_featherweight():
+	"""Tests if the given weight is in the feather weight class"""
     weight = get_weight_class(125)
     assert weight == "FEATHERWEIGHT"
 
@@ -233,49 +256,38 @@ def test_get_featherweight():
 # Update Boxers Stats
 ##################################################
 
-def test_update_boxer_stats_win(mock_db_connection):
-    """Test updating stats for a win
+def test_update_boxer_status_win(mock_db_connection):
+	"""Tests update boxer status given a win"""
 	
- 	"""
-    mock_conn, mock_cursor = mock_db_connection
-	
-    mock_cursor.fetchone.return_value = (1,)
-    
-    with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
-        update_boxer_stats(boxer_id=1, result='win')
-
+	mock_conn, mock_cursor = mock_db_connection
+	mock_cursor.fetchone.return_value = (1,)
+	with mock.patch('boxing.models.boxers_model.get_db_connection',return_value=mock_conn):
+		update_boxer_stats(boxer_id=1, result ='win')
+		
 def test_update_boxer_stats_loss(mock_db_connection):
-    """Test updating stats for a win
+	"""tests update boxer stats given a loss"""
 	
- 	"""
-    mock_conn, mock_cursor = mock_db_connection
-	
-    mock_cursor.fetchone.return_value = (1,)
-    
-    with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
-		update_boxer_stats(boxer_id=1, result='loss')
+	mock_conn, mock_cursor = mock_db_connection
+	mock_cursor.fetchone.return_value = (1,)
+	with mock.patch('boxing.models.boxers_model.get_db_connection',return_value=mock_conn):
+		update_boxer_stats(boxer_id=1, result ='loss')
 		
 def test_update_boxer_invalid_win_loss(mock_db_connection):
-    """Test updating stats for invalid input
+	"""tests update boxer stats given a invalid outcome"""
 	
- 	"""
-    mock_conn, mock_cursor = mock_db_connection
-	
-    mock_cursor.fetchone.return_value = (1,)
-	with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
-		with pytest.raises(ValueError, match="Invalid result: invalid. Expected 'win' or 'loss'.")
-    			update_boxer_stats(boxer_id=1, result='invalid')
-
+	mock_conn, mock_cursor = mock_db_connection
+	mock_cursor.fetchone.return_value = (1,)
+	with mock.patch('boxing.models.boxers_model.get_db_connection',return_value=mock_conn):
+		with pytest.raises(ValueError, match="Invalid result: invalid. Expected 'win' or 'loss'."):
+			update_boxer_stats(boxer_id=1, result='invalid')
+			
 def test_update_boxer_invalid_ID(mock_db_connection):
-    """Test updating stats for invalid input 
+	"""tests update boxer given a invalid boxer ID"""
 	
- 	"""
-    mock_conn, mock_cursor = mock_db_connection
-	
-    mock_cursor.fetchone.return_value = None 
-    
-    with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
-		with pytest.raises(ValueError, match="Boxer with ID 102 not found.")
-    			update_boxer_stats(boxer_id=102, result='win')
-    
+	mock_conn, mock_cursor = mock_db_connection
+	mock_cursor.fetchone.return_value = None
+	with mock.patch('boxing.models.boxers_model.get_db_connection',return_value=mock_conn):
+		with pytest.raises(ValueError, match="Boxer with ID 102 not found."):
+			update_boxer_stats(boxer_id=102, result='win')
+
 	
