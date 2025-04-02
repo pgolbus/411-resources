@@ -72,6 +72,53 @@ add_boxer() {
   fi
 }
 
+delete_boxer() {
+  boxer_id=$1
+
+  echo "Deleting boxer by ID ($boxer_id)..."
+  response=$(curl -s -X DELETE "$BASE_URL/delete-boxer/$boxer_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer deleted successfully by ID ($boxer_id)."
+  else
+    echo "Failed to delete boxer by ID ($boxer_id)."
+    exit 1
+  fi
+}
+
+get_boxer_by_id() {
+  boxer_id=$1
+
+  echo "Getting boxer by ID ($boxer_id)..."
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-id/$boxer_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer retrieved successfully by ID ($boxer_id)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Boxer JSON (ID $boxer_id):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get boxer by ID ($boxer_id)."
+    exit 1
+  fi
+}
+
+get_boxer_by_name() {
+  boxer_name=$1
+
+  echo "Getting boxer by name ($boxer_name)..."
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-name/$boxer_name")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer retrieved successfully by name ($boxer_name)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Boxer JSON (Name: $boxer_name):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get boxer by name ($boxer_name)."
+    exit 1
+  fi
+}
+
 
 ###############################################
 #
@@ -143,6 +190,29 @@ fight() {
   fi
 }
 
+
+############################################################
+#
+# Leaderboard
+#
+############################################################
+
+get_boer_leaderboard() {
+  echo "Getting boxer leaderboard sorted by wins..."
+  response=$(curl -s -X GET "$BASE_URL/leaderboard?sort=wins")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer leaderboard retrieved successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Leaderboard JSON (sorted by wins):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get boxer leaderboard."
+    exit 1
+  fi
+}
+
+
 # Health Checks
 check_health
 check_db
@@ -150,7 +220,17 @@ check_db
 # Add boxers
 add_boxer "Boxer 1" 150 68 70 30
 add_boxer "Boxer 2" 155 70 72 28
+
+get_boxer_by_id 1
+get_boxer_by_id 2
+
+get_boxer_by_name "Boxer 1"
+get_boxer_by_name "Boxer 2"
+
 add_boxer "Boxer 3" 160 66 68 32
+get_boxer_by_id 3
+get_boxer_by_name "Boxer 3"
+delete_boxer 3
 
 clear_ring
 
@@ -163,6 +243,8 @@ get_boxers
 enter_ring "Boxer 1"
 clear_ring
 get_boxers
+
+get_leaderboard
 
 echo "All tests passed  successfully!"
 
