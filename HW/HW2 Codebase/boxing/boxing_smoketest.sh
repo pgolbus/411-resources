@@ -185,9 +185,8 @@ name=$1
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Boxer successfully entered in ring."
   else
-    echo "Failed to enter boxer in ring."
-    exit 1
-  fi
+      echo "Failed to enter boxer in ring."
+      exit 1
 }
 
 
