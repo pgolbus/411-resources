@@ -1,0 +1,7 @@
+===================================================================== short test summary info ====================================================================== 
+FAILED test_boxing_model.py::test_create_boxer - ValueError: Boxer with name 'Mike' already exists
+FAILED test_boxing_model.py::test_get_leaderboard - AssertionError: assert 'David' == 'Goliath'
+FAILED test_boxing_model.py::test_get_weight_class - AssertionError: assert 'LIGHTWEIGHT' == 'MIDDLEWEIGHT'
+FAILED test_ring_model.py::test_enter_ring_full - TypeError: Boxer.__init__() missing 1 required positional argument: 'height'
+FAILED test_ring_model.py::test_get_fighting_skill - assert False
+=================================================================== 5 failed, 20 passed in 0.85s =================================================================== 
