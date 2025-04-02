@@ -262,7 +262,7 @@ def test_update_boxer_status_win(mock_db_connection):
 	mock_conn, mock_cursor = mock_db_connection
 	mock_cursor.fetchone.return_value = (1,)
 	with mock.patch('boxing.models.boxers_model.get_db_connection',return_value=mock_conn):
-		update_boxers_stats(boxer_id=1, result ='win')
+		update_boxer_stats(boxer_id=1, result ='win')
 		
 def test_update_boxer_stats_loss(mock_db_connection):
 	"""tests update boxer stats given a loss"""
@@ -270,7 +270,7 @@ def test_update_boxer_stats_loss(mock_db_connection):
 	mock_conn, mock_cursor = mock_db_connection
 	mock_cursor.fetchone.return_value = (1,)
 	with mock.patch('boxing.models.boxers_model.get_db_connection',return_value=mock_conn):
-		update_boxers_stats(boxer_id=1, result ='loss')
+		update_boxer_stats(boxer_id=1, result ='loss')
 		
 def test_update_boxer_invalid_win_loss(mock_db_connection):
 	"""tests update boxer stats given a invalid outcome"""
