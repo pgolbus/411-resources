@@ -57,9 +57,10 @@ def test_invalid_height():
     with pytest.raises(ValueError, match="Invalid height: -1. Must be greater than 0."):
           create_boxer(name="short boxer", weight=100, height=-1, reach=70, age=25)
 
-def test_invalid_reach():"""test error when the boxer's reach is under 0 inches."""
-with pytest.raises(ValueError, match="Invalid reach: -1. Must be greater than 0."):
-      create_boxer(name="reach boxer", weight=100, height=70, reach=-1, age=25)
+def test_invalid_reach():
+     """test error when the boxer's reach is under 0 inches."""
+     with pytest.raises(ValueError, match="Invalid reach: -1. Must be greater than 0."):
+        create_boxer(name="reach boxer", weight=100, height=70, reach=-1, age=25)
 
 def test_invalid_age_younger():
       """Test error when the boxer age is under 18"""
