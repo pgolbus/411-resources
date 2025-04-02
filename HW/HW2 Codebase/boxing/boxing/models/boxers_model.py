@@ -191,7 +191,7 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
                 'win_pct': round(row[8] * 100, 1)  # Convert to percentage
             }
             leaderboard.append(boxer)
-            logger.info(f"Sucesfully added {boxer['name']} to leaderboard}")
+            logger.info(f"Sucesfully added {boxer['name']} to leaderboard")
         
         logger.info(f"Sucesfully created leaderboard list")
         
