@@ -10,6 +10,7 @@ COPY . /app
 # Copy the env file to the container
 COPY .env /app/.env
 
+ENV PORT=5001
 # Install any needed packages specified in requirements.txt
 # In production, you would want to ensure that any re-compiled packages
 # With the same version number are re-downloaded
@@ -22,13 +23,15 @@ RUN apt-get update && apt-get install -y sqlite3
 # Add a shell script that loads the .env file and handles database creation
 COPY ./sql/create_db.sh /app/sql/create_db.sh
 COPY ./sql/init_db.sql /app/sql/init_db.sql
-RUN chmod +x /app/sql/create_db.sh
-
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 # Define a volume for persisting the database
 VOLUME ["/app/db"]
 
 # Make port 5000 available to the world outside this container
-EXPOSE 5000
+EXPOSE $PORT
 
 # Run the entrypoint script when the container launches
-CMD ["/app/entrypoint.sh"]
+
+
+CMD ["sh", "/app/entrypoint.sh"]
