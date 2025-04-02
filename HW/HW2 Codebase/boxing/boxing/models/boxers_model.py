@@ -1,3 +1,6 @@
+"""This module provides functionalities for managing boxer data in a SQLite database,
+including creating, deleting, retrieving, and updating boxer information.
+"""
 from dataclasses import dataclass
 import logging
 import sqlite3
@@ -13,6 +16,18 @@ configure_logger(logger)
 
 @dataclass
 class Boxer:
+    """
+    A class to represent a boxer in the fight.
+
+    Attributes:
+        id (int): The unique ID of the boxer.
+        name (str): The name of the boxer (must be unique).
+        weight (int): The weight of the boxer in pounds (must be >= 125).
+        height (int): The height of the boxer in inches (must be > 0).
+        reach (float): The reach of the boxer in inches (must be > 0).
+        age (int): The age of the boxer (must be between 18 and 40).
+        weight_class (str, optional): The automatically assigned weight class based on weight.
+    """
     id: int
     name: str
     weight: int
@@ -22,18 +37,40 @@ class Boxer:
     weight_class: str = None
 
     def __post_init__(self):
+        """Assigns a weight class to the boxer based on their weight."""
         self.weight_class = get_weight_class(self.weight)  # Automatically assign weight class
 
+##################################################
+# Boxer Creation / Deletion
+##################################################
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
+    """Creates a new boxer and adds them to the database.
 
+    Args:
+        name (str): The unique name of the boxer.
+        weight (int): The weight of the boxer in pounds (must be >= 125).
+        height (int): The height of the boxer in inches (must be > 0).
+        reach (float): The reach of the boxer in inches (must be > 0).
+        age (int): The age of the boxer (must be between 18 and 40).
+
+    Raises:
+        ValueError: If any argument is invalid or if a boxer with the same name already exists.
+        sqlite3.Error: If a database error occurs.
+    """
+    
+    logger.info(f"Received request to create boxer: {name} ({age} years, {weight} pounds, {height} inches, {reach} inches)")
     if weight < 125:
+        logger.error(f"Invalid weight: {weight}. Must be at least 125.")        
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
     if height <= 0:
+        logger.error(f"Invalid height: {height}. Must be greater than 0.") 
         raise ValueError(f"Invalid height: {height}. Must be greater than 0.")
     if reach <= 0:
+        logger.error(f"Invalid reach: {reach}. Must be greater than 0.") 
         raise ValueError(f"Invalid reach: {reach}. Must be greater than 0.")
     if not (18 <= age <= 40):
+        logger.error(f"Invalid age: {age}. Must be between 18 and 40.") 
         raise ValueError(f"Invalid age: {age}. Must be between 18 and 40.")
 
     try:
@@ -43,6 +80,7 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
             # Check if the boxer already exists (name must be unique)
             cursor.execute("SELECT 1 FROM boxers WHERE name = ?", (name,))
             if cursor.fetchone():
+                logger.error(f"Boxer with name '{name}' already exists")
                 raise ValueError(f"Boxer with name '{name}' already exists")
 
             cursor.execute("""
@@ -51,15 +89,30 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
             """, (name, weight, height, reach, age))
 
             conn.commit()
+            logger.info(f"Successfully add boxer {name}")
 
     except sqlite3.IntegrityError:
+        logger.error(f"Boxer with name '{name}' already exists")
         raise ValueError(f"Boxer with name '{name}' already exists")
 
     except sqlite3.Error as e:
+        logger.error(f"Database error while adding boxer: {e}")
         raise e
 
 
 def delete_boxer(boxer_id: int) -> None:
+    """Deletes a boxer from the database by their unique ID.
+
+    Looks up the boxer in the database using the provided ID. If the boxer exists,
+    deletes their record from the 'boxers' table.
+
+    Args:
+        boxer_id (int): The ID of the boxer to delete.
+
+    Raises:
+        ValueError: If no boxer with the given ID exists.
+        sqlite3.Error: If a database error occurs during deletion.
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -70,12 +123,31 @@ def delete_boxer(boxer_id: int) -> None:
 
             cursor.execute("DELETE FROM boxers WHERE id = ?", (boxer_id,))
             conn.commit()
-
+            logger.info(f"Successfully deleted boxer with ID {boxer_id}")
     except sqlite3.Error as e:
+        logger.error(f"Database error while deleting boxer: {e}")
         raise e
 
 
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
+    """Retrieves a list of all boxers with at least one fight, sorted by performance.
+
+    Queries the database for boxers who have participated in at least one fight
+    and returns a leaderboard sorted by either total wins or win percentage.
+
+    Args:
+        sort_by (str, optional): The field to sort by. Must be either 'wins' or 'win_pct'.
+        Defaults to 'wins'.
+
+    Returns:
+        List[dict[str, Any]]: A list of dictionaries, each representing a boxer and their stats,
+        including win percentage and calculated weight class.
+
+    Raises:
+        ValueError: If the 'sort_by' parameter is not 'wins' or 'win_pct'.
+        sqlite3.Error: If a database error occurs during the query.
+    """
+    
     query = """
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
@@ -88,6 +160,7 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
     elif sort_by == "wins":
         query += " ORDER BY wins DESC"
     else:
+        logger.error(f"Invalid sort_by parameter: {sort_by}")
         raise ValueError(f"Invalid sort_by parameter: {sort_by}")
 
     try:
@@ -111,10 +184,11 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
                 'win_pct': round(row[8] * 100, 1)  # Convert to percentage
             }
             leaderboard.append(boxer)
-
+        logger.info(f"Successfully get leaderboard by {sort_by}.")
         return leaderboard
 
     except sqlite3.Error as e:
+        logger.error(f"Database error while getting leaderboard: {e}")
         raise e
 
 
@@ -131,7 +205,6 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
         ValueError: If a boxer with the given ID is not found.
         sqlite3.Error: If there is an error during database operation.
     """
-    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -171,7 +244,6 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
         ValueError: If a boxer with the given name is not found.
         sqlite3.Error: If there is an error during database operation.
     """
-    
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -210,7 +282,6 @@ def get_weight_class(weight: int) -> str:
     Raises:
         ValueError: If the provided weight is invalid (must be at least 125).
     """
-    
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
     elif weight >= 166:
@@ -222,7 +293,6 @@ def get_weight_class(weight: int) -> str:
     else:
         logger.error(f"Invalid weight: {weight}. Weight must be at least 125.")
         raise ValueError(f"Invalid weight: {weight}. Weight must be at least 125.")
-
     logger.info(f"Weight class of {weight} is {weight_class}")
     return weight_class
 
@@ -238,7 +308,6 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
         ValueError: If the `result` is invalid or if a boxer with the given ID is not found.
         sqlite3.Error: If there is an error during database operation.
     """
-    
     if result not in {'win', 'loss'}:
         logger.error(f"Invalid result: {result}. Expected 'win' or 'loss'.")
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
@@ -256,10 +325,9 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
                 cursor.execute("UPDATE boxers SET fights = fights + 1, wins = wins + 1 WHERE id = ?", (boxer_id,))
             else:  # result == 'loss'
                 cursor.execute("UPDATE boxers SET fights = fights + 1 WHERE id = ?", (boxer_id,))
-
+            
             conn.commit()
             logger.info(f"boxer with {boxer_id}'s status has been updated to {result}")
-
     except sqlite3.Error as e:
         logger.error(f"Database error while updating boxer status: {e}")
         raise e

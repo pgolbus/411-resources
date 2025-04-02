@@ -53,15 +53,54 @@ check_db() {
 ##########################################################
 
 add_boxer() {
+  name=$1
+  weight=$2
+  height=$3
+  reach=$4
+  age=$5
 
+  echo "Adding boxer ($name, $age yrs) to the gym..."
+  curl -s -X POST "$BASE_URL/add-boxer" -H "Content-Type: application/json" \
+    -d "{\"name\":\"$name\", \"weight\":$weight, \"height\":$height, \"reach\":$reach, \"age\":$age}" | grep -q '"status": "success"'
+
+  if [ $? -eq 0 ]; then
+    echo "Boxer $name added successfully."
+  else
+    echo "Failed to add boxer: $name."
+    exit 1
+  fi
 }
 
 add_boxer_errors() {
+  name=$1
+  weight=$2
+  height=$3
+  reach=$4
+  age=$5
 
+  echo "Adding boxer ($name, $age yrs) to the gym..."
+  curl -s -X POST "$BASE_URL/add-boxer" -H "Content-Type: application/json" \
+    -d "{\"name\":\"$name\", \"weight\":$weight, \"height\":$height, \"reach\":$reach, \"age\":$age}" | grep -q '"status": "error"'
+
+  if [ $? -eq 0 ]; then
+    echo "Correctly rejected invalid boxer: $name"
+  else
+    echo "Failed to return error from the server."
+    exit 1
+  fi
 }
 
 delete_boxer_by_id() {
+  boxer_id=$1
 
+  echo "Deleting boxer by ID ($boxer_id)..."
+  response=$(curl -s -X DELETE "$BASE_URL/delete-boxer/$boxer_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer deleted successfully by ID ($boxer_id)."
+  else
+    echo "Failed to delete boxer by ID ($boxer_id)."
+    exit 1
+  fi
 }
 
 get_all_boxers() {
@@ -112,12 +151,6 @@ get_boxer_by_name() {
     exit 1
   fi
 }
-
-##########################################################
-#
-# Ring Management
-#
-##########################################################
 
 enter_ring_too_many() {
   
@@ -181,8 +214,21 @@ enter_ring() {
 }
 
 fight() {
-  
+  echo "Let the boxer in the ring fight each other..."
+  response=$(curl -s -X GET "$BASE_URL/fight")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Ring fight successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Boxers JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to fight in ring."
+    exit 1
+  fi
 }
+
+
 
 
 
@@ -237,5 +283,8 @@ delete_boxer_by_id 1
 
 # test too many boxers entered
 enter_ring_too_many
+
+
+
 
 echo "All tests passed successfully!"

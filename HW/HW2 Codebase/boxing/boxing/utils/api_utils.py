@@ -1,3 +1,6 @@
+"""This module provides a utility function to fetch a random decimal fraction
+from the random.org website.
+"""
 import logging
 import os
 import requests
@@ -10,24 +13,22 @@ configure_logger(logger)
 
 
 RANDOM_ORG_URL = os.getenv("RANDOM_ORG_URL",
-                           "https://www.random.org/decimal-fractions/?num=1&dec=2&col=1&format=plain&rnd=new")
+                            "https://www.random.org/decimal-fractions/?num=1&dec=2&col=1&format=plain&rnd=new")
 
 
 def get_random() -> float:
-    """Fetches a random decimal fraction between 0.00 and 0.99 from random.org.
+    """
+    Fetches a random decimal number (with two decimal places) from random.org.
 
-    The function makes an HTTP GET request to the URL specified by the
-    `RANDOM_ORG_URL` environment variable, or a default URL if the environment
-    variable is not set. It parses the response to extract the random number.
+    Uses the RANDOM_ORG_URL environment variable to construct the request URL.
+    Falls back to a default endpoint if the variable is not set.
 
     Returns:
-        float: A random decimal fraction between 0.00 and 0.99 (inclusive).
+        float: A random decimal number between 0 and 1, rounded to two decimal places.
 
     Raises:
-        RuntimeError: If the request to random.org times out or if the request
-            fails due to other network-related issues.
-        ValueError: If the response from random.org is invalid and cannot be
-            parsed as a float.
+        RuntimeError: If the request to random.org fails or times out.
+        ValueError: If the response from random.org is not a valid float.
     """
     
     try:
@@ -44,7 +45,6 @@ def get_random() -> float:
         except ValueError:
             logger.error(f"Invalid response from random.org: {random_number_str}")
             raise ValueError(f"Invalid response from random.org: {random_number_str}")
-
         logger.info(f"Received random number: {random_number}")
         return random_number
 

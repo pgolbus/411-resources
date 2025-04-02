@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.2.2, pluggy-1.5.0
+rootdir: /app
+plugins: mock-3.14.0
+collected 49 items
+
+tests/test_api_utils.py ....                                             [  8%]
+tests/test_boxing_model.py ..............................                [ 69%]
+tests/test_ring_model.py ...............                                 [100%]
+
+============================== 49 passed in 1.44s ==============================
