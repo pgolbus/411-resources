@@ -245,5 +245,10 @@ clear_ring
 # get leaderboard
 get_leaderboard
 
+id1=$(get_boxer_id_by_name "$boxer1")
+id2=$(get_boxer_id_by_name "$boxer2")
+
+delete_boxer_by_id "$id1"
+delete_boxer_by_id "$id2"
 
 echo "All boxing tests passed successfully!"
