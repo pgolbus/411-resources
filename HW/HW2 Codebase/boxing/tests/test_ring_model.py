@@ -73,7 +73,7 @@ def test_clear_ring(ring_model, boxer1, boxer2):
     ring_model.enter_ring(boxer1)
     ring_model.enter_ring(boxer2)
     assert len(ring_model.ring) == 2
-    ring_model.fight()
+    ring_model.clear_ring()    
     assert len(ring_model.ring) == 0  
 
 ##################################################
