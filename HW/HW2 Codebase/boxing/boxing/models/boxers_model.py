@@ -368,13 +368,13 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
                 raise ValueError(f"Boxer with ID {boxer_id} not found.")
             logger.info(f"Boxer {boxer_id} found")
 
-            logger.info(f"Updating boxer {fights} and {wins} based on {result}")
+            logger.info(f"Updating boxer fights and wins based on {result}")
             if result == 'win':
                 cursor.execute("UPDATE boxers SET fights = fights + 1, wins = wins + 1 WHERE id = ?", (boxer_id,))
-                logger.info(f"Boxer won, Successfully updated boxer fights to {fights} and wins to {wins}")
+                logger.info(f"Boxer won, Successfully updated boxer fights and wins ")
             else:  # result == 'loss'
                 cursor.execute("UPDATE boxers SET fights = fights + 1 WHERE id = ?", (boxer_id,))
-                logger.info(f"Boxer lost, Successfully updated boxer fights to {fights}")
+                logger.info(f"Boxer lost, Successfully updated boxer fights")
 
             conn.commit()
             logger.info(f"Successfully uploaded to database")
