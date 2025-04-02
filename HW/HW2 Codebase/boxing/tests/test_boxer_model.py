@@ -2,8 +2,8 @@ from dataclasses import asdict
 
 import pytest
 
-from boxing.models.boxers_model import Boxer
-from boxing.models.ring_model import RingModel
+from boxing.models.boxers_model import *
+from boxing.models.ring_model import *
 
 @pytest.fixture()
 def boxer_model():

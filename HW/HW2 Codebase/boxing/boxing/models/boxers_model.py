@@ -13,6 +13,19 @@ configure_logger(logger)
 
 @dataclass
 class Boxer:
+    """
+    A class to store and access Boxer attributes."
+
+    Attributes:
+        id (int): ID number of the boxer
+        name (str): name of the boxer
+        weight (int): weight of the boxer
+        height (int): height of the boxer
+        reach (float): reach of the boxer
+        age (int): boxer's age
+        weight_class (str): boxer's weight class
+
+    """
     id: int
     name: str
     weight: int
@@ -22,11 +35,27 @@ class Boxer:
     weight_class: str = None
 
     def __post_init__(self):
+        """
+        Initializes a boxer with their weight class assigned. 
+        """
         self.weight_class = get_weight_class(self.weight)  # Automatically assign weight class
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
+    """Initializes a new boxer not currently in the SQL database and inserts them in it.
 
+        Args:
+            id (int): ID number of the boxer
+            name (str): name of the boxer
+            weight (int): weight of the boxer
+            height (int): height of the boxer
+            reach (float): reach of the boxer
+            age (int): boxer's age
+
+        Raises:
+            ValueError: If an attribute is does not meet the criteria or if the boxer already exists in the db.
+
+        """
     if weight < 125:
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
     if height <= 0:
@@ -60,6 +89,15 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
 
 
 def delete_boxer(boxer_id: int) -> None:
+    """Deletes a boxer from the database.
+
+        Args:
+            id (int): ID number of the boxer.
+
+        Raises:
+            ValueError: If the boxer's ID is not in the database.
+
+        """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -76,6 +114,15 @@ def delete_boxer(boxer_id: int) -> None:
 
 
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
+    """Retrieves the leaderboard of boxers from the SQL database and sorts them by wins.
+
+        Args:
+            sort the database by wins.
+
+        Raises:
+            ValueError: If a parameter for sort_by is not possible.
+
+        """
     query = """
         SELECT id, name, weight, height, reach, age, fights, wins,
                (wins * 1.0 / fights) AS win_pct
@@ -119,6 +166,15 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
 
 
 def get_boxer_by_id(boxer_id: int) -> Boxer:
+    """Retrieves a boxer's stats by ID.
+
+        Args:
+            id (int): ID number of the boxer.
+
+        Raises:
+            ValueError: If the ID is not in the database.
+
+        """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -143,6 +199,15 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
 
 
 def get_boxer_by_name(boxer_name: str) -> Boxer:
+    """Retrieves a boxer's stats by name.
+
+        Args:
+            name (str): Name of the boxer.
+
+        Raises:
+            ValueError: If the name is not in the database.
+
+        """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -167,6 +232,15 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
 
 
 def get_weight_class(weight: int) -> str:
+    """Outputs a weightclass based on an input weight
+
+        Args:
+            weight (int): Weight of the boxer.
+
+        Raises:
+            ValueError: If the weight is not at least 125.
+
+        """
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
     elif weight >= 166:
@@ -182,6 +256,16 @@ def get_weight_class(weight: int) -> str:
 
 
 def update_boxer_stats(boxer_id: int, result: str) -> None:
+    """Updates stats after a match.
+
+        Args:
+            id (int): ID number of the boxer.
+            result (str): Result of the boxer's match
+
+        Raises:
+            ValueError: Invalid result of a match or if a boxer is not in the database.
+
+        """
     if result not in {'win', 'loss'}:
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
 
