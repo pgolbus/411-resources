@@ -69,7 +69,7 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
         with get_db_connection() as conn:
             cursor = conn.cursor()
 
-             logger.info(f"Connected to database.")
+            logger.info(f"Connected to database.")
             # Check if the boxer already exists (name must be unique)
             cursor.execute("SELECT 1 FROM boxers WHERE name = ?", (name,))
             if cursor.fetchone():
@@ -191,7 +191,7 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
                 'win_pct': round(row[8] * 100, 1)  # Convert to percentage
             }
             leaderboard.append(boxer)
-            logger.info(f"Sucesfully added {boxer['name'] to leaderboard}")
+            logger.info(f"Sucesfully added {boxer['name']} to leaderboard}")
         
         logger.info(f"Sucesfully created leaderboard list")
         
