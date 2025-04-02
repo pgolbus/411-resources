@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Variables
-IMAGE_NAME=
-CONTAINER_TAG=
-HOST_PORT=5000
-CONTAINER_PORT=5000
+IMAGE_NAME=boxing_flask
+CONTAINER_TAG=latest
+HOST_PORT=5002
+CONTAINER_PORT=5002
 DB_VOLUME_PATH=  # Adjust this to the desired host path for the database persistence
 BUILD=  # Set this to true if you want to build the image
 

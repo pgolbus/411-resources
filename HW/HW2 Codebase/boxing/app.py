@@ -523,7 +523,7 @@ if __name__ == '__main__':
     app.logger.info("Starting Flask app...")
 
     try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(debug=True, host='0.0.0.0', port=5002)
     except Exception as e:
         app.logger.error(f"Flask app encountered an error: {e}")
     finally:

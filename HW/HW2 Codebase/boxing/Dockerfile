@@ -23,12 +23,13 @@ RUN apt-get update && apt-get install -y sqlite3
 COPY ./sql/create_db.sh /app/sql/create_db.sh
 COPY ./sql/init_db.sql /app/sql/init_db.sql
 RUN chmod +x /app/sql/create_db.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Define a volume for persisting the database
 VOLUME ["/app/db"]
 
 # Make port 5000 available to the world outside this container
-EXPOSE 5000
+EXPOSE 5002
 
 # Run the entrypoint script when the container launches
 CMD ["/app/entrypoint.sh"]
