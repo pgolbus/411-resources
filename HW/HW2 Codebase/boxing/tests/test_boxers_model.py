@@ -264,7 +264,7 @@ def test_update_boxer_invalid_win_loss(mock_db_connection):
     mock_cursor.fetchone.return_value = (1,)
 	with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
 		with pytest.raises(ValueError, match="Invalid result: invalid. Expected 'win' or 'loss'.")
-    		update_boxer_stats(boxer_id=1, result='invalid')
+    			update_boxer_stats(boxer_id=1, result='invalid')
 
 def test_update_boxer_invalid_ID(mock_db_connection):
     """Test updating stats for invalid input 
@@ -276,6 +276,6 @@ def test_update_boxer_invalid_ID(mock_db_connection):
     
     with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
 		with pytest.raises(ValueError, match="Boxer with ID 102 not found.")
-    		update_boxer_stats(boxer_id=102, result='win')
+    			update_boxer_stats(boxer_id=102, result='win')
     
 	
