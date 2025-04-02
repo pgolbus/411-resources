@@ -73,12 +73,71 @@ add_boxer() {
   fi
 }
 
+delete_boxer_by_id() {
+id=$1
+
+  echo "Deleting boxer by ID..."
+  response=$(curl -s -X DELETE "$BASE_URL/get-boxer-by-id")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer successfully deleted by ID."
+  else
+    echo "Failed to delete boxer by ID."
+    exit 1
+  fi
+}
+
+
 
 ############################################################
 #
 # Get boxers
 #
 ############################################################
+
+get_boxer_by_id() {
+id=$1
+
+  echo "Entering boxer in ring..."
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-id")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer successfully retrieved by ID."
+  else
+    echo "Failed to retrieve boxer by ID."
+    exit 1
+  fi
+}
+
+get_boxer_by_name() {
+name=$1
+
+  echo "Entering boxer in ring..."
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-name")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer successfully retrieved by name."
+  else
+    echo "Failed to retrieve boxer by name."
+    exit 1
+  fi
+}
+
+get_boxers_in_ring() {
+
+  echo "Retrieving boxers in ring..."
+  response=$(curl -s -X GET "$BASE_URL/get-boxers")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxers in ring successfully retrieved."
+  else
+    echo "Failed to retrieve boxers in ring."
+    exit 1
+  fi
+}
+
+
+
 
 
 ############################################################
@@ -139,18 +198,43 @@ clear_ring() {
 #                                                                               
 ############################################################  
 
+get_leaderboard() {
+
+  echo "Retrieving leaderboard..."
+  response=$(curl -s -X GET "$BASE_URL/get-leaderboard")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Leaderboard successfully retrieved."
+  else
+    echo "Failed to retrieve leaderboard."
+    exit 1
+  fi
+}
+
 
 # Health checks
 check_health
 check_db
 
 # create boxers
+create_boxer "smoketestboxer1" 200 150 75.0 35
+create_boxer "smoketestboxer2" 100 250 75.5 30
 
-# get boxers by name and ID
+
+
+# get boxer by name
+get_boxer_by_name "smoketestboxer1"
+
+# get boxer by ID
+get_boxer_by_id 1
 
 # Place boxers in ring
+enter_ring "smoketestboxer1"
+enter_ring "smoketestboxer2"
+
 
 # check ring state
+get_boxers_in_ring
 
 # trigger fight
 trigger_fight
@@ -159,7 +243,10 @@ trigger_fight
 clear_ring
 
 # get leaderboard
+get_leaderboard
 
 # delete boxers
+delete_boxer_by_id 1
+delete_boxer_by_id 2
 
 echo "All boxing tests passed successfully!"
