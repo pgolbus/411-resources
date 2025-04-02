@@ -59,16 +59,16 @@ add_boxer() {
   reach=$4
   age=$5
 
-  echo "adding boxer..."
+  echo "Adding boxer: $name..."
   response=$(curl -s -X POST "$BASE_URL/add-boxer" \
     -H "Content-Type: application/json" \
     -d "{\"name\": \"$name\", \"weight\": $weight, \"height\": $height, \"reach\": $reach, \"age\": $age}")
 
-
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Boxer added successfully."
   else
-    echo "Failed to add boxer."
+    echo "Failed to add boxer. Response:"
+    echo "$response" | jq .
     exit 1
   fi
 }
