@@ -101,6 +101,23 @@ get_boxer_by_id() {
   fi
 }
 
+get_boxer_by_name() {
+  boxer_name=$1
+
+  echo "Getting boxer by name ($boxer_name)..."
+  encoded_name=$(echo "$boxer_name" | sed 's/ /%20/g')
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-name/$encoded_name")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Boxer retrieved successfully by name ($boxer_name)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Boxer JSON (name $boxer_name):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get boxer by name ($boxer_name)."
+    exit 1
+  fi
+}
 
 ###############################################
 #
@@ -206,6 +223,8 @@ add_boxer "Boxer 2" 155 70 72 28
 get_boxer_by_id 1
 get_boxer_by_id 2
 
+get_boxer_by_name "Boxer 1"
+get_boxer_by_name "Boxer 2"
 
 add_boxer "Boxer 3" 160 66 68 32
 delete_boxer 3
