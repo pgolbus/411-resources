@@ -241,6 +241,8 @@ add_boxer "$boxer2" 350 250 75.5 30
 # get boxer by name
 get_boxer_by_name "$boxer1"
 
+# clear ring
+clear_ring
 
 # Place boxers in ring
 enter_ring "$boxer1"
