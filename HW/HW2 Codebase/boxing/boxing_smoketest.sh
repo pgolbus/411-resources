@@ -77,7 +77,7 @@ delete_boxer_by_id() {
 id=$1
 
   echo "Deleting boxer by ID..."
-  response=$(curl -s -X DELETE "$BASE_URL/get-boxer-by-id/$id")
+  response=$(curl -s -X DELETE "$BASE_URL/delete-boxer/$id")
 
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Boxer successfully deleted by ID."
@@ -98,7 +98,7 @@ id=$1
 get_boxer_by_id() {
 id=$1
 
-  echo "Entering boxer in ring..."
+  echo "Retrieving boxer by ID..."
   response=$(curl -s -X GET "$BASE_URL/get-boxer-by-id/$id")
 
   if echo "$response" | grep -q '"status": "success"'; then
@@ -112,7 +112,7 @@ id=$1
 get_boxer_by_name() {
 name=$1
 
-  echo "Entering boxer in ring..."
+  echo "Retrieving boxer by name..."
   response=$(curl -s -X GET "$BASE_URL/get-boxer-by-name/$name")
 
   if echo "$response" | grep -q '"status": "success"'; then
@@ -201,7 +201,7 @@ clear_ring() {
 get_leaderboard() {
 
   echo "Retrieving leaderboard..."
-  response=$(curl -s -X GET "$BASE_URL/get-leaderboard")
+  response=$(curl -s -X GET "$BASE_URL/leaderboard")
 
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Leaderboard successfully retrieved."
