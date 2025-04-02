@@ -10,6 +10,7 @@ COPY . /app
 # Copy the env file to the container
 COPY .env /app/.env
 
+ENV PORT=5001
 # Install any needed packages specified in requirements.txt
 # In production, you would want to ensure that any re-compiled packages
 # With the same version number are re-downloaded
@@ -28,7 +29,7 @@ RUN chmod +x /app/entrypoint.sh
 VOLUME ["/app/db"]
 
 # Make port 5000 available to the world outside this container
-EXPOSE 5000
+EXPOSE $PORT
 
 # Run the entrypoint script when the container launches
 
