@@ -35,9 +35,7 @@ def mock_db_connection(mocker):
 ##################################################
 
 def test_create_valid_boxer(mock_db_connection):
-    """Test create boxer given a valid boxer
-	
- 	"""
+	"""Test create boxer given a valid boxer"""
     mock_conn, mock_cursor = mock_db_connection
         
     with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
@@ -51,44 +49,32 @@ def test_create_valid_boxer(mock_db_connection):
 
 
 def test_invalid_weight():
-    """Test error when the boxer is under 125 pounds
-	
- 	"""
+	"""Test error when the boxer is under 125 pounds"""
     with pytest.raises(ValueError, match="Invalid weight: 100. Must be at least 125."):
         create_boxer(name="overweight boxer", weight=100, height=70, reach=70, age=25)
 
 def test_invalid_height():
-    """Test error when the boxer is under 0 inches
-	
- 	"""
+	"""Test error when the boxer is under 0 inches"""
     with pytest.raises(ValueError, match="Invalid height: -1. Must be greater than 0."):
         create_boxer(name="short boxer", weight=100, height=-1, reach=70, age=25)
 
 def test_invalid_reach():
-    """test error when the boxer's reach is under 0 inches.
-	
- 	"""
+	"""test error when the boxer's reach is under 0 inches."""
     with pytest.raises(ValueError, match="Invalid reach: -1. Must be greater than 0."):
         create_boxer(name="reach boxer", weight=100, height=70, reach=-1, age=25)
 
 def test_invalid_age_younger():
-    """Test error when the boxer age is under 18
-	
- 	"""
+	"""Test error when the boxer age is under 18"""
     with pytest.raises(ValueError, match="Invalid age: 2. Must be between 18 and 40."):
         create_boxer(name="younger boxer", weight=100, height=70, reach=70, age=2)
 
 def test_invalid_age_older():
-    """Test error when the boxer age is over 40
-	
- 	"""
+	"""Test error when the boxer age is over 40"""
     with pytest.raises(ValueError, match="Invalid age: 50. Must be between 18 and 40."):
         create_boxer(name="older boxer", weight=100, height=70, reach=70, age=50)
 
 def test_duplicate_name(mock_db_connection):
-    """ Test error when the boxer doesn't have a unique name
-	
- 	"""
+	""" Test error when the boxer doesn't have a unique name"""
     mock_conn, mock_cursor = mock_db_connection
 	
     with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
@@ -99,9 +85,7 @@ def test_duplicate_name(mock_db_connection):
 # Boxer Deletion Test Cases
 ##################################################
 def test_delete_boxer(mock_db_connection):
-    """test delete boxers for a boxer that exists
-	
- 	"""
+	"""test delete boxers for a boxer that exists"""
     mock_conn, mock_cursor = mock_db_connection
     mock_cursor.fetchone.return_value = (1, "Boxer1", 160, 70, 72, 30, 20, 15, 0.75)
 
@@ -110,9 +94,7 @@ def test_delete_boxer(mock_db_connection):
         delete_boxer(1)
 
 def test_delete_boxer_not_exist(mock_db_connection):
-    """test delete boxers for a boxer that does not exist
-	
- 	"""
+	"""test delete boxers for a boxer that does not exist"""
     mock_conn, mock_cursor = mock_db_connection
 	
     mock_cursor.fetchone.return_value = None
@@ -125,9 +107,7 @@ def test_delete_boxer_not_exist(mock_db_connection):
 # Get leaderboard Test Cases
 ##################################################
 def test_leaderboards_by_wins(mock_db_connection):
-    """tests leaderboards sorted by wins
-	
- 	"""
+	"""tests leaderboards sorted by wins"""
     mock_conn, mock_cursor = mock_db_connection
     with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
         leaderboard = get_leaderboard(sort_by="wins")
@@ -137,9 +117,7 @@ def test_leaderboards_by_wins(mock_db_connection):
     assert leaderboard[2]['name'] == "Boxer2"
 
 def test_leaderboards_by_win_pct(mock_db_connection):
-    """tests leaderboards sorted by wins pct
-	
- 	"""
+	"""tests leaderboards sorted by wins pct"""
     mock_conn, mock_cursor = mock_db_connection
     with mock.patch('boxing.models.boxers_model.get_db_connection', return_value=mock_conn):
         leaderboard = get_leaderboard(sort_by="win_pct")
@@ -149,9 +127,7 @@ def test_leaderboards_by_win_pct(mock_db_connection):
     assert leaderboard[2]['name'] == "Boxer2"
 
 def test_get_leaderboard_invalid_sort_by(mock_db_connection):
-    """Test error when the sort_by parameter is invalid.
-	
- 	"""
+	"""Test error when the sort_by parameter is invalid"""
 
 	
     mock_conn, mock_cursor = mock_db_connection
@@ -179,9 +155,7 @@ def test_get_boxers_by_ID(mock_db_connection):
     assert boxer.age == 30
 
 def test_get_boxer_by_id_not_found(mock_db_connection):
-    """Test when the boxer is not found in the database
-	
- 	"""
+	"""Test when the boxer is not found in the database"""
 
 	
     mock_conn, mock_cursor = mock_db_connection
@@ -212,9 +186,7 @@ def test_get_boxers_by_name(mock_db_connection):
     assert boxer.age == 30
 
 def test_get_boxer_by_name_not_found(mock_db_connection):
-    """Test when the boxer is not found in the database
-	
- 	"""
+	"""Test when the boxer is not found in the database"""
 	
     mock_conn, mock_cursor = mock_db_connection
     mock_cursor.fetchone.return_value = None
