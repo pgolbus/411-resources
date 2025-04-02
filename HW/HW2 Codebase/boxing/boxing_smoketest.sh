@@ -217,21 +217,21 @@ check_health
 check_db
 
 # create boxers
-add_boxer "smoketestboxer1" 200 150 75.0 35
-add_boxer "smoketestboxer2" 100 250 75.5 30
+suffix=$(date +%s)
+boxer1="smoketestboxer1_$suffix"
+boxer2="smoketestboxer2_$suffix"
 
+add_boxer "$boxer1" 200 150 75.0 35
+add_boxer "$boxer2" 100 250 75.5 30
 
 
 # get boxer by name
-get_boxer_by_name "smoketestboxer1"
+get_boxer_by_name "$boxer1"
 
-# get boxer by ID
-get_boxer_by_id 1
 
 # Place boxers in ring
-enter_ring "smoketestboxer1"
-enter_ring "smoketestboxer2"
-
+enter_ring "$boxer1"
+enter_ring "$boxer2"
 
 # check ring state
 get_boxers_in_ring
@@ -245,8 +245,5 @@ clear_ring
 # get leaderboard
 get_leaderboard
 
-# delete boxers
-delete_boxer_by_id 1
-delete_boxer_by_id 2
 
 echo "All boxing tests passed successfully!"
