@@ -3,8 +3,8 @@
 # Variables
 IMAGE_NAME=
 CONTAINER_TAG=
-HOST_PORT=5000
-CONTAINER_PORT=5000
+HOST_PORT=5001
+CONTAINER_PORT=5001
 DB_VOLUME_PATH=  # Adjust this to the desired host path for the database persistence
 BUILD=  # Set this to true if you want to build the image
 

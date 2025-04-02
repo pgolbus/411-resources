@@ -1,3 +1,9 @@
+"""
+This module provides functionality for managing boxers in the boxing application.
+It includes functions to create, delete, and retrieve boxers, manage the leaderboard,
+and update boxer statistics. Proper logging is implemented for debugging and tracing purposes.
+"""
+
 from dataclasses import dataclass
 import logging
 import sqlite3
@@ -11,6 +17,7 @@ logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 
+# Data class representing a boxer with attributes and automatic weight class assignment.
 @dataclass
 class Boxer:
     id: int
@@ -25,7 +32,10 @@ class Boxer:
         self.weight_class = get_weight_class(self.weight)  # Automatically assign weight class
 
 
+# Function: create_boxer
+# Purpose: Creates a new boxer in the database after validating input parameters.
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
+    logger.info(f"Attempting to create boxer: {name}")
 
     if weight < 125:
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
@@ -51,6 +61,7 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
             """, (name, weight, height, reach, age))
 
             conn.commit()
+            logger.info(f"Boxer created successfully: {name}")
 
     except sqlite3.IntegrityError:
         raise ValueError(f"Boxer with name '{name}' already exists")
@@ -59,8 +70,11 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
         raise e
 
 
+# Function: delete_boxer
+# Purpose: Deletes a boxer from the database by boxer ID.
 def delete_boxer(boxer_id: int) -> None:
     try:
+        logger.info(f"Attempting to delete boxer with ID: {boxer_id}")
         with get_db_connection() as conn:
             cursor = conn.cursor()
 
@@ -70,11 +84,14 @@ def delete_boxer(boxer_id: int) -> None:
 
             cursor.execute("DELETE FROM boxers WHERE id = ?", (boxer_id,))
             conn.commit()
+            logger.info(f"Boxer with ID {boxer_id} deleted successfully.")
 
     except sqlite3.Error as e:
         raise e
 
 
+# Function: get_leaderboard
+# Purpose: Retrieves the leaderboard of boxers sorted by wins or win percentage.
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
     query = """
         SELECT id, name, weight, height, reach, age, fights, wins,
@@ -95,6 +112,7 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
             cursor = conn.cursor()
             cursor.execute(query)
             rows = cursor.fetchall()
+            logger.info("Retrieved leaderboard data successfully.")
 
         leaderboard = []
         for row in rows:
@@ -112,12 +130,15 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
             }
             leaderboard.append(boxer)
 
+        logger.info("Processed leaderboard data for return.")
         return leaderboard
 
     except sqlite3.Error as e:
         raise e
 
 
+# Function: get_boxer_by_id
+# Purpose: Retrieves a boxer from the database using the boxer ID.
 def get_boxer_by_id(boxer_id: int) -> Boxer:
     try:
         with get_db_connection() as conn:
@@ -128,8 +149,13 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
             """, (boxer_id,))
 
             row = cursor.fetchone()
+            if row:
+                logger.info(f"Boxer found with ID: {boxer_id}")
+            else:
+                logger.warning(f"Boxer with ID {boxer_id} not found.")
 
             if row:
+                logger.info(f"Returning boxer with ID: {boxer_id}")
                 boxer = Boxer(
                     id=row[0], name=row[1], weight=row[2], height=row[3],
                     reach=row[4], age=row[5]
@@ -142,6 +168,8 @@ def get_boxer_by_id(boxer_id: int) -> Boxer:
         raise e
 
 
+# Function: get_boxer_by_name
+# Purpose: Retrieves a boxer from the database using the boxer name.
 def get_boxer_by_name(boxer_name: str) -> Boxer:
     try:
         with get_db_connection() as conn:
@@ -152,8 +180,13 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
             """, (boxer_name,))
 
             row = cursor.fetchone()
+            if row:
+                logger.info(f"Boxer found with name: {boxer_name}")
+            else:
+                logger.warning(f"Boxer with name {boxer_name} not found.")
 
             if row:
+                logger.info(f"Returning boxer with name: {boxer_name}")
                 boxer = Boxer(
                     id=row[0], name=row[1], weight=row[2], height=row[3],
                     reach=row[4], age=row[5]
@@ -166,6 +199,8 @@ def get_boxer_by_name(boxer_name: str) -> Boxer:
         raise e
 
 
+# Function: get_weight_class
+# Purpose: Determines the weight class of a boxer based on weight.
 def get_weight_class(weight: int) -> str:
     if weight >= 203:
         weight_class = 'HEAVYWEIGHT'
@@ -178,9 +213,12 @@ def get_weight_class(weight: int) -> str:
     else:
         raise ValueError(f"Invalid weight: {weight}. Weight must be at least 125.")
 
+    logger.info(f"Determined weight class '{weight_class}' for weight: {weight}")
     return weight_class
 
 
+# Function: update_boxer_stats
+# Purpose: Updates the statistics (fights and wins) for a boxer based on the result.
 def update_boxer_stats(boxer_id: int, result: str) -> None:
     if result not in {'win', 'loss'}:
         raise ValueError(f"Invalid result: {result}. Expected 'win' or 'loss'.")
@@ -193,12 +231,14 @@ def update_boxer_stats(boxer_id: int, result: str) -> None:
             if cursor.fetchone() is None:
                 raise ValueError(f"Boxer with ID {boxer_id} not found.")
 
+            logger.info(f"Updating stats for boxer ID {boxer_id} with result: {result}")
             if result == 'win':
                 cursor.execute("UPDATE boxers SET fights = fights + 1, wins = wins + 1 WHERE id = ?", (boxer_id,))
             else:  # result == 'loss'
                 cursor.execute("UPDATE boxers SET fights = fights + 1 WHERE id = ?", (boxer_id,))
 
             conn.commit()
+            logger.info(f"Boxer stats updated successfully for boxer ID {boxer_id} with result: {result}")
 
     except sqlite3.Error as e:
         raise e
