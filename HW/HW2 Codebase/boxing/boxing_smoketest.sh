@@ -123,6 +123,18 @@ name=$1
   fi
 }
 
+get_boxer_id_by_name() {
+  name=$1
+  response=$(curl -s -X GET "$BASE_URL/get-boxer-by-name/$name")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "$response" | jq -r '.boxer.id'
+  else
+    echo "Failed to get boxer ID for $name."
+    echo "$response" | jq .
+    exit 1
+  fi
+}
+
 get_boxers_in_ring() {
 
   echo "Retrieving boxers in ring..."
