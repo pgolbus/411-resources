@@ -28,17 +28,17 @@ def ring_model():
 @pytest.fixture()
 def boxer1():
     """Fixture to create a Boxer instance for testing."""
-    return Boxer(id=1, name="Boxer 1", age=20, weight=165, reach=50)
+    return Boxer(id=1, name="Boxer 1", age=20, weight=165, height=57, reach=50)
 
 @pytest.fixture()
 def boxer2():
     """Fixture to create another Boxer instance for testing."""
-    return Boxer(id=2, name="Boxer 2", age=22, weight=185, reach=60)
+    return Boxer(id=2, name="Boxer 2", age=22, weight=185, height=60, reach=60)
 
 @pytest.fixture()
 def boxer3():
     """Fixture to create a third Boxer instance for testing."""
-    return Boxer(id=3, name="Boxer 3", age=20, weight=138, reach=55)
+    return Boxer(id=3, name="Boxer 3", age=20, weight=138, height=40, reach=55)
 
 ##################################################
 # Ring Test Cases
@@ -66,7 +66,7 @@ def test_add_duplicate_boxer_raises_error(ring_model, boxer1):
     """Test error when trying to add a boxer with the same name."""
     ring_model.enter_ring(boxer1)
     with pytest.raises(ValueError, match="Ring is full, cannot add more boxers."):
-        ring_model.enter_ring(Boxer(id=4, name="Boxer 1", age=25, weight=157, reach=68))
+        ring_model.enter_ring(boxer1)
 
 def test_clear_ring(ring_model, boxer1, boxer2):
     """Test that the ring is cleared after a fight."""
@@ -101,10 +101,12 @@ def test_fight_with_less_than_two_boxers(ring_model, boxer1):
 # Skill Calculation Test Case
 ##################################################
 
-def test_get_fighting_skill(ring_model, boxer_1):
+def test_get_fighting_skill(ring_model, boxer1):
     """Test that the fighting skill is correctly calculated."""
-    skill = ring_model.get_fighting_skill(boxer_1)
-    expected_skill = (boxer_1.weight * len(boxer_1.name)) + (boxer_1.reach / 10) + 0  
+    
+    age_modifier = -1 if boxer1.age < 25 else (-2 if boxer1.age > 35 else 0)
+    skill = ring_model.get_fighting_skill(boxer1)
+    expected_skill = (boxer1.weight * len(boxer1.name)) + (boxer1.reach / 10) + age_modifier  
     assert skill == expected_skill
 
 ##################################################
