@@ -56,13 +56,19 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
             ValueError: If an attribute is does not meet the criteria or if the boxer already exists in the db.
 
         """
+    logger.info("Received request to create new boxer")
+
     if weight < 125:
+        logger.warning("Invalid input data types")
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
     if height <= 0:
+        logger.warning("Invalid input data types")
         raise ValueError(f"Invalid height: {height}. Must be greater than 0.")
     if reach <= 0:
+        logger.warning("Invalid input data types")
         raise ValueError(f"Invalid reach: {reach}. Must be greater than 0.")
     if not (18 <= age <= 40):
+        logger.warning("Invalid input data types")
         raise ValueError(f"Invalid age: {age}. Must be between 18 and 40.")
 
     try:
@@ -78,13 +84,16 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
                 INSERT INTO boxers (name, weight, height, reach, age)
                 VALUES (?, ?, ?, ?, ?)
             """, (name, weight, height, reach, age))
-
+            logger.info(f"Adding boxer: {name}, {weight}kg, {height}cm, {reach} inches, {age} years old")
+            logger.info(f"Boxer added successfully: {name}")
             conn.commit()
 
     except sqlite3.IntegrityError:
+        logger.error(f"Failed to add boxer:")
         raise ValueError(f"Boxer with name '{name}' already exists")
 
     except sqlite3.Error as e:
+        logger.error(f"Failed to add boxer:")
         raise e
 
 
@@ -158,7 +167,6 @@ def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
                 'win_pct': round(row[8] * 100, 1)  # Convert to percentage
             }
             leaderboard.append(boxer)
-
         return leaderboard
 
     except sqlite3.Error as e:

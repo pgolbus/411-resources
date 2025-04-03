@@ -86,13 +86,17 @@ class RingModel:
             ValueError: If the ring is full and a boxer tries to enter.
 
         """
+        logger.info(f"Attempting to enter {boxer.name} into the ring.")
         if not isinstance(boxer, Boxer):
+            logger.warning(f"Cannot enter {boxer.name}")
             raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
 
         if len(self.ring) >= 2:
+            logger.warning(f"Cannot enter {boxer.name}")
             raise ValueError("Ring is full, cannot add more boxers.")
 
         self.ring.append(boxer)
+        logger.info(f"Boxer '{boxer.name}' is now in the ring.")
 
     def get_boxers(self) -> List[Boxer]:
         """ Get boxers
