@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Variables
-IMAGE_NAME="boxing"
-CONTAINER_TAG="0.2.0"
+IMAGE_NAME="boxxxxing"
+CONTAINER_TAG="0.1"
 HOST_PORT=5000
 CONTAINER_PORT=5000
-DB_VOLUME_PATH="./boxing" # Adjust this to the desired host path for the database persistence
+DB_VOLUME_PATH="/app/db" # Adjust this to the desired host path for the database persistence
 BUILD=true # Set this to true if you want to build the image
 
 # Check if we need to build the Docker image

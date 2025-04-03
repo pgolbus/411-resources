@@ -46,28 +46,21 @@ check_db() {
   fi
 }
 
-
-##########################################################
-#
-# Song Management
-#
-##########################################################
-
-create_song() {
-  artist=$1
-  title=$2
-  year=$3
-  genre=$4
-  duration=$5
+create_boxer() {
+  name=$1
+  weight=$2
+  height=$3
+  reach=$4
+  age=$5
 
   echo "Adding song ($artist - $title, $year) to the playlist..."
-  curl -s -X POST "$BASE_URL/create-song" -H "Content-Type: application/json" \
-    -d "{\"artist\":\"$artist\", \"title\":\"$title\", \"year\":$year, \"genre\":\"$genre\", \"duration\":$duration}" | grep -q '"status": "success"'
+  curl -s -X POST "$BASE_URL/add-boxer" -H "Content-Type: application/json" \
+    -d "{\"name\":\"$name\", \"weight\":\"$weight\", \"height\":$height, \"reach\":\"$reach\", \"age\":$age}" | grep -q '"status": "success"'
 
   if [ $? -eq 0 ]; then
-    echo "Song added successfully."
+    echo "boxer added successfully."
   else
-    echo "Failed to add song."
+    echo "Failed to add boxer."
     exit 1
   fi
 }
@@ -79,12 +72,10 @@ sqlite3 db/playlist.db < sql/init_db.sql
 check_health
 check_db
 
-# Create songs
+# Create boxers
 
-##create_song "The Beatles" "Hey Jude" 1968 "Rock" 180
-##create_song "The Rolling Stones" "Paint It Black" 1966 "Rock" 180
-##create_song "The Beatles" "Let It Be" 1970 "Rock" 180
-##create_song "Queen" "Bohemian Rhapsody" 1975 "Rock" 180
-##create_song "Led Zeppelin" "Stairway to Heaven" 1971 "Rock" 180
+create_boxer "Mo" 150 50 6 30
+create_boxer "So" 160 10 2 30
+create_boxer "Lo" 120 50 5 30
 
 echo "All tests passed successfully!"
