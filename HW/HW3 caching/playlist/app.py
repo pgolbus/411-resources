@@ -13,6 +13,7 @@ from playlist.utils.logger import configure_logger
 
 load_dotenv()
 
+
 def create_app(config_class=ProductionConfig) -> Flask:
     """Create a Flask application with the specified configuration.
 
@@ -40,7 +41,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
     @login_manager.user_loader
     def load_user(user_id):
-        return Users.query.get(int(user_id))
+        return Users.query.filter_by(username=user_id).first()
 
     @login_manager.unauthorized_handler
     def unauthorized():
@@ -262,8 +263,38 @@ def create_app(config_class=ProductionConfig) -> Flask:
     #
     ##########################################################
 
+    @app.route('/api/reset-songs', methods=['DELETE'])
+    def reset_songs() -> Response:
+        """Recreate the songs table to delete songs.
+
+        Returns:
+            JSON response indicating the success of recreating the Songs table.
+
+        Raises:
+            500 error if there is an issue recreating the Songs table.
+        """
+        try:
+            app.logger.info("Received request to recreate Songs table")
+            with app.app_context():
+                Songs.__table__.drop(db.engine)
+                Songs.__table__.create(db.engine)
+            app.logger.info("Songs table recreated successfully")
+            return make_response(jsonify({
+                "status": "success",
+                "message": f"Songs table recreated successfully"
+            }), 200)
+
+        except Exception as e:
+            app.logger.error(f"Songs table recreation failed: {e}")
+            return make_response(jsonify({
+                "status": "error",
+                "message": "An internal error occurred while deleting users",
+                "details": str(e)
+            }), 500)
+
 
     @app.route('/api/create-song', methods=['POST'])
+    @login_required
     def add_song() -> Response:
         """Route to add a new song to the catalog.
 
@@ -317,7 +348,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
                 }), 400)
 
             app.logger.info(f"Adding song: {artist} - {title} ({year}), Genre: {genre}, Duration: {duration}s")
-            song_model.create_song(artist=artist, title=title, year=year, genre=genre, duration=duration)
+            Songs.create_song(artist=artist, title=title, year=year, genre=genre, duration=duration)
 
             app.logger.info(f"Song added successfully: {artist} - {title}")
             return make_response(jsonify({
@@ -335,6 +366,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/delete-song/<int:song_id>', methods=['DELETE'])
+    @login_required
     def delete_song(song_id: int) -> Response:
         """Route to delete a song by ID.
 
@@ -353,7 +385,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
             app.logger.info(f"Received request to delete song with ID {song_id}")
 
             # Check if the song exists before attempting to delete
-            song = song_model.get_song_by_id(song_id)
+            song = Songs.get_song_by_id(song_id)
             if not song:
                 app.logger.warning(f"Song with ID {song_id} not found.")
                 return make_response(jsonify({
@@ -361,7 +393,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
                     "message": f"Song with ID {song_id} not found"
                 }), 400)
 
-            song_model.delete_song(song_id)
+            Songs.delete_song(song_id)
             app.logger.info(f"Successfully deleted song with ID {song_id}")
 
             return make_response(jsonify({
@@ -379,6 +411,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-all-songs-from-catalog', methods=['GET'])
+    @login_required
     def get_all_songs() -> Response:
         """Route to retrieve all songs in the catalog (non-deleted), with an option to sort by play count.
 
@@ -398,7 +431,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
             app.logger.info(f"Received request to retrieve all songs from catalog (sort_by_play_count={sort_by_play_count})")
 
-            songs = song_model.get_all_songs(sort_by_play_count=sort_by_play_count)
+            songs = Songs.get_all_songs(sort_by_play_count=sort_by_play_count)
 
             app.logger.info(f"Successfully retrieved {len(songs)} songs from the catalog")
 
@@ -418,6 +451,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-song-from-catalog-by-id/<int:song_id>', methods=['GET'])
+    @login_required
     def get_song_by_id(song_id: int) -> Response:
         """Route to retrieve a song by its ID.
 
@@ -435,7 +469,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
         try:
             app.logger.info(f"Received request to retrieve song with ID {song_id}")
 
-            song = song_model.get_song_by_id(song_id)
+            song = Songs.get_song_by_id(song_id)
             if not song:
                 app.logger.warning(f"Song with ID {song_id} not found.")
                 return make_response(jsonify({
@@ -461,6 +495,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-song-from-catalog-by-compound-key', methods=['GET'])
+    @login_required
     def get_song_by_compound_key() -> Response:
         """Route to retrieve a song by its compound key (artist, title, year).
 
@@ -500,7 +535,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
             app.logger.info(f"Received request to retrieve song by compound key: {artist}, {title}, {year}")
 
-            song = song_model.get_song_by_compound_key(artist, title, year)
+            song = Songs.get_song_by_compound_key(artist, title, year)
             if not song:
                 app.logger.warning(f"Song not found: {artist} - {title} ({year})")
                 return make_response(jsonify({
@@ -526,6 +561,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-random-song', methods=['GET'])
+    @login_required
     def get_random_song() -> Response:
         """Route to retrieve a random song from the catalog.
 
@@ -540,7 +576,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
         try:
             app.logger.info("Received request to retrieve a random song from the catalog")
 
-            song = song_model.get_random_song()
+            song = Songs.get_random_song()
             if not song:
                 app.logger.warning("No songs found in the catalog.")
                 return make_response(jsonify({
@@ -573,6 +609,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/add-song-to-playlist', methods=['POST'])
+    @login_required
     def add_song_to_playlist() -> Response:
         """Route to add a song to the playlist by compound key (artist, title, year).
 
@@ -616,7 +653,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
                 }), 400)
 
             app.logger.info(f"Looking up song: {artist} - {title} ({year})")
-            song = song_model.get_song_by_compound_key(artist, title, year)
+            song = Songs.get_song_by_compound_key(artist, title, year)
 
             if not song:
                 app.logger.warning(f"Song not found: {artist} - {title} ({year})")
@@ -643,6 +680,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/remove-song-from-playlist', methods=['DELETE'])
+    @login_required
     def remove_song_by_song_id() -> Response:
         """Route to remove a song from the playlist by compound key (artist, title, year).
 
@@ -686,7 +724,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
                 }), 400)
 
             app.logger.info(f"Looking up song to remove: {artist} - {title} ({year})")
-            song = song_model.get_song_by_compound_key(artist, title, year)
+            song = Songs.get_song_by_compound_key(artist, title, year)
 
             if not song:
                 app.logger.warning(f"Song not found in catalog: {artist} - {title} ({year})")
@@ -713,6 +751,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/remove-song-from-playlist-by-track-number/<int:track_number>', methods=['DELETE'])
+    @login_required
     def remove_song_by_track_number(track_number: int) -> Response:
         """Route to remove a song from the playlist by track number.
 
@@ -755,6 +794,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/clear-playlist', methods=['POST'])
+    @login_required
     def clear_playlist() -> Response:
         """Route to clear all songs from the playlist.
 
@@ -793,6 +833,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/play-current-song', methods=['POST'])
+    @login_required
     def play_current_song() -> Response:
         """Route to play the current song in the playlist.
 
@@ -841,6 +882,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/play-entire-playlist', methods=['POST'])
+    @login_required
     def play_entire_playlist() -> Response:
         """Route to play all songs in the playlist.
 
@@ -880,6 +922,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/play-rest-of-playlist', methods=['POST'])
+    @login_required
     def play_rest_of_playlist() -> Response:
         """Route to play the rest of the playlist from the current track.
 
@@ -926,6 +969,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/rewind-playlist', methods=['POST'])
+    @login_required
     def rewind_playlist() -> Response:
         """Route to rewind the playlist to the first song.
 
@@ -965,6 +1009,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/go-to-track-number/<int:track_number>', methods=['POST'])
+    @login_required
     def go_to_track_number(track_number: int) -> Response:
         """Route to set the playlist to start playing from a specific track number.
 
@@ -1013,6 +1058,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/go-to-random-track', methods=['POST'])
+    @login_required
     def go_to_random_track() -> Response:
         """Route to set the playlist to start playing from a random track number.
 
@@ -1059,6 +1105,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-all-songs-from-playlist', methods=['GET'])
+    @login_required
     def get_all_songs_from_playlist() -> Response:
         """Retrieve all songs in the playlist.
 
@@ -1090,6 +1137,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-song-from-playlist-by-track-number/<int:track_number>', methods=['GET'])
+    @login_required
     def get_song_by_track_number(track_number: int) -> Response:
         """Retrieve a song from the playlist by track number.
 
@@ -1132,6 +1180,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-current-song', methods=['GET'])
+    @login_required
     def get_current_song() -> Response:
         """Retrieve the current song being played.
 
@@ -1163,6 +1212,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/get-playlist-length-duration', methods=['GET'])
+    @login_required
     def get_playlist_length_and_duration() -> Response:
         """Retrieve the length (number of songs) and total duration of the playlist.
 
@@ -1203,6 +1253,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/move-song-to-beginning', methods=['POST'])
+    @login_required
     def move_song_to_beginning() -> Response:
         """Move a song to the beginning of the playlist.
 
@@ -1235,7 +1286,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
             artist, title, year = data["artist"], data["title"], data["year"]
             app.logger.info(f"Received request to move song to beginning: {artist} - {title} ({year})")
 
-            song = song_model.get_song_by_compound_key(artist, title, year)
+            song = Songs.get_song_by_compound_key(artist, title, year)
             playlist_model.move_song_to_beginning(song.id)
 
             app.logger.info(f"Successfully moved song to beginning: {artist} - {title} ({year})")
@@ -1254,6 +1305,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/move-song-to-end', methods=['POST'])
+    @login_required
     def move_song_to_end() -> Response:
         """Move a song to the end of the playlist.
 
@@ -1286,7 +1338,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
             artist, title, year = data["artist"], data["title"], data["year"]
             app.logger.info(f"Received request to move song to end: {artist} - {title} ({year})")
 
-            song = song_model.get_song_by_compound_key(artist, title, year)
+            song = Songs.get_song_by_compound_key(artist, title, year)
             playlist_model.move_song_to_end(song.id)
 
             app.logger.info(f"Successfully moved song to end: {artist} - {title} ({year})")
@@ -1305,6 +1357,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/move-song-to-track-number', methods=['POST'])
+    @login_required
     def move_song_to_track_number() -> Response:
         """Move a song to a specific track number in the playlist.
 
@@ -1337,7 +1390,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
             artist, title, year, track_number = data["artist"], data["title"], data["year"], data["track_number"]
             app.logger.info(f"Received request to move song to track number {track_number}: {artist} - {title} ({year})")
 
-            song = song_model.get_song_by_compound_key(artist, title, year)
+            song = Songs.get_song_by_compound_key(artist, title, year)
             playlist_model.move_song_to_track_number(song.id, track_number)
 
             app.logger.info(f"Successfully moved song to track {track_number}: {artist} - {title} ({year})")
@@ -1356,6 +1409,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
 
 
     @app.route('/api/swap-songs-in-playlist', methods=['POST'])
+    @login_required
     def swap_songs_in_playlist() -> Response:
         """Swap two songs in the playlist by their track numbers.
 
@@ -1428,7 +1482,7 @@ def create_app(config_class=ProductionConfig) -> Flask:
         try:
             app.logger.info("Received request to generate song leaderboard")
 
-            leaderboard_data = song_model.get_all_songs(sort_by_play_count=True)
+            leaderboard_data = Songs.get_all_songs(sort_by_play_count=True)
 
             app.logger.info(f"Successfully generated song leaderboard with {len(leaderboard_data)} entries")
             return make_response(jsonify({
@@ -1447,8 +1501,8 @@ def create_app(config_class=ProductionConfig) -> Flask:
     return app
 
 if __name__ == '__main__':
+    app = create_app()
     app.logger.info("Starting Flask app...")
-
     try:
         app.run(debug=True, host='0.0.0.0', port=5000)
     except Exception as e:
