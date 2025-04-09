@@ -83,7 +83,7 @@ class PlaylistModel:
 
         song_id = self.validate_song_id(song_id, check_in_playlist=False)
 
-        if song_id in {s.id for s in self.playlist}:
+        if song_id in self.playlist:
             logger.error(f"Song with ID {song_id} already exists in the playlist")
             raise ValueError(f"Song with ID {song_id} already exists in the playlist")
 
@@ -246,7 +246,7 @@ class PlaylistModel:
         Returns:
             int: The total duration of all songs in the playlist in seconds.
         """
-        total_duration = sum(self._get_song_from_cache_or_db(song.id).duration for song in self.playlist)
+        total_duration = sum(self._get_song_from_cache_or_db(song_id).duration for song_id in self.playlist)
         logger.info(f"Retrieving total playlist duration: {total_duration} seconds")
         return total_duration
 
