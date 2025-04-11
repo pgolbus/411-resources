@@ -14,6 +14,16 @@ RANDOM_ORG_URL = os.getenv("RANDOM_ORG_URL",
 
 
 def get_random() -> float:
+    """
+    Fetches a random integer between 1 and max inclusive from random.org.
+
+    Returns:
+        random_number (float): A random number between 1 and max.
+
+    Raises:
+        RuntimeError: If the request to random.org fails.
+        ValueError: If the response from random.org is not a valid integer.
+    """
     try:
         response = requests.get(RANDOM_ORG_URL, timeout=5)
 
