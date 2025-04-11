@@ -32,7 +32,10 @@ class RingModel:
             ttl_seconds (int): The time-to-live in seconds for the cached boxer objects.
 
         """
-        pass
+        self.ring: List[int] = []
+        self._boxer_cache: dict[int, Boxers] = {}
+        self._ttl: dict[int, float] = {}
+        self.ttl_seconds = int(os.getenv("TTL", 60))  # Default TTL is 60 seconds
 
     def fight(self) -> str:
         """Simulates a fight between two combatants.
@@ -111,6 +114,8 @@ class RingModel:
             ValueError: If the boxer ID is invalid or the boxer does not exist.
 
         """
+        logger.info(f"Received request to add Boxer with ID {boxer_id} to the ring")
+
         if len(self.ring) >= 2:
             logger.error(f"Attempted to add boxer ID {boxer_id} but the ring is full")
 
@@ -119,6 +124,10 @@ class RingModel:
         except ValueError as e:
             logger.error(str(e))
             raise
+        
+        if boxer_id in self.ring:
+            logger.warning(f"Boxer ID {boxer_id} is already in the ring.")
+            return
 
         logger.info(f"Adding boxer '{boxer.name}' (ID {boxer_id}) to the ring")
 
