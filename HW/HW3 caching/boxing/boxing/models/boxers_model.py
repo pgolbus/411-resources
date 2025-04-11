@@ -45,8 +45,25 @@ class Boxers(db.Model):
             - Fight statistics (`fights` and `wins`) are initialized to 0 by default in the database schema.
 
         """
-        if str 
-        pass
+        #check unique name 
+        if weight < 125:
+            raise ValueError("Weight must be at least 125 pounds.")
+        if height <= 0:
+            raise ValueError("Height must be greater than 0 inches.")
+        if reach <= 0:
+            raise ValueError("Reach must be greater than 0 inches.")
+        if not (18 <= age <= 40):
+            raise ValueError("Age must be between 18 and 40, inclusive.")
+
+        self.name = name
+        self.weight = weight
+        self.height = height
+        self.reach = reach
+        self.age = age
+        self.weight_class = self.get_weight_class(weight)
+        #double check below
+        self.fights = 0
+        self.wins = 0
 
     @classmethod
     #TODO: IMPLEMENT#####################################################################
@@ -69,9 +86,22 @@ class Boxers(db.Model):
             ValueError: If the weight is less than 125.
 
         """
-        pass
+        # if weight < 125:
+        # raise ValueError("Weight must be at least 125 pounds.")
+
+        if weight >= 203:
+            return 'HEAVYWEIGHT'
+        elif weight >= 166:
+            return 'MIDDLEWEIGHT'
+        elif weight >= 133:
+            return 'LIGHTWEIGHT'
+        elif weight >= 125:
+            return 'FEATHERWEIGHT'
+        else:
+            raise ValueError(f"Invalid weight: {weight}. Weight must be at least 125.")
 
     #TODO: IMPLEMENT#####################################################################
+    #done
     @classmethod
     def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
         """Create and persist a new Boxer instance.
@@ -99,7 +129,45 @@ class Boxers(db.Model):
             db.session.rollback()
             logger.error(f"Database error during creation: {e}")
 
+        ########### Above is original ###########################
+        logger.info(f"Received request to create boxer: {name}, {weight=} {height=} {reach=} {age=}")
+
+        try:
+            boxer = Boxers(
+                name=name.strip(),
+                weight=weight,
+                height=height,
+                reach=reach,
+                age=age
+            )
+        #     boxer.__init__() #double check
+        # except ValueError as e:
+        #     logger.warning(f"Validation failed: {e}")
+        #     raise
+
+        try:
+            # Check for existing boxer with same name 
+            existing = Boxers.query.filter_by(name=name.strip(), weight=weight, height=height, reach=reach, age=age).first()
+            if existing:
+                logger.error(f"Boxer already exists: {name}, {weight=} {height=} {reach=} {age=}")
+                raise ValueError(f"Boxer with name '{name}', weight '{weight}', height '{height}', reach '{reach}', and age {age} already exists.")
+
+            db.session.add(boxer)
+            db.session.commit()
+            logger.info(f"Boxer successfully added: {name}, {weight=} {height=} {reach=} {age=}")
+
+        except IntegrityError:
+            logger.error(f"Boxer already exists: {name}, {weight=} {height=} {reach=} {age=}")
+            db.session.rollback()
+            raise ValueError(f"Boxer with name '{name}', weight '{weight}', height '{height}', reach '{reach}', and age {age} already exists.")
+
+        except SQLAlchemyError as e:
+            logger.error(f"Database error while creating song: {e}")
+            db.session.rollback()
+            raise
+
     #TODO: IMPLEMENT#####################################################################
+    #done
     @classmethod
     def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
         """Retrieve a boxer by ID.
@@ -134,6 +202,7 @@ class Boxers(db.Model):
             raise
 
     #TODO: IMPLEMENT#####################################################################
+    #done
     @classmethod
     def get_boxer_by_name(cls, name: str) -> "Boxers":
         """Retrieve a boxer by name.
