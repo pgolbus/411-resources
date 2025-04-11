@@ -10,6 +10,9 @@ COPY . /app
 # Copy the env file to the container
 COPY .env /app/.env
 
+# Use port 5002 to host app.
+ENV PORT=5002
+
 # Install any needed packages specified in requirements.txt
 # In production, you would want to ensure that any re-compiled packages
 # With the same version number are re-downloaded
@@ -25,10 +28,14 @@ COPY ./sql/init_db.sql /app/sql/init_db.sql
 RUN chmod +x /app/sql/create_db.sh
 
 # Define a volume for persisting the database
-VOLUME ["/app/db"]
+VOLUME ["/app/boxing_db..."]
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
+# Expose port 5002 to container
+EXPOSE $PORT
 
 # Run the entrypoint script when the container launches
-CMD ["/app/entrypoint.sh"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+HEALTHCHECK --interval=30s --timeout=3s \
+CMD curl -f http://localhost:${PORT}/health || exit 1

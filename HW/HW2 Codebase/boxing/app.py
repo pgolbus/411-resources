@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
+import os
 # from flask_cors import CORS
 
 from boxing.models import boxers_model
@@ -20,6 +21,8 @@ app = Flask(__name__)
 ring_model = RingModel()
 configure_logger(app.logger)
 
+# Expose port 5002
+port = os.getenv('PORT')
 
 ####################################################
 #
@@ -296,8 +299,7 @@ def get_boxer_by_name(boxer_name: str) -> Response:
 #
 ############################################################
 
-
-@app.route('/api/fight', methods=['GET'])
+@app.route('/api/fight', methods=['POST'])
 def bout() -> Response:
     """Route that triggers the fight between the two current boxers.
 
@@ -335,7 +337,7 @@ def bout() -> Response:
             "message": "An internal error occurred while triggering the fight",
             "details": str(e)
         }), 500)
-
+    
 
 @app.route('/api/clear-boxers', methods=['POST'])
 def clear_boxers() -> Response:
@@ -523,7 +525,7 @@ if __name__ == '__main__':
     app.logger.info("Starting Flask app...")
 
     try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(host='0.0.0.0', port = port, debug=True, threaded = False)
     except Exception as e:
         app.logger.error(f"Flask app encountered an error: {e}")
     finally:
