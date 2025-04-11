@@ -20,6 +20,15 @@ class Boxers(db.Model):
     manage boxer data, run simulations, and track fight outcomes.
 
     """
+    __tablename__ = "Boxers"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    height = db.Column(db.Float, nullable=False)
+    reach = db.Column(db.Float, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+
     #TODO: IMPLEMENT#####################################################################
     def __init__(self, name: str, weight: float, height: float, reach: float, age: int):
         """Initialize a new Boxer instance with basic attributes.
@@ -36,6 +45,7 @@ class Boxers(db.Model):
             - Fight statistics (`fights` and `wins`) are initialized to 0 by default in the database schema.
 
         """
+        if str 
         pass
 
     @classmethod
@@ -105,8 +115,23 @@ class Boxers(db.Model):
 
         """
         if boxer is None:
-            logger.info(f"Boxer with ID {boxer_id} not found.")
-        pass
+            logger.info(f"Boxer with ID {boxer_id} not found.") #Originally here
+
+        logger.info(f"Attempting to retrieve boxer with ID {boxer_id}")
+
+        try:
+            boxer = cls.query.get(boxer_id)
+
+            if not boxer:
+                logger.info(f"Boxer with ID {boxer_id} not found")
+                raise ValueError(f"Boxer with ID {boxer_id} not found")
+
+            logger.info(f"Successfully retrieved boxer: {boxer.name}")
+            return boxer
+
+        except SQLAlchemyError as e:
+            logger.error(f"Database error while retrieving song by ID {boxer_id}: {e}")
+            raise
 
     #TODO: IMPLEMENT#####################################################################
     @classmethod
@@ -124,8 +149,26 @@ class Boxers(db.Model):
 
         """
         if boxer is None:
-            logger.info(f"Boxer '{name}' not found.")
-        pass
+            logger.info(f"Boxer '{name}' not found.") #originally here
+
+        logger.info(f"Attempting to retrieve boxer with name '{name}'")
+
+        try:
+            boxer = cls.query.filter_by(name=name.strip()).first()
+
+            if not boxer:
+                logger.info(f"Boxer with name '{name}' not found")
+                raise ValueError(f"Boxer with name '{name}' not found")
+
+            logger.info(f"Successfully retrieved boxer: {boxer.name}")
+            return boxer
+
+        except SQLAlchemyError as e:
+            logger.error(
+                f"Database error while retrieving song by compound key "
+                f"(name '{name}'): {e}"
+            )
+            raise 
 
     @classmethod
     def delete(cls, boxer_id: int) -> None:
