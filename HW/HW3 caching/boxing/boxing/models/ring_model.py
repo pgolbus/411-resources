@@ -18,6 +18,7 @@ class RingModel:
 
     """
 
+    #TODO: IMPLEMENT###########################################################
     def __init__(self):
         """Initializes the RingManager with an empty list of combatants.
 
@@ -98,7 +99,7 @@ class RingModel:
         logger.info("Clearing the boxers from the ring.")
         self.ring.clear()
 
-
+    #TODO: IMPLEMENT###########################################################
     def enter_ring(self, boxer_id: int):
         """Prepares a boxer by adding them to the ring for an upcoming fight.
 
@@ -123,7 +124,7 @@ class RingModel:
 
         logger.info(f"Current boxers in the ring: {[Boxers.get_boxer_by_id(b).name for b in self.ring]}")
 
-
+    #TODO: IMPLEMENT###########################################################
     def get_boxers(self) -> List[Boxers]:
         """Retrieves the current list of boxers in the ring.
 
@@ -143,6 +144,7 @@ class RingModel:
                 logger.debug(f"Using cached boxer {boxer_id} (TTL valid).")
 
         logger.info(f"Retrieved {len(boxers)} boxers from the ring.")
+
 
     def get_fighting_skill(self, boxer: Boxers) -> float:
         """Calculates the fighting skill for a boxer based on arbitrary rules.
@@ -168,6 +170,7 @@ class RingModel:
         logger.info(f"Fighting skill for {boxer.name}: {skill:.3f}")
         return skill
 
+    #TODO: IMPLEMENT###########################################################
     def clear_cache(self):
         """Clears the local TTL cache of boxer objects.
 
