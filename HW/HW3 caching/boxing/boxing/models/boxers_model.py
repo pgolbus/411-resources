@@ -20,7 +20,7 @@ class Boxers(db.Model):
     manage boxer data, run simulations, and track fight outcomes.
 
     """
-
+    #TODO: IMPLEMENT#####################################################################
     def __init__(self, name: str, weight: float, height: float, reach: float, age: int):
         """Initialize a new Boxer instance with basic attributes.
 
@@ -39,6 +39,7 @@ class Boxers(db.Model):
         pass
 
     @classmethod
+    #TODO: IMPLEMENT#####################################################################
     def get_weight_class(cls, weight: float) -> str:
         """Determine the weight class based on weight.
 
@@ -60,6 +61,7 @@ class Boxers(db.Model):
         """
         pass
 
+    #TODO: IMPLEMENT#####################################################################
     @classmethod
     def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
         """Create and persist a new Boxer instance.
@@ -87,6 +89,7 @@ class Boxers(db.Model):
             db.session.rollback()
             logger.error(f"Database error during creation: {e}")
 
+    #TODO: IMPLEMENT#####################################################################
     @classmethod
     def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
         """Retrieve a boxer by ID.
@@ -105,6 +108,7 @@ class Boxers(db.Model):
             logger.info(f"Boxer with ID {boxer_id} not found.")
         pass
 
+    #TODO: IMPLEMENT#####################################################################
     @classmethod
     def get_boxer_by_name(cls, name: str) -> "Boxers":
         """Retrieve a boxer by name.
@@ -142,6 +146,7 @@ class Boxers(db.Model):
         db.session.commit()
         logger.info(f"Boxer with ID {boxer_id} permanently deleted.")
 
+ 
     def update_stats(self, result: str) -> None:
         """Update the boxer's fight and win count based on result.
 
