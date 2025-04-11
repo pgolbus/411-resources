@@ -146,13 +146,19 @@ class RingModel:
         else:
             logger.info(f"Retrieving {len(self.ring)} boxers from the ring.")
 
+        boxers = []
         for boxer_id in self.ring:
+            try:
+                boxer = Boxers.get_boxer_by_id(boxer_id)
+                boxers.append(boxer)
             if expired:
                 logger.info(f"TTL expired or missing for boxer {boxer_id}. Refreshing from DB.")
             else:
                 logger.debug(f"Using cached boxer {boxer_id} (TTL valid).")
 
         logger.info(f"Retrieved {len(boxers)} boxers from the ring.")
+        
+        return boxers
 
 
     def get_fighting_skill(self, boxer: Boxers) -> float:
@@ -185,3 +191,12 @@ class RingModel:
 
         """
         logger.info("Clearing local boxer cache in RingModel.")
+
+        if not self._boxer_cache and not self._ttl:
+            logger.debug("Boxer cache and TTL already empty.")
+            return
+
+        self._boxer_cache.clear()
+        self._ttl.clear()
+        logger.info("Successfully cleared boxer cache and TTLs.")
+
