@@ -4,6 +4,7 @@ import pytest
 
 from boxing.models.ring_model import RingModel
 from boxing.models.boxers_model import Boxers
+from pytest_mock import MockerFixture
 
 
 @pytest.fixture
