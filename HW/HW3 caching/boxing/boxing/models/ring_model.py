@@ -146,19 +146,54 @@ class RingModel:
         else:
             logger.info(f"Retrieving {len(self.ring)} boxers from the ring.")
 
-        boxers = []
+        boxers: List[Boxers] = [] # this is the get from cache or db implementation, we should be calling this from another method
+    
         for boxer_id in self.ring:
-            try:
-                boxer = Boxers.get_boxer_by_id(boxer_id)
-                boxers.append(boxer)
-            if expired:
-                logger.info(f"TTL expired or missing for boxer {boxer_id}. Refreshing from DB.")
-            else:
-                logger.debug(f"Using cached boxer {boxer_id} (TTL valid).")
+            boxers.append(self._get_boxer_from_cache_or_db(boxer_id))
+            # try:
+            #     boxer = Boxers.get_boxer_by_id(boxer_id)
+            #     boxers.append(boxer)
+            # if expired:
+            #     logger.info(f"TTL expired or missing for boxer {boxer_id}. Refreshing from DB.")
+            # else:
+            #     logger.debug(f"Using cached boxer {boxer_id} (TTL valid).")
 
         logger.info(f"Retrieved {len(boxers)} boxers from the ring.")
         
         return boxers
+    
+    def _get_boxer_from_cache_or_db(self, boxer_id: int) -> Boxers:
+        """
+        Retrieves a boxer by ID, using the internal cache if possible.
+
+        This method checks whether a cached version of the song is available
+        and still valid. If not, it queries the database, updates the cache, and returns the song.
+
+        Args:
+            boxer_id (int): The unique ID of the boxer to retrieve.
+
+        Returns:
+            Boxers: The boxer object corresponding to the given ID.
+
+        Raises:
+            ValueError: If the boxer cannot be found in the database.
+        """
+        now = time.time()
+
+        if boxer_id in self._boxer_cache and self._ttl.get(boxer_id, 0) > now:
+            logger.debug(f"Boxer ID {boxer_id} retrieved from cache")
+            return self._boxer_cache[boxer_id]
+
+        try:
+            song = Boxers.get_boxer_by_id(boxer_id)
+            logger.info(f"Boxer ID {boxer_id} loaded from DB")
+        except ValueError as e:
+            logger.error(f"Boxer ID {boxer_id} not found in DB: {e}")
+            raise ValueError(f"Boxer ID {boxer_id} not found in database") from e
+
+        self._boxer_cache[boxer_id] = song
+        self._ttl[boxer_id] = now + self.ttl_seconds
+        return song
 
 
     def get_fighting_skill(self, boxer: Boxers) -> float:

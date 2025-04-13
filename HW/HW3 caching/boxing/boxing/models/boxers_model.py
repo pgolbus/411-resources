@@ -65,6 +65,23 @@ class Boxers(db.Model):
         self.fights = 0
         self.wins = 0
 
+    def validate(self) -> None:
+        """Validates the song instance before committing to the database.
+
+        Raises:
+            ValueError: If any required fields are invalid.
+        """
+        if not self.name or not isinstance(self.name, str):
+            raise ValueError("Name must be a non-empty string.")
+        if not isinstance(self.weight, int) or self.weight <= 0:
+            raise ValueError("Weight must be an integer greater than 0.")
+        if not isinstance(self.height, int) or self.height <= 0:
+            raise ValueError("Height must be an integer greater than 0.")
+        if not isinstance(self.reach, float) or self.reach <= 0:
+            raise ValueError("Reach must be an float greater than 0.")
+        if not isinstance(self.age, int) or self.age <= 0:
+            raise ValueError("Age must be an float greater than 0.")
+
     @classmethod
     #TODO: IMPLEMENT#####################################################################
     def get_weight_class(cls, weight: float) -> str:
@@ -140,10 +157,10 @@ class Boxers(db.Model):
                 reach=reach,
                 age=age
             )
-        #     boxer.__init__() #double check
-        # except ValueError as e:
-        #     logger.warning(f"Validation failed: {e}")
-        #     raise
+            boxer.validate
+        except ValueError as e:
+            logger.warning(f"Validation failed: {e}")
+            raise
 
         try:
             # Check for existing boxer with same name 
