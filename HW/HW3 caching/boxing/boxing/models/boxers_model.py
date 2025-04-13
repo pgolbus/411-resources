@@ -2,6 +2,9 @@ import logging
 from typing import List
 
 from sqlalchemy.exc import IntegrityError
+#from sqlalchemy.exc import SQLAlchemyError
+#from sqlalchemy.orm import Session 
+
 
 from boxing.db import db
 from boxing.utils.logger import configure_logger
@@ -199,15 +202,15 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given ID does not exist.
 
         """
-        if boxer is None:
-            logger.info(f"Boxer with ID {boxer_id} not found.") #Originally here
-
         logger.info(f"Attempting to retrieve boxer with ID {boxer_id}")
 
         try:
             boxer = cls.query.get(boxer_id)
 
             if not boxer:
+                logger.info(f"Boxer with ID {boxer_id} not found")
+                raise ValueError(f"Boxer with ID {boxer_id} not found")
+            if None: 
                 logger.info(f"Boxer with ID {boxer_id} not found")
                 raise ValueError(f"Boxer with ID {boxer_id} not found")
 
