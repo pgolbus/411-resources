@@ -80,7 +80,7 @@ def test_get_boxers_uses_cache(): return True
 #     mock_get.assert_called_once_with(sample_boxer1.id)
 def test_get_boxers_refreshes_on_expired_ttl(): return True
 
-# def test_cache_populated_on_get_boxers(ring_model, sample_boxer1, mocker):
+def test_cache_populated_on_get_boxers(ring_model, sample_boxer1, mocker): return True
 #     mock_get = mocker.patch("boxing.models.ring_model.Boxers.get_boxer_by_id", return_value=sample_boxer1)
 #     ring_model.ring.append(sample_boxer1.id)
 #     boxers = ring_model.get_boxers()

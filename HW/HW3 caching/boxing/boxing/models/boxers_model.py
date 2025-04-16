@@ -1,11 +1,12 @@
 import logging
 from typing import List
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from boxing.db import db
 from boxing.utils.logger import configure_logger
-
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
@@ -21,6 +22,18 @@ class Boxers(db.Model):
 
     """
 
+    __tablename__ = 'boxers'  # Added explicit table name
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(80), unique=True, nullable=False)
+    weight = Column(Float, nullable=False)
+    height = Column(Float, nullable=False)
+    reach = Column(Float, nullable=False)
+    age = Column(Integer, nullable=False)
+    weight_class = Column(String(50), nullable=False)  # Added weight_class
+    fights = Column(Integer, default=0)
+    wins = Column(Integer, default=0)
+
     def __init__(self, name: str, weight: float, height: float, reach: float, age: int):
         """Initialize a new Boxer instance with basic attributes.
 
@@ -33,10 +46,28 @@ class Boxers(db.Model):
 
         Notes:
             - The boxer's weight class is automatically assigned based on weight.
-            - Fight statistics (`fights` and `wins`) are initialized to 0 by default in the database schema.
-
+            - Fight statistics (`fights` and `wins`) are initialized to 0 by default
+              in the database schema.
         """
-        pass
+        if weight < 125:
+            raise ValueError("Weight must be at least 125 pounds.")
+        if height <= 0:
+            raise ValueError("Height must be greater than 0.")
+        if reach <= 0:
+            raise ValueError("Reach must be greater than 0.")
+        if not 18 <= age <= 40:
+            raise ValueError("Age must be between 18 and 40, inclusive.")
+
+        self.name = name
+        self.weight = weight
+        self.height = height
+        self.reach = reach
+        self.age = age
+        self.weight_class = self.get_weight_class(
+            weight
+        )  # Corrected: Call as self.get_weight_class
+        self.fights = 0  # Initialize fights
+        self.wins = 0  # Initialize wins
 
     @classmethod
     def get_weight_class(cls, weight: float) -> str:
@@ -44,9 +75,9 @@ class Boxers(db.Model):
 
         This method is defined as a class method rather than a static method,
         even though it does not currently require access to the class object.
-        Both @staticmethod and @classmethod would be valid choices in this context;
-        however, using @classmethod makes it easier to support subclass-specific
-        behavior or logic overrides in the future.
+        Both @staticmethod and @classmethod would be valid choices in this
+        context; however, using @classmethod makes it easier to support
+        subclass-specific behavior or logic overrides in the future.
 
         Args:
             weight: The weight of the boxer.
@@ -56,9 +87,29 @@ class Boxers(db.Model):
 
         Raises:
             ValueError: If the weight is less than 125.
-
         """
-        pass
+        if weight < 125:
+            raise ValueError("Weight must be at least 125 pounds.")  # Added validation
+        if weight < 130:
+            return "Super Featherweight"
+        elif weight < 135:
+            return "Lightweight"
+        elif weight < 140:
+            return "Light Welterweight"
+        elif weight < 147:
+            return "Welterweight"
+        elif weight < 154:
+            return "Light Middleweight"
+        elif weight < 160:
+            return "Middleweight"
+        elif weight < 168:
+            return "Super Middleweight"
+        elif weight < 175:
+            return "Light Heavyweight"
+        elif weight < 200:
+            return "Cruiserweight"
+        else:
+            return "Heavyweight"
 
     @classmethod
     def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
