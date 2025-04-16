@@ -129,14 +129,21 @@ class Boxers(db.Model):
 
         """
         logger.info(f"Creating boxer: {name}, {weight=} {height=} {reach=} {age=}")
-
         try:
+            boxer = cls(name=name, weight=weight, height=height, reach=reach, age=age)
+            db.session.add(boxer)
+            db.session.commit()
             logger.info(f"Boxer created successfully: {name}")
-        except IntegrityError:
-            logger.error(f"Boxer with name '{name}' already exists.")
+            return boxer  # Return the created boxer instance
+        except IntegrityError as e:
+            db.session.rollback()
+            logger.error(f"IntegrityError: {e}")
+            raise ValueError(f"Boxer with name '{name}' already exists.") from e
         except SQLAlchemyError as e:
             db.session.rollback()
-            logger.error(f"Database error during creation: {e}")
+            logger.error(f"SQLAlchemyError: {e}")
+            raise
+
 
     @classmethod
     def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
@@ -152,9 +159,15 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given ID does not exist.
 
         """
-        if boxer is None:
-            logger.info(f"Boxer with ID {boxer_id} not found.")
-        pass
+        logger.info(f"Getting boxer by ID: {boxer_id}")
+        try:
+            boxer = db.session.get(cls, boxer_id)  # Use db.session.get()
+            if not boxer:
+                logger.info(f"Boxer with ID {boxer_id} not found.")
+            return boxer
+        except SQLAlchemyError as e:
+            logger.error(f"SQLAlchemyError: {e}")
+            raise
 
     @classmethod
     def get_boxer_by_name(cls, name: str) -> "Boxers":
@@ -170,10 +183,16 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given name does not exist.
 
         """
-        if boxer is None:
-            logger.info(f"Boxer '{name}' not found.")
-        pass
-
+        logger.info(f"Getting boxer by name: {name}")
+        try:
+            boxer = cls.query.filter_by(name=name).first()
+            if not boxer:
+                logger.info(f"Boxer with name '{name}' not found.")
+            return boxer
+        except SQLAlchemyError as e:
+            logger.error(f"SQLAlchemyError: {e}")
+            raise
+        
     @classmethod
     def delete(cls, boxer_id: int) -> None:
         """Delete a boxer by ID.
