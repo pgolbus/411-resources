@@ -105,6 +105,7 @@ def test_enter_ring_full(ring_model):
 
 # --- Fight Logic ---
 
+<<<<<<< HEAD
 def test_get_fighting_skill(ring_model, sample_boxers):
     expected_1 = 210 * 12 + (78 / 10)
     expected_2 = 220 * 10 + (71 / 10) - 1
@@ -142,3 +143,49 @@ def test_clear_cache(ring_model, sample_boxer1):
     ring_model.clear_cache()
     assert ring_model._boxer_cache == {}
     assert ring_model._ttl == {}
+=======
+    def test_get_fighting_skill(ring_model, sample_boxers):
+        expected_1 = 210 * 12 + (78 / 10)
+        expected_2 = 220 * 10 + (71 / 10) - 1
+        assert ring_model.get_fighting_skill(sample_boxers[0]) == expected_1
+        assert ring_model.get_fighting_skill(sample_boxers[1]) == expected_2
+
+#def test_get_fighting_skill(): return True #remove this 
+
+    def test_fight(ring_model, sample_boxers, caplog, mocker):
+        ring_model.ring.extend(sample_boxers)
+        mocker.patch("boxing.models.ring_model.RingModel.get_fighting_skill", side_effect=[2526.8, 2206.1])
+        mocker.patch("boxing.models.ring_model.get_random", return_value=0.42)
+        mocker.patch("boxing.models.ring_model.RingModel.get_boxers", return_value=sample_boxers)
+        mock_update = mocker.patch("boxing.models.ring_model.Boxers.update_stats")
+        winner = ring_model.fight()
+        assert winner == "Muhammad Ali"
+        mock_update.assert_any_call("win")
+        mock_update.assert_any_call("loss")
+        assert ring_model.ring == []
+
+#def test_fight(): #return True #remove this
+
+    def test_fight_with_empty_ring(ring_model):
+        with pytest.raises(ValueError, match="There must be two boxers to start a fight."):
+         ring_model.fight()
+
+#def test_fight_with_empty_ring(): return True
+
+    def test_fight_with_one_boxer(ring_model, sample_boxer1):
+        ring_model.ring.append(sample_boxer1)
+        with pytest.raises(ValueError, match="There must be two boxers to start a fight."):
+            ring_model.fight()
+
+#def test_fight_with_one_boxer(): return True
+
+    def test_clear_cache(ring_model, sample_boxer1):
+        ring_model._boxer_cache[sample_boxer1.id] = sample_boxer1
+        ring_model._ttl[sample_boxer1.id] = time.time() + 100
+        ring_model.clear_cache()
+        assert ring_model._boxer_cache == {}
+        assert ring_model._ttl == {}
+
+#def test_clear_cache(): #return True
+##add code here
+>>>>>>> 8fc7ad0 (uncommented test_ring_model)
