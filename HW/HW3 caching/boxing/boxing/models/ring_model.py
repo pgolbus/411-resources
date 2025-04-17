@@ -125,6 +125,8 @@ class RingModel:
                 logger.warning(
                     f"Boxer with ID {boxer_id} removed from ring because it was not found in DB."
                 )
+        if not self.ring:
+            logger.warning("Retrieving boxers from an empty ring.")
         logger.info(f"Retrieved {len(boxers)} boxers for the ring.")
         return boxers
 
