@@ -12,15 +12,14 @@ def sample_user():
 # User Creation
 ##########################################################
 
-# def test_create_user(session, sample_user):
-#     """Test creating a new user with a unique username."""
-#     Users.create_user(**sample_user)
-#     user = session.query(Users).filter_by(username=sample_user["username"]).first()
-#     assert user is not None
-#     assert user.username == sample_user["username"]
-#     assert len(user.salt) == 32
-#     assert len(user.password) == 64
-def test_create_user(): return True
+def test_create_user(session, sample_user):
+    """Test creating a new user with a unique username."""
+    Users.create_user(**sample_user)
+    user = session.query(Users).filter_by(username=sample_user["username"]).first()
+    assert user is not None
+    assert user.username == sample_user["username"]
+    assert len(user.salt) == 32
+    assert len(user.password) == 64
 
 # def test_create_duplicate_user(session, sample_user):
 #     """Test attempting to create a user with a duplicate username."""
