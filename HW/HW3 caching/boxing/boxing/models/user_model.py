@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 
-class Users():
+class Users(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key = True)
@@ -56,8 +56,8 @@ class Users():
             logger.info("User successfully added to the database: %s", username)
         except IntegrityError:
             db.session.rollback()
-            raise ValueError(f"User with username '{username}' already exists")
             logger.error("Duplicate username: %s", username)
+            raise ValueError(f"User with username '{username}' already exists")
         except Exception as e:
             db.session.rollback()
             logger.error("Database error: %s", str(e))
