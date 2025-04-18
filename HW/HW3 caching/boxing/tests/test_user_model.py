@@ -52,19 +52,18 @@ def test_check_password_user_not_found(session):
 # Update Password
 ##########################################################
 
-# def test_update_password(session, sample_user):
-#     """Test updating the password for an existing user."""
-#     Users.create_user(**sample_user)
-#     new_password = "newpassword456"
-#     Users.update_password(sample_user["username"], new_password)
-#     assert Users.check_password(sample_user["username"], new_password) is True
-def test_update_password(): return True
+def test_update_password(session, sample_user):
+    """Test updating the password for an existing user."""
+    Users.create_user(**sample_user)
+    new_password = "newpassword456"
+    Users.update_password(sample_user["username"], new_password)
+    assert Users.check_password(sample_user["username"], new_password) is True
 
-# def test_update_password_user_not_found(session):
-#     """Test updating the password for a non-existent user."""
-#     with pytest.raises(ValueError, match="User nonexistentuser not found"):
-#         Users.update_password("nonexistentuser", "newpassword")
-def test_update_password_user_not_found(): return True
+
+def test_update_password_user_not_found(session):
+    """Test updating the password for a non-existent user."""
+    with pytest.raises(ValueError, match="User nonexistentuser not found"):
+        Users.update_password("nonexistentuser", "newpassword")
 
 ##########################################################
 # Delete User
