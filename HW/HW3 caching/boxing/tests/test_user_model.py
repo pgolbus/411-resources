@@ -32,23 +32,21 @@ def test_create_duplicate_user(session, sample_user):
 # User Authentication
 ##########################################################
 
-# def test_check_password_correct(session, sample_user):
-#     """Test checking the correct password."""
-#     Users.create_user(**sample_user)
-#     assert Users.check_password(sample_user["username"], sample_user["password"]) is True
-def test_check_password_correct(): return True
+def test_check_password_correct(session, sample_user):
+    """Test checking the correct password."""
+    Users.create_user(**sample_user)
+    assert Users.check_password(sample_user["username"], sample_user["password"]) is True
 
-# def test_check_password_incorrect(session, sample_user):
-#     """Test checking an incorrect password."""
-#     Users.create_user(**sample_user)
-#     assert Users.check_password(sample_user["username"], "wrongpassword") is False
-def test_check_password_incorrect(): return True
+def test_check_password_incorrect(session, sample_user):
+    """Test checking an incorrect password."""
+    Users.create_user(**sample_user)
+    assert Users.check_password(sample_user["username"], "wrongpassword") is False
 
-# def test_check_password_user_not_found(session):
-#     """Test checking password for a non-existent user."""
-#     with pytest.raises(ValueError, match="User nonexistentuser not found"):
-#         Users.check_password("nonexistentuser", "password")
-def test_check_password_user_not_found(): return True
+
+def test_check_password_user_not_found(session):
+    """Test checking password for a non-existent user."""
+    with pytest.raises(ValueError, match="User nonexistentuser not found"):
+        Users.check_password("nonexistentuser", "password")
 
 ##########################################################
 # Update Password
