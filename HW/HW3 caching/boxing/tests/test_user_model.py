@@ -87,16 +87,15 @@ def test_delete_user_not_found(session):
 # Get User
 ##########################################################
 
-# def test_get_id_by_username(session, sample_user):
-#     """Test successfully retrieving a user's ID by their username."""
-#     Users.create_user(**sample_user)
-#     user_id = Users.get_id_by_username(sample_user["username"])
-#     user = session.query(Users).filter_by(username=sample_user["username"]).first()
-#     assert user.id == user_id
-def test_get_id_by_username(): return True
+def test_get_id_by_username(session, sample_user):
+    """Test successfully retrieving a user's ID by their username."""
+    Users.create_user(**sample_user)
+    user_id = Users.get_id_by_username(sample_user["username"])
+    user = session.query(Users).filter_by(username=sample_user["username"]).first()
+    assert user.id == user_id
 
-# def test_get_id_by_username_user_not_found(session):
-#     """Test failure when retrieving a non-existent user's ID."""
-#     with pytest.raises(ValueError, match="User nonexistentuser not found"):
-#         Users.get_id_by_username("nonexistentuser")
-def test_get_id_by_username_user_not_found(): return True
+def test_get_id_by_username_user_not_found(session):
+    """Test failure when retrieving a non-existent user's ID."""
+    with pytest.raises(ValueError, match="User nonexistentuser not found"):
+        Users.get_id_by_username("nonexistentuser")
+
