@@ -21,12 +21,12 @@ def test_create_user(session, sample_user):
     assert len(user.salt) == 32
     assert len(user.password) == 64
 
-# def test_create_duplicate_user(session, sample_user):
-#     """Test attempting to create a user with a duplicate username."""
-#     Users.create_user(**sample_user)
-#     with pytest.raises(ValueError, match="User with username 'testuser' already exists"):
-#         Users.create_user(**sample_user)
-def test_create_duplicate_user(): return True
+def test_create_duplicate_user(session, sample_user):
+     """Test attempting to create a user with a duplicate username."""
+     Users.create_user(**sample_user)
+     with pytest.raises(ValueError, match="User with username 'testuser' already exists"):
+         Users.create_user(**sample_user)
+
 
 ##########################################################
 # User Authentication
