@@ -69,19 +69,19 @@ def test_update_password_user_not_found(session):
 # Delete User
 ##########################################################
 
-# def test_delete_user(session, sample_user):
-#     """Test deleting an existing user."""
-#     Users.create_user(**sample_user)
-#     Users.delete_user(sample_user["username"])
-#     user = session.query(Users).filter_by(username=sample_user["username"]).first()
-#     assert user is None
-def test_delete_user(): return True
+def test_delete_user(session, sample_user):
+    """Test deleting an existing user."""
+    Users.create_user(**sample_user)
+    Users.delete_user(sample_user["username"])
+    user = session.query(Users).filter_by(username=sample_user["username"]).first()
+    assert user is None
 
-# def test_delete_user_not_found(session):
-#     """Test deleting a non-existent user."""
-#     with pytest.raises(ValueError, match="User nonexistentuser not found"):
-#         Users.delete_user("nonexistentuser")
-def test_delete_user_not_found(): return True
+
+def test_delete_user_not_found(session):
+    """Test deleting a non-existent user."""
+    with pytest.raises(ValueError, match="User nonexistentuser not found"):
+        Users.delete_user("nonexistentuser")
+
 
 ##########################################################
 # Get User
