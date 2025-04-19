@@ -33,6 +33,41 @@ class RingModel:
         """
         pass
 
+    #implemented _get_boxer_from_cache_or_db() follow the approach of _get_song_from_cache_or_db
+
+    def _get_boxer_from_cache_or_db(self, boxer_id: int) -> Boxers:
+        """
+        Retrieves a boxer by ID, using the internal cache if possible.
+
+        This method checks whether a cached version of the boxer is available
+        and still valid. If not, it queries the database, updates the cache, and returns the boxer.
+
+        Args:
+            boxer_id (int): The unique ID of the boxer to retrieve.
+
+        Returns:
+            Boxers: The boxer object corresponding to the given ID.
+
+        Raises:
+            ValueError: If the boxer cannot be found in the database.
+        """
+        now = time.time()
+
+        if boxer_id in self._boxer_cache and self._ttl.get(boxer_id, 0) > now:
+            logger.debug(f"Boxer ID {boxer_id} retrieved from cache")
+            return self._boxer_cache[boxer_id]
+
+        try:
+            boxer = Boxers.get_boxer_by_id(boxer_id)
+            logger.info(f"Boxer ID {boxer_id} loaded from DB")
+        except ValueError as e:
+            logger.error(f"Boxer ID {boxer_id} not found in DB: {e}")
+            raise ValueError(f"Boxer ID {boxer_id} not found in database") from e
+
+        self._boxer_cache[boxer_id] = boxer
+        self._ttl[boxer_id] = now + self.ttl_seconds
+        return boxer
+
     def fight(self) -> str:
         """Simulates a fight between two combatants.
 
