@@ -12,7 +12,7 @@ def ring_model():
 
     """
     return RingModel()
-
+              
 # Fixtures providing sample boxers
 @pytest.fixture
 def sample_boxer1(session):
