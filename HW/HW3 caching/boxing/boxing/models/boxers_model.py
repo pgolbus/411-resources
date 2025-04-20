@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from boxing.db import db
 from boxing.utils.logger import configure_logger
@@ -121,9 +121,21 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given ID does not exist.
 
         """
-        if boxer is None:
-            logger.info(f"Boxer with ID {boxer_id} not found.")
-        pass
+        logger.info(f"Attempting to retrieve boxer with ID {boxer_id}")
+
+        try:
+            boxer = cls.query.get(boxer_id)
+
+            if not boxer:
+                logger.info(f"Boxer with ID {boxer_id} not found")
+                raise ValueError(f"Boxer with ID {boxer_id} not found")
+
+            logger.info(f"Successfully retrieved boxer: {boxer.id} - {boxer.name}")
+            return boxer
+
+        except SQLAlchemyError as e:
+            logger.error(f"Database error while retrieving boxer by ID {boxer_id}: {e}")
+            raise
 
     @classmethod
     def get_boxer_by_name(cls, name: str) -> "Boxers":
@@ -139,9 +151,21 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given name does not exist.
 
         """
-        if boxer is None:
-            logger.info(f"Boxer '{name}' not found.")
-        pass
+        logger.info(f"Attempting to retrieve boxer with name {name}")
+
+        try:
+            boxer = cls.query.get(name)
+
+            if not boxer:
+                logger.info(f"Boxer with name {name} not found")
+                raise ValueError(f"Boxer with name {name} not found")
+
+            logger.info(f"Successfully retrieved boxer: {boxer.id} - {boxer.name}")
+            return boxer
+
+        except SQLAlchemyError as e:
+            logger.error(f"Database error while retrieving boxer by name {name}: {e}")
+            raise
 
     @classmethod
     def delete(cls, boxer_id: int) -> None:

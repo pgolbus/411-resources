@@ -160,6 +160,11 @@ class RingModel:
 
         """
         logger.info(f"Calculating fighting skill for {boxer.name}: weight={boxer.weight}, age={boxer.age}, reach={boxer.reach}")
+        # Arbitrary calculations
+        age_modifier = -1 if boxer.age < 25 else (-2 if boxer.age > 35 else 0)
+        skill = (boxer.weight * len(boxer.name)) + (boxer.reach / 10) + age_modifier
+        logger.info(f"Successfully retrieved fighting skill {skill} of {boxer.name}")
+        return skill
 
         # Arbitrary calculations
         age_modifier = -1 if boxer.age < 25 else (-2 if boxer.age > 35 else 0)
