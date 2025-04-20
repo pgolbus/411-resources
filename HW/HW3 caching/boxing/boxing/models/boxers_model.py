@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 
 from boxing.db import db
 from boxing.utils.logger import configure_logger
@@ -63,7 +64,6 @@ class Boxers(db.Model):
         self.reach = reach
         self.age = age
         self.weight_class = self.get_weight_class(weight)
-        #double check below
         self.fights = 0
         self.wins = 0
 
@@ -87,7 +87,20 @@ class Boxers(db.Model):
             ValueError: If the weight is less than 125.
 
         """
-        pass
+        logger.info(f"Determining weight class for weight: {weight}")
+        if weight >= 203:
+            weight_class = 'HEAVYWEIGHT'
+        elif weight >= 166:
+            weight_class = 'MIDDLEWEIGHT'
+        elif weight >= 133:
+            weight_class = 'LIGHTWEIGHT'
+        elif weight >= 125:
+            weight_class = 'FEATHERWEIGHT'
+        else:
+            logger.error(f"Invalid weight: {weight}. Weight must be at least 125.")
+            raise ValueError(f"Invalid weight: {weight}. Weight must be at least 125.")
+
+        return weight_class
 
     @classmethod
     def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
@@ -116,6 +129,27 @@ class Boxers(db.Model):
             db.session.rollback()
             logger.error(f"Database error during creation: {e}")
 
+
+        logger.info(f"Creating boxer: {name}, {weight=} {height=} {reach=} {age=}")
+
+        if not all([name, weight >= 125, height > 0, reach > 0, 18 <= age <= 40]):
+            raise ValueError("Invalid boxer parameters")
+
+        try:
+            boxer = cls(name=name, weight=weight, height=height, reach=reach, age=age)
+            db.session.add(boxer)
+            db.session.commit()
+            logger.info(f"Boxer created successfully: {name}")
+            return boxer
+        except IntegrityError:
+            db.session.rollback()
+            logger.error(f"Boxer with name '{name}' already exists.")
+            raise ValueError(f"Boxer with name '{name}' already exists")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during creation: {e}")
+            raise ValueError(f"Database error: {e}")
+
     @classmethod
     def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
         """Retrieve a boxer by ID.
@@ -130,10 +164,20 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given ID does not exist.
 
         """
-        if boxer is None:
-            logger.info(f"Boxer with ID {boxer_id} not found.")
-        pass
+        logger.info(f"Attempting to retrieve boxer with ID {boxer_id}")
+        try:
+            boxer = cls.query.get(boxer_id)
 
+            if not boxer:
+                logger.info(f"Boxer with ID {boxer_id} not found")
+                raise ValueError(f"Boxer with ID {boxer_id} not found")
+
+            logger.info(f"Successfully retrieved boxer: {boxer.name}")
+            return boxer
+
+        except SQLAlchemyError as e:
+            logger.error(f"Database error while retrieving song by ID {boxer_id}: {e}")
+            raise
     @classmethod
     def get_boxer_by_name(cls, name: str) -> "Boxers":
         """Retrieve a boxer by name.
@@ -148,10 +192,24 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given name does not exist.
 
         """
-        if boxer is None:
-            logger.info(f"Boxer '{name}' not found.")
-        pass
+        logger.info(f"Attempting to retrieve boxer with name '{name}'")
+    
+        try:
+            boxer = cls.query.filter_by(name=name).first()
 
+            if not boxer:
+                logger.info(f"Boxer with name '{name}' not found")
+                raise ValueError(f"Boxer with name '{name}' not found")
+
+            logger.info(f"Successfully retrieved boxer: {boxer.name} (ID: {boxer.id})")
+            
+            return boxer
+
+        except SQLAlchemyError as e:
+            logger.error(f"Database error while retrieving boxer by name '{name}': {e}")
+            db.session.rollback()
+            raise
+        
     @classmethod
     def delete(cls, boxer_id: int) -> None:
         """Delete a boxer by ID.

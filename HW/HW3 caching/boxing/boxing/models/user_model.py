@@ -14,6 +14,12 @@ configure_logger(logger)
 
 
 class Users():
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    salt = db.Column(db.String(32), nullable=False)  
+    password = db.Column(db.String(64), nullable=False)  
 
     @staticmethod
     def _generate_hashed_password(password: str) -> tuple[str, str]:
@@ -26,7 +32,9 @@ class Users():
         Returns:
             tuple: A tuple containing the salt and hashed password.
         """
-        pass
+        salt = os.urandom(16).hex()
+        hashed_password = hashlib.sha256((password + salt).encode()).hexdigest()
+        return salt, hashed_password
 
     @classmethod
     def create_user(cls, username: str, password: str) -> None:
