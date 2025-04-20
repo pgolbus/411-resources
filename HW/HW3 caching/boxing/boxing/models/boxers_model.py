@@ -21,6 +21,18 @@ class Boxers(db.Model):
 
     """
 
+    __tablename__ = 'boxers'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, unique=True, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    height = db.Column(db.Float, nullable=False)
+    reach = db.Column(db.Float, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    fights = db.Column(db.Integer, nullable=False, default=0)
+    wins = db.Column(db.Integer, nullable=False, default=0)
+    weight_class = db.Column(db.String)
+
     def __init__(self, name: str, weight: float, height: float, reach: float, age: int):
         """Initialize a new Boxer instance with basic attributes.
 
@@ -36,7 +48,24 @@ class Boxers(db.Model):
             - Fight statistics (`fights` and `wins`) are initialized to 0 by default in the database schema.
 
         """
-        pass
+        if weight < 125:
+            raise ValueError("Weight must be at least 125 pounds.")
+        if height <= 0:
+            raise ValueError("Height must be greater than 0 inches.")
+        if reach <= 0:
+            raise ValueError("Reach must be greater than 0 inches.")
+        if not (18 <= age <= 40):
+            raise ValueError("Age must be between 18 and 40, inclusive.")
+
+        self.name = name
+        self.weight = weight
+        self.height = height
+        self.reach = reach
+        self.age = age
+        self.weight_class = self.get_weight_class(weight)
+        #double check below
+        self.fights = 0
+        self.wins = 0
 
     @classmethod
     def get_weight_class(cls, weight: float) -> str:
