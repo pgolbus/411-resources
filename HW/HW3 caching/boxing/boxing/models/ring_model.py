@@ -99,19 +99,18 @@ class RingModel:
         self.ring.clear()
 
 
-    def enter_ring(self, boxer_id: int):
-        """Prepares a boxer by adding them to the ring for an upcoming fight.
+    def enter_ring(self, boxer_id: int):   
+        """Prepares a boxer by adding them to the ring for an upcoming fight."""
 
-        Args:
-            boxer_id (int): The ID of the boxer to enter the ring.
+        logger.info(f"Received request to add Boxer with ID {boxer_id} to the ring")
 
-        Raises:
-            ValueError: If the ring already has two boxers (fight is full).
-            ValueError: If the boxer ID is invalid or the boxer does not exist.
-
-        """
         if len(self.ring) >= 2:
             logger.error(f"Attempted to add boxer ID {boxer_id} but the ring is full")
+            raise ValueError("Ring is full")
+
+        if boxer_id in self.ring:
+            logger.warning(f"Boxer ID {boxer_id} is already in the ring.")
+            return
 
         try:
             boxer = Boxers.get_boxer_by_id(boxer_id)
@@ -120,9 +119,8 @@ class RingModel:
             raise
 
         logger.info(f"Adding boxer '{boxer.name}' (ID {boxer_id}) to the ring")
-
         logger.info(f"Current boxers in the ring: {[Boxers.get_boxer_by_id(b).name for b in self.ring]}")
-
+        self.ring.append(boxer_id)
 
     def get_boxers(self) -> List[Boxers]:
         """Retrieves the current list of boxers in the ring.

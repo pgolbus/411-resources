@@ -59,29 +59,24 @@ class Boxers(db.Model):
         self.weight_class = self.get_weight_class(weight)
 
     @classmethod
-    def get_weight_class(cls, weight: float) -> str:
-        """Determine the weight class based on weight.
+    def get_weight_class(cls, weight: float) -> str:  
+        """Determine the weight class based on weight."""
+        if weight < 125:
+            raise ValueError("Weight must be at least 125 lbs")
 
-        This method is defined as a class method rather than a static method,
-        even though it does not currently require access to the class object.
-        Both @staticmethod and @classmethod would be valid choices in this context;
-        however, using @classmethod makes it easier to support subclass-specific
-        behavior or logic overrides in the future.
-
-        Args:
-            weight: The weight of the boxer.
-
-        Returns:
-            str: The weight class of the boxer.
-
-        Raises:
-            ValueError: If the weight is less than 125.
-
-        """
-        pass
+        if weight <= 135:
+            return "Lightweight"
+        elif weight <= 147:
+            return "Welterweight"
+        elif weight <= 160:
+            return "Middleweight"
+        elif weight <= 175:
+            return "Light Heavyweight"
+        else:
+            return "Heavyweight"
 
     @classmethod
-    def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
+    def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:  
         """Create and persist a new Boxer instance.
 
         Args:
@@ -100,12 +95,26 @@ class Boxers(db.Model):
         logger.info(f"Creating boxer: {name}, {weight=} {height=} {reach=} {age=}")
 
         try:
+            if weight < 125:
+                raise ValueError("Weight must be at least 125 lbs")
+            if height <= 0 or reach <= 0:
+                raise ValueError("Height and reach must be greater than 0")
+            if not (18 <= age <= 40):
+                raise ValueError("Age must be between 18 and 40")
+
+            new_boxer = cls(name=name, weight=weight, height=height, reach=reach, age=age)
+            db.session.add(new_boxer)
+            db.session.commit()
             logger.info(f"Boxer created successfully: {name}")
+
         except IntegrityError:
+            db.session.rollback()
             logger.error(f"Boxer with name '{name}' already exists.")
+            raise
         except SQLAlchemyError as e:
             db.session.rollback()
             logger.error(f"Database error during creation: {e}")
+            raise
 
     @classmethod
     def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
@@ -186,17 +195,9 @@ class Boxers(db.Model):
         db.session.commit()
         logger.info(f"Boxer with ID {boxer_id} permanently deleted.")
 
-    def update_stats(self, result: str) -> None:
-        """Update the boxer's fight and win count based on result.
+    def update_stats(self, result: str) -> None:   
+        """Update the boxer's fight and win count based on result."""
 
-        Args:
-            result: The result of the fight ('win' or 'loss').
-
-        Raises:
-            ValueError: If the result is not 'win' or 'loss'.
-            ValueError: If the number of wins exceeds the number of fights.
-
-        """
         if result not in {"win", "loss"}:
             raise ValueError("Result must be 'win' or 'loss'.")
 
