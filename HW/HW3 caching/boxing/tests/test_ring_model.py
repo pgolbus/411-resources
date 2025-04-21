@@ -213,7 +213,7 @@ def test_fight_with_one_boxer(ring_model, sample_boxer1):
 
     with pytest.raises(ValueError, match="There must be two boxers to start a fight."):
         ring_model.fight()
-
+#temp
 def test_clear_cache(ring_model, sample_boxer1):
     ring_model._boxer_cache[sample_boxer1.id] = sample_boxer1
     ring_model._ttl[sample_boxer1.id] = time.time() + 100
