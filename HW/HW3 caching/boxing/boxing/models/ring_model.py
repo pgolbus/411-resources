@@ -8,7 +8,7 @@ from boxing.models.boxers_model import Boxers
 from boxing.utils.logger import configure_logger
 from boxing.utils.api_utils import get_random
 
-
+#temp
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
