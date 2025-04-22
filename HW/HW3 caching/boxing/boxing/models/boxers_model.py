@@ -98,7 +98,19 @@ class Boxers(db.Model):
             ValueError: If the weight is less than 125.
 
         """
-        pass
+        if weight < 125:
+            raise ValueError("Weight must be at least 125 pounds.")
+        
+        if weight <= 135:
+            return "Lightweight"
+        elif weight <= 147:
+            return "Welterweight"
+        elif weight <= 160:
+            return "Middleweight"
+        elif weight <= 175:
+            return "Light Heavyweight"
+        else:
+            return "Heavyweight"
 
     @classmethod
     def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
@@ -118,37 +130,20 @@ class Boxers(db.Model):
 
         """
         logger.info(f"Creating boxer: {name}, {weight=} {height=} {reach=} {age=}")
-
+        boxer = Boxers(name,weight,height,reach,age)
+        boxer_in_db = Boxers.query.filter_by(name=name).first()
+        if boxer_in_db is not None:
+            raise IntegrityError(f"Boxer with name '{name}' already exists.")
+       
         try:
-            boxer = Boxers(
-                    name=name.strip(),
-                    weight=weight,
-                    height=height,
-                    reach=reach,
-                    age=age
-            )
-            boxer.validate()
-        except ValueError as e:
-            logger.warning(f"Validation failed: {e}")
-            raise
-        try:
-            # Check for existing boxer with same compound key (artist, title, year)
-            existing = Boxers.query.filter_by(name=name.strip(), weight=weight, height=height).first()
-            if existing:
-                logger.error(f"Boxer already exists: {name} - {weight} ({height})")
-                raise ValueError(f"Boxer with name '{name}', weight '{weight}', and height {height} already exists.")
-
             db.session.add(boxer)
-            db.session.commit()
             logger.info(f"Boxer created successfully: {name}")
         except IntegrityError:
             logger.error(f"Boxer with name '{name}' already exists.")
-            db.session.rollback()
-            raise ValueError(f"Song with artist '{name}', title '{weight}', and year {height} already exists.")
         except SQLAlchemyError as e:
             db.session.rollback()
             logger.error(f"Database error during creation: {e}")
-            raise
+        db.session.commit()
 
     @classmethod
     def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
@@ -164,17 +159,11 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given ID does not exist.
 
         """
-        try:
-            boxer = cls.query.get(boxer_id)
-            if boxer is None:
-                logger.info(f"Boxer with ID {boxer_id} not found.")
-                raise ValueError("Value Error")
-            logger.info(f"Successfully retrieved song: {boxer.name} - {boxer.weight} ({boxer.height})")
-            return boxer
-        
-        except:
-            logger.error(f"Database error while retrieving song by ID {boxer.id}: {e}")
-            raise
+        boxer = Boxers.query.filter(id=boxer_id).first()
+        if boxer is None:
+            logger.info(f"Boxer with ID {boxer_id} not found.")
+            raise ValueError(f"Boxer with ID {boxer_id} not found.")
+        return boxer.name
 
 
     #CHANGE
