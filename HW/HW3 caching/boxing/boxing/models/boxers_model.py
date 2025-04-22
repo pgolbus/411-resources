@@ -22,7 +22,7 @@ class Boxers(db.Model):
     manage boxer data, run simulations, and track fight outcomes.
     """
 
-    __tablename__ = 'boxers'  # Make sure this is correctly defined to map to 'boxers' table
+    __tablename__ = 'boxers' 
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Primary Key
     name = db.Column(db.String, unique=True, nullable=False)
