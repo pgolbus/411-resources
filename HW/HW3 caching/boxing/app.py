@@ -17,9 +17,18 @@ load_dotenv()
 def create_app(config_class=ProductionConfig):
     app = Flask(__name__)
     configure_logger(app.logger)
-
+    
     app.config.from_object(config_class)
 
+    import os
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    os.makedirs(os.path.join(basedir, 'app', 'db'), exist_ok=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        os.getenv('DATABASE_URL')
+        or f"sqlite:///{os.path.join(basedir, 'app', 'db', 'app.db')}"
+    )
+    
+    
     db.init_app(app)  # Initialize db with app
     with app.app_context():
         db.create_all()  # Recreate all tables
@@ -735,7 +744,7 @@ if __name__ == '__main__':
     app = create_app()
     app.logger.info("Starting Flask app...")
     try:
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        app.run(debug=True, host='0.0.0.0', port=5001)
     except Exception as e:
         app.logger.error(f"Flask app encountered an error: {e}")
     finally:
