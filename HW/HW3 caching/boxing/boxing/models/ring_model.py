@@ -31,7 +31,10 @@ class RingModel:
             ttl_seconds (int): The time-to-live in seconds for the cached boxer objects.
 
         """
-        pass
+        self.ring: List[int] = []
+        self._boxer_cache: dict[int, Boxers] = {}
+        self._ttl: dict[int, float] = {}
+        self.ttl_seconds = int(os.getenv("TTL", 60))
 
     #implemented _get_boxer_from_cache_or_db() follow the approach of _get_song_from_cache_or_db
 
@@ -208,3 +211,5 @@ class RingModel:
 
         """
         logger.info("Clearing local boxer cache in RingModel.")
+        self._boxer_cache.clear()
+        self._ttl.clear()
