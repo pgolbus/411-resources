@@ -6,6 +6,7 @@ from boxing.models.ring_model import RingModel
 from boxing.models.boxers_model import Boxers
 
 
+
 @pytest.fixture
 def ring_model():
     """Fixture to provide a new instance of RingModel for each test.

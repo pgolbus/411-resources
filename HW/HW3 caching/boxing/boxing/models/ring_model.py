@@ -31,7 +31,11 @@ class RingModel:
             ttl_seconds (int): The time-to-live in seconds for the cached boxer objects.
 
         """
-        pass
+        self.ring: List[int] = []  # Stores boxer IDs
+        self._boxer_cache: dict[int, Boxers] = {}
+        self._ttl: dict[int, float] = {}
+        self.ttl_seconds = int(os.getenv("TTL_SECONDS", 60))
+        logger.info("RingModel initialized with TTL=%d seconds", self.ttl_seconds)
 
     def fight(self) -> str:
         """Simulates a fight between two combatants.
