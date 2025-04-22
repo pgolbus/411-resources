@@ -2,7 +2,7 @@ import requests
 
 
 def run_smoketest():
-    base_url = "http://localhost:5000/api"
+    base_url = "http://localhost:5050/api"
     username = "test"
     password = "test"
 
@@ -23,6 +23,8 @@ def run_smoketest():
     }
 
     health_response = requests.get(f"{base_url}/health")
+    print("Health response status:", health_response.status_code)
+    print("Health response text:", health_response.text)  # Print the raw response body
     assert health_response.status_code == 200
     assert health_response.json()["status"] == "success"
 
