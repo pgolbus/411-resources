@@ -142,7 +142,7 @@ class RingModel:
         now = time.time()
         boxer_list = []
         for boxer_id in self.ring:
-            if boxer_id in self._boxer_cache and self.ttl.get(boxer_id, 0) > now:
+            if boxer_id in self._boxer_cache and self._ttl.get(boxer_id, 0) > now:
                 logger.debug(f"Using cached boxer {boxer_id} (TTL valid).")
                 logger.debug(f"Boxer ID {boxer_id} retrieved from cache")
                 boxer = self._boxer_cache[boxer_id]
