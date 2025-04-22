@@ -147,8 +147,10 @@ class Boxers(db.Model):
         Raises:
             ValueError: If the boxer with the given ID does not exist.
 
+        Note:
+            Updated to use db.session.get() instead of cls.query.get() for SQLAlchemy 2.0 compatibility.
         """
-        boxer = cls.query.get(boxer_id)
+        boxer = db.session.get(cls, boxer_id)
         if not boxer:
             logger.info(f"Boxer with ID {boxer_id} not found.")
             raise ValueError(f"Boxer with ID {boxer_id} not found.")

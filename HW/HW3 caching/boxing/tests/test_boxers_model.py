@@ -12,14 +12,24 @@ def ring_model():
 
 @pytest.fixture
 def sample_boxer1(session):
-    boxer = Boxers(name="Muhammad Ali", weight=210, height=191, reach=78, age=32)
+    """Fixture to provide a sample boxer with a unique name.
+    
+    Note: Uses timestamp in name to ensure uniqueness across test runs.
+    """
+    unique_name = f"Muhammad Ali {time.time()}"  # Add timestamp to make name unique
+    boxer = Boxers(name=unique_name, weight=210, height=191, reach=78, age=32)
     session.add(boxer)
     session.commit()
     return boxer
 
 @pytest.fixture
 def sample_boxer2(session):
-    boxer = Boxers(name="Mike Tyson", weight=220, height=178, reach=71, age=24)
+    """Fixture to provide another sample boxer with a unique name.
+    
+    Note: Uses timestamp in name to ensure uniqueness across test runs.
+    """
+    unique_name = f"Mike Tyson {time.time()}"  # Add timestamp to make name unique
+    boxer = Boxers(name=unique_name, weight=220, height=178, reach=71, age=24)
     session.add(boxer)
     session.commit()
     return boxer
@@ -106,24 +116,25 @@ def test_enter_ring_full(ring_model):
 # --- Fight Logic ---
 
 def test_get_fighting_skill(ring_model, sample_boxers):
-    expected_1 = 210 * 12 + (78 / 10)
-    expected_2 = 220 * 10 + (71 / 10) - 1
+    """Test that fighting skill is calculated correctly."""
+    # Calculate expected values using the actual name lengths
+    expected_1 = 210 * len(sample_boxers[0].name) + (78 / 10)  # No age modifier for age 32
+    expected_2 = 220 * len(sample_boxers[1].name) + (71 / 10) - 1  # -1 age modifier for age 24
     assert ring_model.get_fighting_skill(sample_boxers[0]) == expected_1
     assert ring_model.get_fighting_skill(sample_boxers[1]) == expected_2
-# def test_get_fighting_skill(): return True
 
 def test_fight(ring_model, sample_boxers, caplog, mocker):
-    ring_model.ring.extend(sample_boxers)
+    """Test that fight simulation works correctly."""
+    ring_model.ring.extend([b.id for b in sample_boxers])
     mocker.patch("boxing.models.ring_model.RingModel.get_fighting_skill", side_effect=[2526.8, 2206.1])
     mocker.patch("boxing.models.ring_model.get_random", return_value=0.42)
     mocker.patch("boxing.models.ring_model.RingModel.get_boxers", return_value=sample_boxers)
     mock_update = mocker.patch("boxing.models.ring_model.Boxers.update_stats")
     winner = ring_model.fight()
-    assert winner == "Muhammad Ali"
+    assert winner == sample_boxers[0].name  # Use the actual name from the fixture
     mock_update.assert_any_call("win")
     mock_update.assert_any_call("loss")
     assert ring_model.ring == []
-# def test_fight(): return True
 
 def test_fight_with_empty_ring(ring_model):
     with pytest.raises(ValueError, match="There must be two boxers to start a fight."):
