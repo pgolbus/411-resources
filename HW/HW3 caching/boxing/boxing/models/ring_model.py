@@ -31,7 +31,45 @@ class RingModel:
             ttl_seconds (int): The time-to-live in seconds for the cached boxer objects.
 
         """
-        pass
+        #CHANGE
+        self.ring: List[int] = []
+        self._boxer_cache: dict[int, Boxers] = {}
+        self._ttl: dict[int, float] = {}
+        self.ttl_seconds = int(os.getenv("TTL", 60))  # Default TTL is 60 seconds
+    
+    #
+    def _get_boxer_from_cache_or_db(self, boxer_id: int) -> Boxers:
+        """
+        Retrieves a song by ID, using the internal cache if possible.
+
+        This method checks whether a cached version of the song is available
+        and still valid. If not, it queries the database, updates the cache, and returns the song.
+
+        Args:
+            song_id (int): The unique ID of the song to retrieve.
+
+        Returns:
+            Songs: The song object corresponding to the given ID.
+
+        Raises:
+            ValueError: If the song cannot be found in the database.
+        """
+        now = time.time()
+
+        if boxer_id in self._boxer_cache and self._ttl.get(boxer_id, 0) > now:
+            logger.debug(f"Boxer ID {boxer_id} retrieved from cache")
+            return self._boxer_cache[boxer_id]
+
+        try:
+            boxer = Boxers.get_boxer_by_id(boxer_id)
+            logger.info(f"Boxer ID {boxer_id} loaded from DB")
+        except ValueError as e:
+            logger.error(f"Boxer ID {boxer_id} not found in DB: {e}")
+            raise ValueError(f"Boxer ID {boxer_id} not found in database") from e
+
+        self._boxer_cache[boxer_id] = boxer
+        self._ttl[boxer_id] = now + self.ttl_seconds
+        return boxer
 
     def fight(self) -> str:
         """Simulates a fight between two combatants.
@@ -112,6 +150,7 @@ class RingModel:
         """
         if len(self.ring) >= 2:
             logger.error(f"Attempted to add boxer ID {boxer_id} but the ring is full")
+            raise ValueError(f"Ring is full")
 
         try:
             boxer = Boxers.get_boxer_by_id(boxer_id)
@@ -121,8 +160,21 @@ class RingModel:
 
         logger.info(f"Adding boxer '{boxer.name}' (ID {boxer_id}) to the ring")
 
+        if boxer_id in self.ring:
+            logger.error(f"Boxer with ID {boxer_id} already exists in the ring")
+            raise ValueError(f"Boxer with ID {boxer_id} already exists in the ring")
+        
+        try:
+            boxer = self._get_boxer_from_cache_or_db(boxer_id)
+        except ValueError as e:
+            logger.error(f"Failed to add boxer: {e}")
+            raise
+
+        self.ring.append(boxer.id)
+
         logger.info(f"Current boxers in the ring: {[Boxers.get_boxer_by_id(b).name for b in self.ring]}")
 
+    #CHANGE
 
     def get_boxers(self) -> List[Boxers]:
         """Retrieves the current list of boxers in the ring.
@@ -135,14 +187,18 @@ class RingModel:
             logger.warning("Retrieving boxers from an empty ring.")
         else:
             logger.info(f"Retrieving {len(self.ring)} boxers from the ring.")
-
+        
+        logger.info(f"Boxer {self.ring}")
+        boxers = []
         for boxer_id in self.ring:
-            if expired:
+            if boxer_id not in self.ring:
                 logger.info(f"TTL expired or missing for boxer {boxer_id}. Refreshing from DB.")
             else:
                 logger.debug(f"Using cached boxer {boxer_id} (TTL valid).")
+                boxers = boxers + [self._get_boxer_from_cache_or_db(boxer_id)]
 
         logger.info(f"Retrieved {len(boxers)} boxers from the ring.")
+        return boxers
 
     def get_fighting_skill(self, boxer: Boxers) -> float:
         """Calculates the fighting skill for a boxer based on arbitrary rules.
@@ -168,8 +224,32 @@ class RingModel:
         logger.info(f"Fighting skill for {boxer.name}: {skill:.3f}")
         return skill
 
+    #CHANGE
     def clear_cache(self):
         """Clears the local TTL cache of boxer objects.
 
         """
         logger.info("Clearing local boxer cache in RingModel.")
+        try:
+            self._boxer_cache = {}
+            self._ttl = {}
+        except ValueError as e:
+            raise
+    
+
+    #CHANGE
+    def validate_boxer_id(self, boxer_id: int):
+        try:
+            boxer_id = int(boxer_id)
+            if boxer_id < 0:
+                raise ValueError
+        except ValueError:
+            logger.error(f"Invalid boxer id: {boxer_id}")
+            raise ValueError(f"Invalid boxer id: {boxer_id}")
+        try:
+            self._boxer_cache[boxer_id]
+        except Exception as e:
+            logger.error(f"Boxer with id {boxer_id} not found in database: {e}")
+            raise ValueError(f"Boxer with id {boxer_id} not found in database")
+        
+        return True
