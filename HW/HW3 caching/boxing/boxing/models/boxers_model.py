@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 
+from boxing.db import db
+
 class Boxers(db.Model):
     """Represents a competitive boxer in the system.
 
@@ -19,6 +21,18 @@ class Boxers(db.Model):
     age, and fight statistics. Used in a Flask-SQLAlchemy application to
     manage boxer data, run simulations, and track fight outcomes.
     """
+
+    __tablename__ = 'boxers'  # Make sure this is correctly defined to map to 'boxers' table
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Primary Key
+    name = db.Column(db.String, unique=True, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    height = db.Column(db.Float, nullable=False)
+    reach = db.Column(db.Float, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    fights = db.Column(db.Integer, nullable=False, default=0)
+    wins = db.Column(db.Integer, nullable=False, default=0)
+    weight_class = db.Column(db.String)
 
     def __init__(self, name: str, weight: float, height: float, reach: float, age: int):
         """Initialize a new Boxer instance with basic attributes.
@@ -83,6 +97,7 @@ class Boxers(db.Model):
             return "Light Heavyweight"
         else:
             return "Heavyweight"
+
 
     @classmethod
     def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
