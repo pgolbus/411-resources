@@ -149,17 +149,32 @@ class RingModel:
 
         """
         if len(self.ring) >= 2:
-            logger.error(f"Attempted to add boxer ID {boxer_id} but the ring is full")
-
+            logger.error(f"Attempted to add boxer ID {boxer_id} but the ring is full.")
+            raise ValueError("Ring is full")
         try:
             boxer = Boxers.get_boxer_by_id(boxer_id)
         except ValueError as e:
             logger.error(str(e))
             raise
 
-        logger.info(f"Adding boxer '{boxer.name}' (ID {boxer_id}) to the ring")
+        logger.info(f"Adding boxer '{boxer.name}' (ID {boxer_id}) to the ring.")
+        self.ring.append(boxer_id)
 
-        logger.info(f"Current boxers in the ring: {[Boxers.get_boxer_by_id(b).name for b in self.ring]}")
+        now = time.time()
+        boxers_in = []
+
+        for b in self.ring:
+            ttl_valid = self._ttl.get(b, 0) > now
+            if b not in self._boxer_cache or not ttl_valid:
+                logger.info(f"Refreshing cache for boxer {b}.")
+                boxer = Boxers.get_boxer_by_id(b)
+                self._boxer_cache[b] = boxer
+                self._ttl[b] = now + self.ttl_seconds
+            else:
+                boxer = self._boxer_cache[b]
+            boxers_in.append(boxer.name)
+
+        logger.info(f"Current boxers in the ring: {boxers_in}")
 
 
     def get_boxers(self) -> List[Boxers]:
@@ -174,13 +189,24 @@ class RingModel:
         else:
             logger.info(f"Retrieving {len(self.ring)} boxers from the ring.")
 
+        now = time.time()
+        listing = []
+
         for boxer_id in self.ring:
-            if expired:
+            ttl_valid = self._ttl.get(boxer_id, 0) > now
+            if boxer_id not in self._boxer_cache or not ttl_valid:
                 logger.info(f"TTL expired or missing for boxer {boxer_id}. Refreshing from DB.")
+                boxer = Boxers.get_boxer_by_id(boxer_id)
+                self._boxer_cache[boxer_id] = boxer
+                self._ttl[boxer_id] = now + self.ttl_seconds
             else:
                 logger.debug(f"Using cached boxer {boxer_id} (TTL valid).")
+                boxer = self._boxer_cache[boxer_id]
 
-        logger.info(f"Retrieved {len(boxers)} boxers from the ring.")
+            listing.append(boxer)
+
+        logger.info(f"Retrieved {len(listing)} boxers from the ring.")
+        return listing
 
     def get_fighting_skill(self, boxer: Boxers) -> float:
         """Calculates the fighting skill for a boxer based on arbitrary rules.

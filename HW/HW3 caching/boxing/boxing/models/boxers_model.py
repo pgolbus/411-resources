@@ -237,4 +237,3 @@ class Boxers(db.Model):
         leaderboard.sort(key=lambda b: b[sort_by], reverse=True)
         logger.info("Leaderboard retrieved successfully.")
         return leaderboard
-
