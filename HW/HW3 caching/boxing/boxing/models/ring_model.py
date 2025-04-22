@@ -150,27 +150,18 @@ class RingModel:
         """
         if len(self.ring) >= 2:
             logger.error(f"Attempted to add boxer ID {boxer_id} but the ring is full")
-            raise ValueError(f"Ring is full")
 
         try:
             boxer = Boxers.get_boxer_by_id(boxer_id)
         except ValueError as e:
             logger.error(str(e))
             raise
+        now = time.time()
+        self.ring.append(boxer.id)
+        self._boxer_cache[boxer.id] = boxer
+        self._ttl[boxer.id] = now + self.ttl_seconds
 
         logger.info(f"Adding boxer '{boxer.name}' (ID {boxer_id}) to the ring")
-
-        if boxer_id in self.ring:
-            logger.error(f"Boxer with ID {boxer_id} already exists in the ring")
-            raise ValueError(f"Boxer with ID {boxer_id} already exists in the ring")
-        
-        try:
-            boxer = self._get_boxer_from_cache_or_db(boxer_id)
-        except ValueError as e:
-            logger.error(f"Failed to add boxer: {e}")
-            raise
-
-        self.ring.append(boxer.id)
 
         logger.info(f"Current boxers in the ring: {[Boxers.get_boxer_by_id(b).name for b in self.ring]}")
 
@@ -224,17 +215,15 @@ class RingModel:
         logger.info(f"Fighting skill for {boxer.name}: {skill:.3f}")
         return skill
 
-    #CHANGE
+    #CHANGE Something new
     def clear_cache(self):
         """Clears the local TTL cache of boxer objects.
 
         """
         logger.info("Clearing local boxer cache in RingModel.")
-        try:
-            self._boxer_cache = {}
-            self._ttl = {}
-        except ValueError as e:
-            raise
+        self._boxer_cache.clear()
+        self._ttl.clear()
+        self.ring.clear()
     
 
     #CHANGE
