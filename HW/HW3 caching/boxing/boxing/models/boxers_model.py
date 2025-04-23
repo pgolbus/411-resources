@@ -46,7 +46,7 @@ class Boxers(db.Model):
         if not isinstance(self.weight, float) or self.weight < 125:
             raise ValueError("Weight must be a non-empty string.")
         if not isinstance(self.height, float) or self.height <= 0:
-            raise ValueError("Height must be an integer greater than 1900.")
+            raise ValueError("Height must be a positive float.")
         if not isinstance(self.reach, float) or self.reach <= 0:
             raise ValueError("Reach must be a non-empty string.")
         if not isinstance(self.age, int) or self.age < 18 or self.age > 40:
@@ -146,7 +146,7 @@ class Boxers(db.Model):
         db.session.commit()
 
     @classmethod
-    def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
+    def get_boxer_by_id(cls, boxer_id: int) -> "Boxers": 
         """Retrieve a boxer by ID.
 
         Args:
@@ -159,11 +159,11 @@ class Boxers(db.Model):
             ValueError: If the boxer with the given ID does not exist.
 
         """
-        boxer = Boxers.query.filter(id=boxer_id).first()
+        boxer = Boxers.query.filter_by(id=boxer_id).first()
         if boxer is None:
             logger.info(f"Boxer with ID {boxer_id} not found.")
             raise ValueError(f"Boxer with ID {boxer_id} not found.")
-        return boxer.name
+        return boxer
 
 
     #CHANGE
@@ -182,10 +182,10 @@ class Boxers(db.Model):
 
         """
         try:
-            boxer = cls.query.get(name=name.strip())
+            boxer = cls.query.filter_by(name=name.strip()).first()
             if boxer is None:
                 logger.info(f"Boxer '{name}' not found.")
-                raise ValueError(f"Song with ID {name} not found")
+                raise ValueError(f"Boxer with ID {name} not found")
             
             logger.info(f"Successfully retrieved song: {boxer.name} - {boxer.weight} ({boxer.height})")
             return boxer
