@@ -1,15 +1,15 @@
 import pytest
 
-from app import create_app
-from config import TestConfig
-from boxing.db import db
+from boxing import create_app
+from boxing.config import TestConfig
+from boxing.models import db
 
 @pytest.fixture
 def app():
     app = create_app(TestConfig)
     with app.app_context():
         db.create_all()
-        yield app
+        yield app  # this gives the app to the test
         db.session.remove()
         db.drop_all()
 
