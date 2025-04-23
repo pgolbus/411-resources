@@ -13,7 +13,13 @@ logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 
-class Users():
+class Users(db.Model, UserMixin):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    salt = db.Column(db.String(32), nullable=False)  
+    password = db.Column(db.String(64), nullable=False)  
 
     @staticmethod
     def _generate_hashed_password(password: str) -> tuple[str, str]:
@@ -26,7 +32,9 @@ class Users():
         Returns:
             tuple: A tuple containing the salt and hashed password.
         """
-        pass
+        salt = os.urandom(16).hex()
+        hashed_password = hashlib.sha256((password + salt).encode()).hexdigest()
+        return salt, hashed_password
 
     @classmethod
     def create_user(cls, username: str, password: str) -> None:
@@ -40,12 +48,23 @@ class Users():
         Raises:
             ValueError: If a user with the username already exists.
         """
+        logger.info(f"Attempting to create new user: {username}")
+        
+        salt, hashed_password = cls._generate_hashed_password(password)
+        new_user = cls(username=username, salt=salt, password=hashed_password)
+        
         try:
-            logger.info("User successfully added to the database: %s", username)
+            db.session.add(new_user)
+            db.session.commit()
+            logger.info(f"User successfully created: {username}")
         except IntegrityError:
-            logger.error("Duplicate username: %s", username)
+            db.session.rollback()
+            logger.error(f"Duplicate username: {username}")
+            raise ValueError(f"User with username '{username}' already exists")
         except Exception as e:
-            logger.error("Database error: %s", str(e))
+            db.session.rollback()
+            logger.error(f"Database error creating user {username}: {str(e)}")
+            raise ValueError(f"Database error: {str(e)}")
 
     @classmethod
     def check_password(cls, username: str, password: str) -> bool:
@@ -62,9 +81,22 @@ class Users():
         Raises:
             ValueError: If the user does not exist.
         """
+        logger.info(f"Attempting password check for user: {username}")
+        
+        user = cls.query.filter_by(username=username).first()
         if not user:
+            logger.error(f"User not found: {username}")
             raise ValueError(f"User {username} not found")
-        pass
+            
+        hashed_password = hashlib.sha256((password + user.salt).encode()).hexdigest()
+        is_valid = hashed_password == user.password
+        
+        if is_valid:
+            logger.info(f"Password check successful for user: {username}")
+        else:
+            logger.warning(f"Invalid password attempt for user: {username}")
+            
+        return is_valid
 
     @classmethod
     def delete_user(cls, username: str) -> None:
@@ -77,9 +109,16 @@ class Users():
         Raises:
             ValueError: If the user does not exist.
         """
+        logger.info(f"Attempting to delete user: {username}")
+        
+        user = cls.query.filter_by(username=username).first()
         if not user:
-            logger.info("User %s not found", username)
-        logger.info("User %s deleted successfully", username)
+            logger.error(f"User not found for deletion: {username}")
+            raise ValueError(f"User {username} not found")
+            
+        db.session.delete(user)
+        db.session.commit()
+        logger.info(f"User deleted successfully: {username}")
 
     def get_id(self) -> str:
         """
@@ -88,7 +127,7 @@ class Users():
         Returns:
             str: The ID of the user.
         """
-        pass
+        return str(self.id)
 
     @classmethod
     def get_id_by_username(cls, username: str) -> int:
@@ -104,9 +143,15 @@ class Users():
         Raises:
             ValueError: If the user does not exist.
         """
+        logger.info(f"Looking up ID for username: {username}")
+        
+        user = cls.query.filter_by(username=username).first()
         if not user:
+            logger.error(f"User not found when looking up ID: {username}")
             raise ValueError(f"User {username} not found")
-        pass
+            
+        logger.info(f"Found ID {user.id} for username: {username}")
+        return user.id
 
     @classmethod
     def update_password(cls, username: str, new_password: str) -> None:
@@ -120,7 +165,21 @@ class Users():
         Raises:
             ValueError: If the user does not exist.
         """
+        logger.info(f"Attempting password update for user: {username}")
+        
+        user = cls.query.filter_by(username=username).first()
         if not user:
-            logger.info("User %s not found", username)
+            logger.error(f"User not found for password update: {username}")
+            raise ValueError(f"User {username} not found")
 
-        logger.info("Password updated successfully for user: %s", username)
+        salt, hashed_password = cls._generate_hashed_password(new_password)
+        user.salt = salt
+        user.password = hashed_password
+        
+        try:
+            db.session.commit()
+            logger.info(f"Password updated successfully for user: {username}")
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Failed to update password for user {username}: {str(e)}")
+            raise ValueError(f"Failed to update password: {str(e)}")
