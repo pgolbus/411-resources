@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from flask import Flask, jsonify, make_response, Response, request
+from flask import Flask, jsonify, make_response, Response, request, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 # from flask_cors import CORS
 
