@@ -26,5 +26,5 @@ EXPOSE 5000
 CMD ["python3", "app.py"]
 
 # Health check (checks every 30 seconds to see if the endpoint returns a successful response)
-# HEALTHCHECK --interval=30s --timeout=3s \
-#  CMD curl -f http://localhost:5000/healthcheck || exit 1
+HEALTHCHECK --interval=30s --timeout=3s \
+CMD curl -f http://localhost:5000/healthcheck || exit 1
