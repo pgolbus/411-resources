@@ -26,7 +26,7 @@ def sample_basketball2(session):
     return bballer
 
 @pytest.fixture
-def sample_boxers(sample_bballer1, sample_bballer2):
+def sample_basketballers(sample_bballer1, sample_bballer2):
     return [sample_bballer1, sample_bballer2]
 
 ### --- Ring Clear ---
