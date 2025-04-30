@@ -2,39 +2,40 @@ import time
 
 import pytest
 
-from boxing.models.ring_model import RingModel
-from boxing.models.boxers_model import Boxers
+from basketballers.models.basketball_player_model import BasketballPlayer
+from basketballers.models.basketball_general_model import GameModel
+
 
 @pytest.fixture
-def ring_model():
+def game_model():
     """Fixture to provide a new instance of RingModel for each test."""
-    return RingModel()
+    return GameModel()
 
 @pytest.fixture
-def sample_boxer1(session):
-    boxer = Boxers(name="Muhammad Ali", weight=210, height=191, reach=78, age=32)
-    session.add(boxer)
+def sample_basketball1(session):
+    bballer = BasketballPlayer(name="Stephen Curry", position="G",team="Warriors", height_feet=6, height_inches=2, weight_pounds=185)
+    session.add(bballer)
     session.commit()
-    return boxer
+    return bballer
 
 @pytest.fixture
-def sample_boxer2(session):
-    boxer = Boxers(name="Mike Tyson", weight=220, height=178, reach=71, age=24)
-    session.add(boxer)
+def sample_basketball2(session):
+    bballer = BasketballPlayer(name="Giannis Antetokounmpo", position="F",team="Bucks", height_feet=6, height_inches=11, weight_pounds=243)
+    session.add(bballer)
     session.commit()
-    return boxer
+    return bballer
 
 @pytest.fixture
-def sample_boxers(sample_boxer1, sample_boxer2):
-    return [sample_boxer1, sample_boxer2]
+def sample_boxers(sample_bballer1, sample_bballer2):
+    return [sample_bballer1, sample_bballer2]
 
 ### --- Ring Clear ---
 
-def test_clear_ring(ring_model):
-     """Test that clear_ring empties the ring."""
-     ring_model.ring = [1, 2]
-     ring_model.clear_ring()
-     assert len(ring_model.ring) == 0
+def test_clear_game(game_model):
+     """Test that clear_game empties the court."""
+     game_model.ring = [1, 2]
+     game_model.clear_game()
+     assert len(game_model.ring) == 0   #Unsure for what .ring should replace
 
 def test_clear_ring_empty(ring_model, caplog):
     """Test that clear_ring logs a warning when already empty."""
