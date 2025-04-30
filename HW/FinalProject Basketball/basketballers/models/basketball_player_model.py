@@ -1,254 +1,170 @@
 import logging
 from typing import List
-
 from sqlalchemy.exc import IntegrityError
 
-from boxing.db import db
-from boxing.utils.logger import configure_logger
+from basketball.db import db
+from basketball.utils.logger import configure_logger
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
-
-class Boxers(db.Model):
-    """Represents a competitive boxer in the system.
-
-    This model maps to the 'boxers' table in the database and stores personal
-    and performance-related attributes such as name, weight, height, reach,
-    age, and fight statistics. Used in a Flask-SQLAlchemy application to
-    manage boxer data, run simulations, and track fight outcomes.
-
+class BasketballPlayer(db.Model):
+    """Represents an NBA player in the system (stored in DB after being fetched from external API).
+    
+    This model maps to the 'players' table in the database and stores personal
+    and performance-related attributes retrieved from the BallDontLie API.
     """
-    __tablename__ = "boxers"
 
+    __tablename__ = "players"
+    
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    weight = db.Column(db.Float, nullable=False)
-    height = db.Column(db.Float, nullable=False)
-    reach = db.Column(db.Float, nullable=False)
-    age = db.Column(db.Integer, nullable=False)
-    weight_class = db.Column(db.String(20), nullable=False)
-    fights = db.Column(db.Integer, default=0, nullable=False)
-    wins = db.Column(db.Integer, default=0, nullable=False)
+    full_name = db.Column(db.String(100), nullable=False)
+    position = db.Column(db.String(10), nullable=False)
+    team = db.Column(db.String(50), nullable=False)
+    height_feet = db.Column(db.Integer, nullable=False)
+    height_inches = db.Column(db.Integer, nullable=False)
+    weight_pounds = db.Column(db.Integer, nullable=False)
 
-
-    def __init__(self, name: str, weight: float, height: float, reach: float, age: int):
-        """Initialize a new Boxer instance with basic attributes.
-
-        Args:
-            name (str): The boxer's name. Must be unique.
-            weight (float): The boxer's weight in pounds. Must be at least 125.
-            height (float): The boxer's height in inches. Must be greater than 0.
-            reach (float): The boxer's reach in inches. Must be greater than 0.
-            age (int): The boxer's age. Must be between 18 and 40, inclusive.
-
-        Notes:
-            - The boxer's weight class is automatically assigned based on weight.
-            - Fight statistics (`fights` and `wins`) are initialized to 0 by default in the database schema.
-
+     def __init__(self, full_name: str, position: str, team: str,
+                 height_feet: int, height_inches: int, weight_pounds: int):
         """
-        if weight < 125:
-          raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
-        if height <= 0:
-          raise ValueError(f"Invalid height: {height}. Must be greater than 0.")
-        if reach <= 0:
-          raise ValueError(f"Invalid reach: {reach}. Must be greater than 0.")
-        if not (18 <= age <= 40):
-          raise ValueError(f"Invalid age: {age}. Must be between 18 and 40.")
-
-        self.name = name
-        self.weight = weight
-        self.height = height
-        self.reach = reach
-        self.age = age
-        self.weight_class = self.get_weight_class(weight)
-        self.fights = 0
-        self.wins = 0
-
-    @classmethod
-    def get_weight_class(cls, weight: float) -> str:
-        """Determine the weight class based on weight.
-
-        This method is defined as a class method rather than a static method,
-        even though it does not currently require access to the class object.
-        Both @staticmethod and @classmethod would be valid choices in this context;
-        however, using @classmethod makes it easier to support subclass-specific
-        behavior or logic overrides in the future.
+        Initialize a new Player instance with basic attributes.
 
         Args:
-            weight: The weight of the boxer.
-
-        Returns:
-            str: The weight class of the boxer.
+            full_name (str): Full name of the player.
+            position (str): Playing position.
+            team (str): Team name or abbreviation.
+            height_feet (int): Player height in feet.
+            height_inches (int): Additional height in inches.
+            weight_pounds (int): Player's weight in pounds.
 
         Raises:
-            ValueError: If the weight is less than 125.
-
+            ValueError: If any provided attributes are invalid.
         """
-        if weight >= 203:
-            return "HEAVYWEIGHT"
-        elif weight >= 166:
-            return "MIDDLEWEIGHT"
-        elif weight >= 133:
-            return "LIGHTWEIGHT"
-        elif weight >= 125:
-            return "FEATHERWEIGHT"
-        else:
-            raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
+        if weight_pounds < 150:
+            raise ValueError(f"Invalid weight: {weight_pounds}. Must be at least 150.")
+        if height_feet < 4:
+            raise ValueError(f"Invalid height (feet): {height_feet}. Must be at least 4 feet.")
+        if height_inches < 0 or height_inches > 11:
+            raise ValueError(f"Invalid height (inches): {height_inches}. Must be between 0 and 11.")
 
+        self.full_name = full_name
+        self.position = position
+        self.team = team
+        self.height_feet = height_feet
+        self.height_inches = height_inches
+        self.weight_pounds = weight_pounds
+        
     @classmethod
-    def create_boxer(cls, name: str, weight: float, height: float, reach: float, age: int) -> None:
-        """Create and persist a new Boxer instance.
+    def create_player(cls, full_name: str, position: str, team: str,
+                      height_feet: int, height_inches: int, weight_pounds: int) -> None:
+        """
+        Creates and stores a new player.
 
         Args:
-            name: The name of the boxer.
-            weight: The weight of the boxer.
-            height: The height of the boxer.
-            reach: The reach of the boxer.
-            age: The age of the boxer.
+            full_name (str): Player's name.
+            position (str): Playing position.
+            team (str): Team name or code.
+            height_feet (int): Height in feet.
+            height_inches (int): Additional inches.
+            weight_pounds (int): Weight in pounds.
 
         Raises:
-            IntegrityError: If a boxer with the same name already exists.
-            ValueError: If the weight is less than 125 or if any of the input parameters are invalid.
-            SQLAlchemyError: If there is a database error during creation.
-
+            ValueError: If a player with the same name already exists or validation fails.
+            Exception: For any other database error.
         """
-        logger.info(f"Creating boxer: {name}, {weight=} {height=} {reach=} {age=}")
+        logger.info(f"Creating player: {full_name}, {position}, {team}")
         try:
-            new_boxer = cls(name, weight, height, reach, age)
-            db.session.add(new_boxer)
+            if cls.query.filter_by(full_name=full_name).first():
+                raise ValueError(f"Player with name '{full_name}' already exists.")
+
+            new_player = cls(full_name=full_name, position=position, team=team,
+                             height_feet=height_feet, height_inches=height_inches, weight_pounds=weight_pounds)
+            db.session.add(new_player)
             db.session.commit()
-            logger.info(f"Boxer created successfully: {name}")
+            logger.info(f"Player created successfully: {full_name}")
         except IntegrityError:
             db.session.rollback()
-            logger.error(f"Boxer with name '{name}' already exists.")
-            raise ValueError(f"Boxer with name '{name}' already exists.")
+            logger.warning(f"Integrity error when creating player '{full_name}'")
+            raise
         except Exception as e:
             db.session.rollback()
-            logger.error(f"Database error during creation: {e}")
+            logger.error(f"Error during player creation: {e}")
             raise
             
     @classmethod
-    def get_boxer_by_id(cls, boxer_id: int) -> "Boxers":
-        """Retrieve a boxer by ID.
+    def get_player_by_id(cls, player_id: int) -> "BasketballPlayer":
+        """
+        Retrieve a player by internal database ID.
 
         Args:
-            boxer_id: The ID of the boxer.
+            player_id (int): Primary key of the player.
 
         Returns:
-            Boxer: The boxer instance.
+            BasketballPlayer: Player instance.
 
         Raises:
-            ValueError: If the boxer with the given ID does not exist.
-
+            ValueError: If player is not found.
         """
-        boxer = cls.query.get(boxer_id)
-        if boxer is None:
-            logger.info(f"Boxer with ID {boxer_id} not found.")
-            raise ValueError(f"Boxer with ID {boxer_id} not found.")
-        return boxer
+        player = cls.query.get(player_id)
+        if player is None:
+            logger.info(f"Player with ID {player_id} not found.")
+            raise ValueError(f"Player with ID {player_id} not found.")
+        return player
 
     @classmethod
-    def get_boxer_by_name(cls, name: str) -> "Boxers":
-        """Retrieve a boxer by name.
+    def get_player_by_name(cls, name: str) -> "BasketballPlayer":
+        """
+        Retrieve a player using their full name.
 
         Args:
-            name: The name of the boxer.
+            name (str): Full name of the player.
 
         Returns:
-            Boxer: The boxer instance.
+            BasketballPlayer: Player instance.
 
         Raises:
-            ValueError: If the boxer with the given name does not exist.
-
+            ValueError: If player is not found.
         """
-        boxer = cls.query.filter_by(name=name).first()
-        if boxer is None:
-            logger.info(f"Boxer '{name}' not found.")
-            raise ValueError(f"Boxer '{name}' not found.")
-        return boxer
+        player = cls.query.filter_by(full_name=name).first()
+        if player is None:
+            logger.info(f"Player with name '{name}' not found.")
+            raise ValueError(f"Player with name '{name}' not found.")
+        return player
 
-    @classmethod
-    def delete(cls, boxer_id: int) -> None:
-        """Delete a boxer by ID.
+       @classmethod
+    def delete_player(cls, player_id: int) -> None:
+        """
+        Delete a player from the database by internal ID.
 
         Args:
-            boxer_id: The ID of the boxer to delete.
+            player_id (int): ID of the player to delete.
 
         Raises:
-            ValueError: If the boxer with the given ID does not exist.
-
+            ValueError: If player is not found.
         """
-        boxer = cls.get_boxer_by_id(boxer_id)
-        if boxer is None:
-            logger.info(f"Boxer with ID {boxer_id} not found.")
-            raise ValueError(f"Boxer with ID {boxer_id} not found.")
-        db.session.delete(boxer)
+        player = cls.get_player_by_id(player_id)
+        db.session.delete(player)
         db.session.commit()
-        logger.info(f"Boxer with ID {boxer_id} permanently deleted.")
+        logger.info(f"Player with ID {player_id} deleted.")
 
-    def update_stats(self, result: str) -> None:
-        """Update the boxer's fight and win count based on result.
-
-        Args:
-            result: The result of the fight ('win' or 'loss').
-
-        Raises:
-            ValueError: If the result is not 'win' or 'loss'.
-            ValueError: If the number of wins exceeds the number of fights.
-
+     @staticmethod
+    def get_all_players() -> List[dict]:
         """
-        if result not in {"win", "loss"}:
-            raise ValueError("Result must be 'win' or 'loss'.")
-
-        self.fights += 1
-        if result == "win":
-            self.wins += 1
-
-        if self.wins > self.fights:
-            raise ValueError("Wins cannot exceed number of fights.")
-
-        db.session.commit()
-        logger.info(f"Updated stats for boxer {self.name}: {self.fights} fights, {self.wins} wins.")
-
-    @staticmethod
-    def get_leaderboard(sort_by: str = "wins") -> List[dict]:
-        """Retrieve a sorted leaderboard of boxers.
-
-        Args:
-            sort_by (str): Either "wins" or "win_pct".
+        Retrieve all players currently stored in the database.
 
         Returns:
-            List[Dict]: List of boxers with stats and win percentage.
-
-        Raises:
-            ValueError: If the sort_by parameter is not valid.
-
+            List[dict]: A list of dictionaries with player attributes.
         """
-        logger.info(f"Retrieving leaderboard. Sort by: {sort_by}")
-
-        if sort_by not in {"wins", "win_pct"}:
-            logger.error(f"Invalid sort_by parameter: {sort_by}")
-            raise ValueError(f"Invalid sort_by parameter: {sort_by}")
-
-        boxers = Boxers.query.filter(Boxers.fights > 0).all()
-
-        def compute_win_pct(b: Boxers) -> float:
-            return round((b.wins / b.fights) * 100, 1) if b.fights > 0 else 0.0
-
-        leaderboard = [{
-            "id": b.id,
-            "name": b.name,
-            "weight": b.weight,
-            "height": b.height,
-            "reach": b.reach,
-            "age": b.age,
-            "weight_class": b.weight_class,
-            "fights": b.fights,
-            "wins": b.wins,
-            "win_pct": compute_win_pct(b)
-        } for b in boxers]
-
-        leaderboard.sort(key=lambda b: b[sort_by], reverse=True)
-        logger.info("Leaderboard retrieved successfully.")
-        return leaderboard
+        players = BasketballPlayer.query.all()
+        return [
+            {
+                "id": p.id,
+                "full_name": p.full_name,
+                "position": p.position,
+                "team": p.team,
+                "height_feet": p.height_feet,
+                "height_inches": p.height_inches,
+                "weight_pounds": p.weight_pounds
+            } for p in players
+        ]

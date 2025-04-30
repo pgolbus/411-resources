@@ -88,22 +88,27 @@ class GameModel:
         return total_skill
 
     def get_player_skill(self, player: BasketballPlayer) -> float:
-        """Calculates the skill for an individual player.
-
-        Args:
-            player (BasketballPlayer): The BasketballPlayer object for the player.
-
+        """Calculates the skill for an individual basketball player.
+    
+        Skill is calculated based on weight and height:
+        - Skill = (weight in pounds) + (height in inches) + (position factor)
+    
         Returns:
-            float: The player's skill score.
+            float: The calculated skill value.
         """
-        logger.info(f"Calculating skill for {player.name}: weight={player.weight}, age={player.age}, reach={player.reach}")
+        logger.info(f"Calculating skill for {player.full_name}: "
+                    f"weight={player.weight_pounds}, "
+                    f"height={player.height_feet}'{player.height_inches}\", "
+                    f"position={player.position}")
         
-        # Arbitrary skill calculation (you can modify this logic)
-        skill = (player.weight * len(player.name)) + (player.reach / 10) - (player.age / 2)
-
-        logger.debug(f"Calculated skill for {player.name}: {skill:.3f}")
+        height_inches_total = player.height_feet * 12 + player.height_inches
+        position_factor = {"G": 1.0, "F": 1.2, "C": 1.4}.get(player.position[:1].upper(), 1.0) 
+    
+        skill = player.weight_pounds + height_inches_total * position_factor
+    
+        logger.info(f"Calculated skill for {player.full_name}: {skill:.2f}")
         return skill
-
+    
     def update_team_stats(self, winning_team: str):
         """Updates the stats for the winning and losing teams (optional)."""
         if winning_team == "Team 1":
@@ -127,19 +132,23 @@ class GameModel:
         else:
             logger.error(f"Cannot add more players to team {team}. Each team can have only 2 players.")
             raise ValueError(f"Team {team} is already full.")
-
-    def _get_player_by_id(self, player_id: int) -> BasketballPlayer:
-        """Retrieve a player by their ID from the cache or database.
-
-        Args:
-            player_id (int): The ID of the player.
-
-        Returns:
-            BasketballPlayer: The player object.
+            
+    def clear_game(self):
         """
-        player = self._player_cache.get(player_id)
-        if not player:
-            logger.info(f"Player {player_id} not found in cache. Refreshing from DB.")
-            player = BasketballPlayer.get_player_by_id(player_id)
-            self._player_cache[player_id] = player
-        return player
+        Clears both teams from the game.
+    
+        Empties the player lists for Team 1 and Team 2 and logs the action.
+        If both teams are already empty, logs a warning.
+        """
+        if not self.team_1 and not self.team_2:
+            logger.warning("Attempted to clear an empty game (both teams are already empty).")
+            return
+        logger.info("Clearing all players from both teams.")
+        self.team_1.clear()
+        self.team_2.clear()
+        
+    def clear_cache(self):
+        """Clears the local TTL cache of basketball players."""
+        logger.info("Clearing local player cache in GameModel.")
+        self._player_cache.clear()
+        self._ttl.clear()
