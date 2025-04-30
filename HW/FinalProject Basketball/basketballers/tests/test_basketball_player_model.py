@@ -32,20 +32,25 @@ def sample_basketballers(sample_bballer1, sample_bballer2):
 ### --- Ring Clear ---
 
 def test_clear_game(game_model):
-     """Test that clear_game empties the court."""
-     game_model.ring = [1, 2]
-     game_model.clear_game()
-     assert len(game_model.ring) == 0   #Unsure for what .ring should replace
+    """Test that clear_game empties both teams."""
+    game_model.team_1 = [1, 3]
+    game_model.team_2 = [2, 4]
+    game_model.clear_game()
+    assert len(game_model.team_1) == 0
+    assert len(game_model.team_2) == 0
 
-def test_clear_ring_empty(ring_model, caplog):
-    """Test that clear_ring logs a warning when already empty."""
+
+def test_clear_game_empty(game_model, caplog):
+    """Test that clear_game logs a warning when already empty."""
     with caplog.at_level("WARNING"):
-        ring_model.clear_ring()
-    assert len(ring_model.ring) == 0
-    assert "Attempted to clear an empty ring." in caplog.text
+        game_model.clear_game()
+    assert len(game_model.team_1) == 0
+    assert len(game_model.team_2) == 0
+    assert "Attempted to clear an empty game" in caplog.text
 
+"""
 def test_get_boxers_empty(ring_model, caplog):
-    """Test get_boxers logs when empty."""
+    #Test get_boxers logs when empty.
     with caplog.at_level("WARNING"):
         boxers = ring_model.get_boxers()
     assert boxers == []
@@ -90,11 +95,12 @@ def test_enter_ring(ring_model, sample_boxers, app):
      assert ring_model.ring == [sample_boxers[0].id]
      ring_model.enter_ring(sample_boxers[1].id)
      assert ring_model.ring == [sample_boxers[0].id, sample_boxers[1].id]
-
-def test_enter_ring_full(ring_model):
-     ring_model.ring = [1, 2]
-     with pytest.raises(ValueError, match="Ring is full"):
-         ring_model.enter_ring(3)
+"""
+def test_enter_game_full(game_model):
+    """Test that enter_game raises an error when team is full."""
+    game_model.team_1 = [1, 2]
+    with pytest.raises(ValueError, match="Team 1 is already full."):
+        game_model.enter_game(5, team=1)
 
 # --- Fight Logic ---
 
@@ -116,19 +122,22 @@ def test_fight(ring_model, sample_boxers, caplog, mocker):
      mock_update.assert_any_call("loss")
      assert ring_model.ring == []
 
-def test_fight_with_empty_ring(ring_model):
-     with pytest.raises(ValueError, match="There must be two boxers to start a fight."):
-         ring_model.fight()
+def test_play_game_with_empty_teams(game_model):
+    """Test that play_game raises an error when teams are empty."""
+    with pytest.raises(ValueError, match="Each team must have 2 players to start a game."):
+        game_model.play_game()
          
-def test_fight_with_one_boxer(ring_model, sample_boxer1):
-     ring_model.ring.append(sample_boxer1)
-     with pytest.raises(ValueError, match="There must be two boxers to start a fight."):
+def test_play_game_with_one_player_each(game_model):
+    """Test that play_game raises an error when teams have only one player each."""
+    game_model.team_1 = [1]
+    game_model.team_2 = [2]
+    with pytest.raises(ValueError, match="Each team must have 2 players to start a game."):
+        game_model.play_game()
 
-         ring_model.fight()
-
-def test_clear_cache(ring_model, sample_boxer1):
-     ring_model._boxer_cache[sample_boxer1.id] = sample_boxer1
-     ring_model._ttl[sample_boxer1.id] = time.time() + 100
-     ring_model.clear_cache()
-     assert ring_model._boxer_cache == {}
-     assert ring_model._ttl == {}
+def test_clear_cache(game_model, sample_basketball1):
+    """Test that clear_cache empties the player cache."""
+    game_model._player_cache[sample_basketball1.id] = sample_basketball1
+    game_model._ttl[sample_basketball1.id] = time.time() + 100
+    game_model.clear_cache()
+    assert game_model._player_cache == {}
+    assert game_model._ttl == {}
