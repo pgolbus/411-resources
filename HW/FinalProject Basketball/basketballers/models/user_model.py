@@ -101,7 +101,7 @@ class User(db.Model, UserMixin):
 
     def get_id(self) -> str:
         """Returns the user's id (username)."""
-        return self.username
+        return str(self.id)
 
     @classmethod
     def get_id_by_username(cls, username: str) -> int:
