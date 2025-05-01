@@ -25,7 +25,7 @@ class BasketballPlayer(db.Model):
     height_inches = db.Column(db.Integer, nullable=False)
     weight_pounds = db.Column(db.Integer, nullable=False)
 
-     def __init__(self, full_name: str, position: str, team: str,
+    def __init__(self, full_name: str, position: str, team: str,
                  height_feet: int, height_inches: int, weight_pounds: int):
         """
         Initialize a new Player instance with basic attributes.
@@ -37,7 +37,6 @@ class BasketballPlayer(db.Model):
             height_feet (int): Player height in feet.
             height_inches (int): Additional height in inches.
             weight_pounds (int): Player's weight in pounds.
-
         Raises:
             ValueError: If any provided attributes are invalid.
         """
@@ -132,7 +131,7 @@ class BasketballPlayer(db.Model):
             raise ValueError(f"Player with name '{name}' not found.")
         return player
 
-       @classmethod
+    @classmethod
     def delete_player(cls, player_id: int) -> None:
         """
         Delete a player from the database by internal ID.
@@ -148,7 +147,7 @@ class BasketballPlayer(db.Model):
         db.session.commit()
         logger.info(f"Player with ID {player_id} deleted.")
 
-     @staticmethod
+    @staticmethod
     def get_all_players() -> List[dict]:
         """
         Retrieve all players currently stored in the database.
