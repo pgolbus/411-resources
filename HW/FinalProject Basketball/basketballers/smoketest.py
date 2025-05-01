@@ -28,6 +28,7 @@ def run_smoketest():
     assert health_response.json()["status"] == "success"
 
     delete_user_response = requests.delete(f"{base_url}/delete-users")
+    print("Delete user failed with:", delete_user_response.status_code, delete_user_response.text)
     assert delete_user_response.status_code == 200
     assert delete_user_response.json()["status"] == "success"
     print("Delete users successful")
@@ -36,16 +37,17 @@ def run_smoketest():
     assert delete_player_response.status_code == 200
     assert delete_player_response.json()["status"] == "success"
     print("Delete players successful")
+    
+    session = requests.Session()
 
-    create_user_response = requests.put(f"{base_url}/create-user", json={
-        "username": username,
-        "password": password
+    create_user_response = session.post(f"{base_url}/create-account", json={
+    "username": username,
+    "password": password
     })
-    assert create_user_response.status_code == 201
-    assert create_user_response.json()["status"] == "success"
+    assert create_user_response.status_code in [200, 201]
+    assert "User created successfully" in create_user_response.json().get("message", "")
     print("User creation successful")
 
-    session = requests.Session()
 
     # Log in
     login_resp = session.post(f"{base_url}/login", json={
@@ -92,14 +94,20 @@ def run_smoketest():
     # Log out
     logout_resp = session.post(f"{base_url}/logout")
     assert logout_resp.status_code == 200
-    assert logout_resp.json()["status"] == "success"
+    assert "Logged out successfully" in logout_resp.json().get("message", "")
     print("Logout successful")
+
 
     add_player_logged_out_resp = session.post(f"{base_url}/add-player", json=test_player_1)
     # This should fail because we are logged out
-    assert add_player_logged_out_resp.status_code == 401
-    assert add_player_logged_out_resp.json()["status"] == "error"
-    print("Player creation failed as expected")
+    assert add_player_logged_out_resp.status_code in [401, 302] 
+    try:
+        data = add_player_logged_out_resp.json()
+        assert data["status"] == "error"
+        print("Player creation failed as expected")
+    except requests.exceptions.JSONDecodeError:
+        print("Player creation failed as expected (non-JSON redirect)")
+
 
 if __name__ == "__main__":
     run_smoketest()

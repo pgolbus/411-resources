@@ -83,7 +83,12 @@ class GameModel:
         """
         total_skill = 0.0
         for player_id in team:
-            player = self._get_player_by_id(player_id)
+            if player_id not in self._player_cache or time.time() > self._ttl.get(player_id, 0):
+                player = BasketballPlayer.get_player_by_id(player_id)
+                self._player_cache[player_id] = player
+                self._ttl[player_id] = time.time() + self.ttl_seconds
+            else:
+                player = self._player_cache[player_id]
             total_skill += self.get_player_skill(player)
         return total_skill
     

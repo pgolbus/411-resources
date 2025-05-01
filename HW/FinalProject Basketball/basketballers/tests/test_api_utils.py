@@ -1,7 +1,7 @@
 import pytest
 import requests
 
-from boxing.utils.api_utils import get_random
+from basketballers.utils.api_utils import get_random
 
 
 RANDOM_NUMBER = 0.42

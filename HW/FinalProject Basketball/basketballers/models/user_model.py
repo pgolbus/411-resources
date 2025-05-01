@@ -119,6 +119,11 @@ class User(db.Model, UserMixin):
             raise ValueError(f"User {username} not found")
         return user.id
 
+    
+    def check_password(self, password: str) -> bool:
+        hashed = hashlib.sha256((password + self.salt).encode()).hexdigest()
+        return hashed == self.password
+    
     @classmethod
     def update_password(cls, username: str, new_password: str) -> None:
         """

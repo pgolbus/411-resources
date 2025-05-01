@@ -1,8 +1,8 @@
 import pytest
 
-from app import create_app
-from config import TestConfig
-from boxing.db import db
+from basketballers.app import create_app
+from basketballers.config import TestConfig
+from basketballers.db import db
 
 @pytest.fixture
 def app():

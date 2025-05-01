@@ -1,7 +1,7 @@
 import time
 import pytest
 from basketballers.models.basketball_player_model import BasketballPlayer
-from basketballers.models.basketball_general_model import GameModel
+from basketballers.models.basketball_game_model import GameModel
 
 
 @pytest.fixture
@@ -132,7 +132,6 @@ def test_enter_game_full(game_model, sample_players):
 # Game Logic
 ##########################################################
 
-
 def test_get_player_skill(game_model, sample_players):
     """Test the get_player_skill method.
 
@@ -143,20 +142,32 @@ def test_get_player_skill(game_model, sample_players):
     expected_skill = p.weight_pounds + total_height * factor
     assert game_model.get_player_skill(p) == expected_skill
 
+def test_get_team_skill(game_model, sample_players):
+    """Test that get_team_skill sums individual player skills correctly."""
+    team_ids = [sample_players[0].id, sample_players[1].id]
+    game_model._player_cache = {
+        sample_players[0].id: sample_players[0],
+        sample_players[1].id: sample_players[1],
+    }
+    game_model._ttl = {
+        sample_players[0].id: time.time() + 100,
+        sample_players[1].id: time.time() + 100,
+    }
+    expected = sum(game_model.get_player_skill(p) for p in [sample_players[0], sample_players[1]])
+    assert game_model.get_team_skill(team_ids) == expected
 
-
-def test_play_game(game_model, sample_players, caplog):
+def test_play_game(game_model, sample_players, mocker, caplog):
     """Test the play game method with sample players.
 
     """
-    # Add 2 players to each team
     game_model.team_1 = [sample_players[0].id, sample_players[1].id]
     game_model.team_2 = [sample_players[2].id, sample_players[3].id]
 
-    # Populate the cache
     for p in sample_players:
         game_model._player_cache[p.id] = p
         game_model._ttl[p.id] = time.time() + 100
+
+    mocker.patch("basketballers.models.basketball_game_model.get_random", return_value=0.3)
 
     with caplog.at_level("INFO"):
         winner = game_model.play_game()
@@ -164,7 +175,14 @@ def test_play_game(game_model, sample_players, caplog):
     assert winner in ["Team 1", "Team 2"]
     assert "Game started between Team 1 and Team 2" in caplog.text
     assert "The winner is:" in caplog.text
-    
+
+def test_update_team_stats(game_model, caplog):
+    with caplog.at_level("INFO"):
+        game_model.update_team_stats("Team 1")
+        game_model.update_team_stats("Team 2")
+    assert "Team 1 wins!" in caplog.text
+    assert "Team 2 wins!" in caplog.text
+
 def test_play_game_with_empty_teams(game_model):
     """Test that the play game method raises a ValueError when there are fewer than two players on each team.
 

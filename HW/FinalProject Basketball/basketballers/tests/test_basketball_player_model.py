@@ -3,36 +3,34 @@ import time
 import pytest
 
 from basketballers.models.basketball_player_model import BasketballPlayer
-from basketballers.models.basketball_general_model import GameModel
+from basketballers.models.basketball_game_model import GameModel
 
 
 @pytest.fixture
 def game_model():
-    #Fixture to provide a new instance of RingModel for each test.
+# Fixture to provide a new instance of GameModel for each test.
     return GameModel()
 
+# Fixture providing sample players
 @pytest.fixture
-def sample_basketball1(session):
-    #Create a sample basketball player for testing.
-    bballer = BasketballPlayer(name="Stephen Curry", position="G",team="Warriors", height_feet=6, height_inches=2, weight_pounds=185)
-    session.add(bballer)
+def sample_players(session):
+    """Creates 4 basketball players in the DB."""
+    players = [
+        BasketballPlayer(full_name="Stephen Curry", position="G", team="Warriors", height_feet=6, height_inches=2, weight_pounds=185),
+        BasketballPlayer(full_name="LeBron James", position="F", team="Lakers", height_feet=6, height_inches=9, weight_pounds=250),
+        BasketballPlayer(full_name="Kevin Durant", position="F", team="Suns", height_feet=6, height_inches=10, weight_pounds=240),
+        BasketballPlayer(full_name="Joel Embiid", position="C", team="76ers", height_feet=7, height_inches=0, weight_pounds=280),
+    ]
+    session.add_all(players)
     session.commit()
-    return bballer
+    return players
 
 @pytest.fixture
-def sample_basketball2(session):
-    #Create another sample basketball player for testing.
-    bballer = BasketballPlayer(name="Giannis Antetokounmpo", position="F",team="Bucks", height_feet=6, height_inches=11, weight_pounds=243)
-    session.add(bballer)
-    session.commit()
-    return bballer
+def sample_player1(sample_players):
+    return sample_players[0]
 
-@pytest.fixture
-def sample_basketballers(sample_bballer1, sample_bballer2):
-    #Fixture to provide a list of sample basketball players.
-    return [sample_bballer1, sample_bballer2]
 
-### --- Ring Clear ---
+### --- Game Management ---
 
 def test_clear_game(game_model):
     #Test that clear_game empties both teams.
@@ -41,7 +39,6 @@ def test_clear_game(game_model):
     game_model.clear_game()
     assert len(game_model.team_1) == 0
     assert len(game_model.team_2) == 0
-
 
 def test_clear_game_empty(game_model, caplog):
     #Test that clear_game logs a warning when already empty.
@@ -100,13 +97,13 @@ def test_enter_game(game_model, sample_players):
     game_model.enter_game(sample_players[1].id, team=2)
     assert game_model.team_2 == [sample_players[1].id]
 
-def test_enter_game_full(game_model):
+def test_enter_game_full(game_model, sample_players):
     #Test that enter_game raises an error when team is full.
-    game_model.team_1 = [1, 2]
+    game_model.team_1 = [sample_players[0].id, sample_players[1].id]
     with pytest.raises(ValueError, match="Team 1 is already full."):
         game_model.enter_game(5, team=1)
 
-# --- Fight Logic ---
+# --- Game Logic ---
 
 def test_get_player_skill(game_model, sample_players):
     #Test that get_player_skill calculates the skill correctly.
@@ -129,10 +126,12 @@ def test_play_game(game_model, sample_players, mocker, caplog):
     mocker.patch("basketballers.models.basketball_player_model.BasketballPlayer.get_player_by_id", side_effect=sample_players)
     
     # Mock skill calculation
-    mocker.patch("basketballers.models.basketball_general_model.GameModel.get_player_skill", side_effect=[300, 310, 290, 280])
-    
+    mocker.patch(
+        "basketballers.models.basketball_game_model.GameModel.get_player_skill",
+        return_value=300.0
+        )    
     # Mock randomness
-    mocker.patch("basketballers.models.basketball_general_model.get_random", return_value=0.3)
+    mocker.patch("basketballers.models.basketball_game_model.get_random", return_value=0.3)
 
     # Run the game
     with caplog.at_level("INFO"):
@@ -155,10 +154,10 @@ def test_play_game_with_one_player_each(game_model):
     with pytest.raises(ValueError, match="Each team must have 2 players to start a game."):
         game_model.play_game()
 
-def test_clear_cache(game_model, sample_basketball1):
+def test_clear_cache(game_model, sample_player1):
     #Test that clear_cache empties the player cache.
-    game_model._player_cache[sample_basketball1.id] = sample_basketball1
-    game_model._ttl[sample_basketball1.id] = time.time() + 100
+    game_model._player_cache[sample_player1.id] = sample_player1
+    game_model._ttl[sample_player1.id] = time.time() + 100
     game_model.clear_cache()
     assert game_model._player_cache == {}
     assert game_model._ttl == {}

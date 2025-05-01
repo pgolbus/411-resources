@@ -2,8 +2,8 @@ import logging
 from typing import List
 from sqlalchemy.exc import IntegrityError
 
-from basketball.db import db
-from basketball.utils.logger import configure_logger
+from basketballers.db import db
+from basketballers.utils.logger import configure_logger
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
