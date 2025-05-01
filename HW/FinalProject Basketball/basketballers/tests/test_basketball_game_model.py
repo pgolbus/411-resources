@@ -73,6 +73,9 @@ def test_get_players_with_data(game_model, sample_players):
     assert sample_players[1] in players
 
 def test_get_players_uses_cache(game_model, sample_players, mocker):
+    """Test that get_players uses the cache if the TTL is not expired.
+
+    """
     p = sample_players[0]
     game_model.team_1 = [p.id]
     game_model._player_cache[p.id] = p
@@ -83,6 +86,9 @@ def test_get_players_uses_cache(game_model, sample_players, mocker):
     mock_get.assert_not_called()
     
 def test_get_players_refreshes_on_expired_ttl(game_model, sample_players, mocker):
+    """Test that get_players refreshes the cache if the TTL is expired.
+
+    """
     p = sample_players[0]
     game_model.team_1 = [p.id]
     game_model._player_cache[p.id] = mocker.Mock()
@@ -93,6 +99,9 @@ def test_get_players_refreshes_on_expired_ttl(game_model, sample_players, mocker
     mock_get.assert_called_once_with(p.id)
 
 def test_clear_cache(game_model, sample_players):
+    """Test that clear_cache empties the player cache and TTL.
+
+    """
     p = sample_players[0]
     game_model._player_cache[p.id] = p
     game_model._ttl[p.id] = time.time() + 100
