@@ -111,7 +111,6 @@ def test_enter_game_full(game_model):
     with pytest.raises(ValueError, match="Team 1 is already full."):
         game_model.enter_game(5, team=1)
 
-"""
 # --- Fight Logic ---
 
 def test_get_fighting_skill(ring_model, sample_boxers):
@@ -120,19 +119,41 @@ def test_get_fighting_skill(ring_model, sample_boxers):
      assert ring_model.get_fighting_skill(sample_boxers[0]) == expected_1
      assert ring_model.get_fighting_skill(sample_boxers[1]) == expected_2
 
-def test_fight(ring_model, sample_boxers, caplog, mocker):
-     ring_model.ring.extend(sample_boxers)
-     mocker.patch("boxing.models.ring_model.RingModel.get_fighting_skill", side_effect=[2526.8, 2206.1])
-     mocker.patch("boxing.models.ring_model.get_random", return_value=0.42)
-     mocker.patch("boxing.models.ring_model.RingModel.get_boxers", return_value=sample_boxers)
-     mock_update = mocker.patch("boxing.models.ring_model.Boxers.update_stats")
-     winner = ring_model.fight()
-     assert winner == "Muhammad Ali"
-     mock_update.assert_any_call("win")
-     mock_update.assert_any_call("loss")
-     assert ring_model.ring == []
 
-     """
+def test_get_player_skill(game_model, sample_players):
+    #Test that get_player_skill calculates the skill correctly.
+    # Skill = (weight in pounds) + (height in inches) * (position factor)
+
+    player = sample_players[0]
+    height_inches = player.height_feet * 12 + player.height_inches
+    position_factor = {"G": 1.0, "F": 1.2, "C": 1.4}.get(player.position[:1].upper(), 1.0)
+    expected_skill = player.weight_pounds + height_inches * position_factor
+
+    assert game_model.get_player_skill(player) == expected_skill
+
+
+def test_play_game(game_model, sample_players, mocker, caplog):
+    # Setup: add 2 players to each team
+    game_model.team_1 = [sample_players[0].id, sample_players[1].id]
+    game_model.team_2 = [sample_players[2].id, sample_players[3].id]
+
+    # Mock players returned from DB
+    mocker.patch("basketballers.models.basketball_player_model.BasketballPlayer.get_player_by_id", side_effect=sample_players)
+    
+    # Mock skill calculation
+    mocker.patch("basketballers.models.basketball_general_model.GameModel.get_player_skill", side_effect=[300, 310, 290, 280])
+    
+    # Mock randomness
+    mocker.patch("basketballers.models.basketball_general_model.get_random", return_value=0.3)
+
+    # Run the game
+    with caplog.at_level("INFO"):
+        winner = game_model.play_game()
+
+    assert winner in ["Team 1", "Team 2"]
+    assert "Game started between Team 1 and Team 2" in caplog.text
+    assert "The winner is:" in caplog.text
+
 
 def test_play_game_with_empty_teams(game_model):
     """Test that play_game raises an error when teams are empty."""
