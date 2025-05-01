@@ -36,7 +36,7 @@ def test_clear_game(game_model):
     assert game_model.team_2 == []
 
 def test_clear_game_empty(game_model, caplog):
-    """Test that calling clear_gme on an empty ring logs a warning and keeps the game empty.
+    """Test that calling clear_game on an empty game logs a warning and keeps the game empty.
 
     """
     with caplog.at_level("WARNING"):
@@ -56,7 +56,7 @@ def test_get_players_empty(game_model, caplog):
     assert "Retrieving players from an empty game." in caplog.text
 
 def test_get_players_with_data(game_model, sample_players):
-    """Test that get_players returns the correct list when there are boxers.
+    """Test that get_players returns the correct list when there are players.
 
 
 
