@@ -86,6 +86,36 @@ class GameModel:
             player = self._get_player_by_id(player_id)
             total_skill += self.get_player_skill(player)
         return total_skill
+    
+    def get_players(self) -> List[BasketballPlayer]:
+        """Retrieves the current list of basketball players in both teams.
+
+        Returns:
+            List[BasketballPlayer]: A list of player objects representing the players in the game.
+        """
+        all_ids = self.team_1 + self.team_2
+        if not all_ids:
+            logger.warning("Retrieving players from an empty game.")
+            return []
+        else:
+            logger.info(f"Retrieving {len(all_ids)} players from the game.")
+
+        players = []
+        for player_id in all_ids:
+            ttl = self._ttl.get(player_id)
+            if not ttl or time.time() > ttl:
+                logger.info(f"TTL expired or missing for player {player_id}. Refreshing from DB.")
+                player = BasketballPlayer.get_player_by_id(player_id)
+                self._player_cache[player_id] = player
+                self._ttl[player_id] = time.time() + self.ttl_seconds
+            else:
+                player = self._player_cache[player_id]
+                logger.debug(f"Using cached player {player_id} (TTL valid).")
+
+            players.append(player)
+
+        logger.info(f"Retrieved {len(players)} players from the game.")
+        return players
 
     def get_player_skill(self, player: BasketballPlayer) -> float:
         """Calculates the skill for an individual basketball player.
