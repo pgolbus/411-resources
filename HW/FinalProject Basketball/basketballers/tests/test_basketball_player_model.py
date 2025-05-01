@@ -48,38 +48,52 @@ def test_clear_game_empty(game_model, caplog):
     assert len(game_model.team_2) == 0
     assert "Attempted to clear an empty game" in caplog.text
 
-"""
-def test_get_boxers_empty(ring_model, caplog):
-    #Test get_boxers logs when empty.
+def test_get_players_empty(game_model, caplog):
+    # Test get_players logs when both teams are empty.
     with caplog.at_level("WARNING"):
-        boxers = ring_model.get_boxers()
-    assert boxers == []
-    assert "Retrieving boxers from an empty ring." in caplog.text
-    
+        players = game_model.get_players()
+    assert players == []
+    assert "Retrieving players from an empty game." in caplog.text
 
-def test_get_boxers_with_data(app, ring_model, sample_boxers):
-    """Test get_boxers with two sample boxers."""
-    ring_model.ring.extend([b.id for b in sample_boxers])
-    boxers = ring_model.get_boxers()
-    assert boxers == sample_boxers
 
-def test_get_boxers_uses_cache(ring_model, sample_boxer1, mocker):
-     ring_model.ring.append(sample_boxer1.id)
-     ring_model._boxer_cache[sample_boxer1.id] = sample_boxer1
-     ring_model._ttl[sample_boxer1.id] = time.time() + 100
-     mock_get = mocker.patch("boxing.models.ring_model.Boxers.get_boxer_by_id")
-     boxers = ring_model.get_boxers()
-     assert boxers[0] == sample_boxer1
-     mock_get.assert_not_called()
-     
-def test_get_boxers_refreshes_on_expired_ttl(ring_model, sample_boxer1, mocker):
-     ring_model.ring.append(sample_boxer1.id)
-     ring_model._boxer_cache[sample_boxer1.id] = mocker.Mock()
-     ring_model._ttl[sample_boxer1.id] = time.time() - 1
-     mock_get = mocker.patch("boxing.models.ring_model.Boxers.get_boxer_by_id", return_value=sample_boxer1)
-     boxers = ring_model.get_boxers()
-     assert boxers[0] == sample_boxer1
-     mock_get.assert_called_once_with(sample_boxer1.id)
+def test_get_players_with_data(game_model, sample_players):
+    # Add sample players to both teams
+    game_model.team_1.append(sample_players[0].id)
+    game_model.team_2.append(sample_players[1].id)
+    game_model._player_cache[sample_players[0].id] = sample_players[0]
+    game_model._player_cache[sample_players[1].id] = sample_players[1]
+    game_model._ttl[sample_players[0].id] = time.time() + 100
+    game_model._ttl[sample_players[1].id] = time.time() + 100
+
+    players = game_model.get_players()
+    assert sample_players[0] in players
+    assert sample_players[1] in players
+
+
+def test_get_players_uses_cache(game_model, sample_player1, mocker):
+    game_model.team_1.append(sample_player1.id)
+    game_model._player_cache[sample_player1.id] = sample_player1
+    game_model._ttl[sample_player1.id] = time.time() + 100
+    mock_get = mocker.patch("basketballers.models.basketball_player_model.BasketballPlayer.get_player_by_id")
+    players = game_model.get_players()
+    assert players[0] == sample_player1
+    mock_get.assert_not_called()
+
+def test_get_players_refreshes_on_expired_ttl(game_model, sample_player1, mocker):
+    game_model.team_2.append(sample_player1.id)
+    game_model._player_cache[sample_player1.id] = mocker.Mock()
+    game_model._ttl[sample_player1.id] = time.time() - 1
+    mock_get = mocker.patch("basketballers.models.basketball_player_model.BasketballPlayer.get_player_by_id", return_value=sample_player1)
+    players = game_model.get_players()
+    assert players[0] == sample_player1
+    mock_get.assert_called_once_with(sample_player1.id)
+
+def test_enter_game(game_model, sample_players):
+    game_model.enter_game(sample_players[0].id, team=1)
+    assert game_model.team_1 == [sample_players[0].id]
+    game_model.enter_game(sample_players[1].id, team=2)
+    assert game_model.team_2 == [sample_players[1].id]
+"""    
      
 
 def test_cache_populated_on_get_boxers(ring_model, sample_boxer1, mocker):
@@ -90,11 +104,6 @@ def test_cache_populated_on_get_boxers(ring_model, sample_boxer1, mocker):
      assert sample_boxer1.id in ring_model._ttl
      assert boxers[0] == sample_boxer1
 
-def test_enter_ring(ring_model, sample_boxers, app):
-     ring_model.enter_ring(sample_boxers[0].id)
-     assert ring_model.ring == [sample_boxers[0].id]
-     ring_model.enter_ring(sample_boxers[1].id)
-     assert ring_model.ring == [sample_boxers[0].id, sample_boxers[1].id]
 """
 def test_enter_game_full(game_model):
     """Test that enter_game raises an error when team is full."""
