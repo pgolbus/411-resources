@@ -1,19 +1,17 @@
 import hashlib
 import logging
 import os
-
 from flask_login import UserMixin
 from sqlalchemy.exc import IntegrityError
+from basketballers.db import db  # Ensure db import is correct
+from basketballers.utils.logger import configure_logger  # Ensure logger is correct
 
-from boxing.db import db
-from boxing.utils.logger import configure_logger
-
-
+# Set up logger
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
-
-class Users(db.Model, UserMixin):
+class User(db.Model, UserMixin):
+    """Represents a user in the system."""
     
     __tablename__ = 'users'
     
@@ -23,7 +21,7 @@ class Users(db.Model, UserMixin):
     password = db.Column(db.String(64), nullable=False)
     
     @staticmethod
-    def _generate_hashed_password(password: str) -> tuple[str, str]:
+    def _generate_hashed_password(password: str) -> tuple:
         """
         Generates a salted, hashed password.
 
@@ -36,7 +34,6 @@ class Users(db.Model, UserMixin):
         salt = os.urandom(16).hex()
         hashed_password = hashlib.sha256((password + salt).encode()).hexdigest()
         return salt, hashed_password
-
 
     @classmethod
     def create_user(cls, username: str, password: str) -> None:
@@ -55,31 +52,27 @@ class Users(db.Model, UserMixin):
         try:
             db.session.add(new_user)
             db.session.commit()
-            logger.info("User successfully added to the database: %s", username)
+            logger.info(f"User {username} created successfully.")
         except IntegrityError:
             db.session.rollback()
-            logger.error("Duplicate username: %s", username)
-            raise ValueError(f"User with username '{username}' already exists")
+            logger.error(f"Duplicate username: {username}")
+            raise ValueError(f"User with username '{username}' already exists.")
         except Exception as e:
             db.session.rollback()
-            logger.error("Database error: %s", str(e))
+            logger.error(f"Database error: {str(e)}")
             raise
-
 
     @classmethod
     def check_password(cls, username: str, password: str) -> bool:
         """
-        Check if a given password matches the stored password for a user.
+        Check if the password matches the stored password for a user.
 
         Args:
             username (str): The username of the user.
             password (str): The password to check.
 
         Returns:
-            bool: True if the password is correct, False otherwise.
-
-        Raises:
-            ValueError: If the user does not exist.
+            bool: True if the password matches, False otherwise.
         """
         user = cls.query.filter_by(username=username).first()
         if not user:
@@ -100,20 +93,15 @@ class Users(db.Model, UserMixin):
         """
         user = cls.query.filter_by(username=username).first()
         if not user:
-           logger.info("User %s not found", username)
-           raise ValueError(f"User {username} not found")
+            logger.info(f"User {username} not found")
+            raise ValueError(f"User {username} not found")
         db.session.delete(user)
         db.session.commit()
-        logger.info("User %s deleted successfully", username)
+        logger.info(f"User {username} deleted successfully.")
 
     def get_id(self) -> str:
-        """
-        Get the ID of the user.
-
-        Returns:
-            str: The ID of the user.
-        """
-        return self.username
+        """Returns the user's id (username)."""
+        return str(self.id)
 
     @classmethod
     def get_id_by_username(cls, username: str) -> int:
@@ -125,15 +113,17 @@ class Users(db.Model, UserMixin):
 
         Returns:
             int: The ID of the user.
-
-        Raises:
-            ValueError: If the user does not exist.
         """
         user = cls.query.filter_by(username=username).first()
         if not user:
-           raise ValueError(f"User {username} not found")
+            raise ValueError(f"User {username} not found")
         return user.id
 
+    
+    def check_password(self, password: str) -> bool:
+        hashed = hashlib.sha256((password + self.salt).encode()).hexdigest()
+        return hashed == self.password
+    
     @classmethod
     def update_password(cls, username: str, new_password: str) -> None:
         """
@@ -142,17 +132,13 @@ class Users(db.Model, UserMixin):
         Args:
             username (str): The username of the user.
             new_password (str): The new password to set.
-
-        Raises:
-            ValueError: If the user does not exist.
         """
         user = cls.query.filter_by(username=username).first()
         if not user:
-            logger.info("User %s not found", username)
+            logger.info(f"User {username} not found")
             raise ValueError(f"User {username} not found")
-
         salt, hashed_password = cls._generate_hashed_password(new_password)
         user.salt = salt
         user.password = hashed_password
         db.session.commit()
-        logger.info("Password updated successfully for user: %s", username)
+        logger.info(f"Password updated for user: {username}")
